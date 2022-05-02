@@ -50,17 +50,23 @@ eas publish
 
 ### TODO
 
--
+
+### Stores
+- [ ] register `fr.ircam.ismm.recomote`
+
+#### Project
 - [ ] name
-  - [ ] reCoMote
-  - [ ] recomote
-  - [ ] Recomote
 - [ ] icons
 - [ ] colours
 
+### App
+
 - [ ] binary webSocket
-- [ ] server QR code generator (settings to URL)
-- [ ] multi-touch buttons
 - [ ] performance on Android
   - [ ] debug screen crashes
-  - [ ] bypass store for sensors stream
+  - [ ] bypass redux store for sensors stream
+
+### CoMo-Vox
+
+- [ ] webSocket input
+- [ ] server QR code generator (settings to URL)
