@@ -167,7 +167,7 @@ export default function SettingsScreen({color}) {
 
 const styles = StyleSheet.create({
   container: {
-    minHeight: '100%',
+    flex: 1,
   },
   groupContainer: {
     padding: 10,
