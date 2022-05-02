@@ -6,6 +6,9 @@ import { RootTabScreenProps } from '../types';
 
 import * as Linking from 'expo-linking';
 
+import { useAppSelector, useAppDispatch } from '../hooks';
+import { selectSensors } from '../features/sensors/sensorsSlice';
+
 // function openUrl() {
 
   // const url = 'recomote://?ws=false&ws-url=wss://129.102.165.35:8888&osc=false&osc-url=udp://128.102.165.32:5555';
@@ -23,19 +26,37 @@ import * as Linking from 'expo-linking';
 //   Linking.openURL(url);
 // }
 
-export default function TabOneScreen({ navigation }: RootTabScreenProps<'TabOne'>) {
+      // <View style={{display: ''}}>
+      //   <Text>
+      //     x: {accelerometer.x.toFixed(2)}
+      //     y: {accelerometer.y.toFixed(2)}
+      //     z: {accelerometer.z.toFixed(2)}
+      //   </Text>
+      // </View>
+export default function DebugScreen({ navigation }: RootTabScreenProps<'Debug'>) {
+    const sensors = useAppSelector( (state) => {
+    return selectSensors(state);
+  });
+  const {accelerometer} = sensors;
+
   return (
     <View style={styles.container}>
 
-      <Text style={styles.title}>Tab One</Text>
+      <View style={{display: ''}}>
+        <Text>
+          x: {accelerometer.x.toFixed(2)}
+          y: {accelerometer.y.toFixed(2)}
+          z: {accelerometer.z.toFixed(2)}
+        </Text>
+      </View>
 
       <Button title={'Open dynamic URL'} onPress={() => {
         const url = Linking.createURL('/settings', {
           queryParams: {
             'ws': 'true',
-            'ws-url': 'ws://129.102.165.35:8888',
+            'ws-url': 'ws://10.10.0.1:8001',
             'osc': 'false',
-            'osc-url': 'udp://128.102.165.32:5555',
+            'osc-url': 'udp://10.10.0.2:8002',
           },
         });
 
@@ -62,8 +83,6 @@ export default function TabOneScreen({ navigation }: RootTabScreenProps<'TabOne'
         Linking.openURL(url);
       }} />
 
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="/screens/TabOneScreen.tsx" />
     </View>
   );
 }
@@ -72,7 +91,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-around',
   },
   title: {
     fontSize: 20,
