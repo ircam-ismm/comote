@@ -1,6 +1,6 @@
+import * as React from 'react';
 import { StyleSheet, Button } from 'react-native';
 
-import EditScreenInfo from '../components/EditScreenInfo';
 import { Text, View } from '../components/Themed';
 import { RootTabScreenProps } from '../types';
 
@@ -26,6 +26,8 @@ import { selectSensors } from '../features/sensors/sensorsSlice';
 //   Linking.openURL(url);
 // }
 
+
+// // this crashes on android v8
       // <View style={{display: ''}}>
       //   <Text>
       //     x: {accelerometer.x.toFixed(2)}
@@ -33,8 +35,9 @@ import { selectSensors } from '../features/sensors/sensorsSlice';
       //     z: {accelerometer.z.toFixed(2)}
       //   </Text>
       // </View>
-export default function DebugScreen({ navigation }: RootTabScreenProps<'Debug'>) {
-    const sensors = useAppSelector( (state) => {
+
+export default function DebugScreen({color}) {
+  const sensors = useAppSelector( (state) => {
     return selectSensors(state);
   });
   const {accelerometer} = sensors;
@@ -42,19 +45,11 @@ export default function DebugScreen({ navigation }: RootTabScreenProps<'Debug'>)
   return (
     <View style={styles.container}>
 
-      <View style={{display: ''}}>
-        <Text>
-          x: {accelerometer.x.toFixed(2)}
-          y: {accelerometer.y.toFixed(2)}
-          z: {accelerometer.z.toFixed(2)}
-        </Text>
-      </View>
-
       <Button title={'Open dynamic URL'} onPress={() => {
         const url = Linking.createURL('/settings', {
           queryParams: {
             'ws': 'true',
-            'ws-url': 'ws://10.10.0.1:8001',
+            'ws-url': 'ws://192.168.0.19:8901',
             'osc': 'false',
             'osc-url': 'udp://10.10.0.2:8002',
           },
@@ -76,7 +71,7 @@ export default function DebugScreen({ navigation }: RootTabScreenProps<'Debug'>)
       <Button title={'Enable WebSocket'} onPress={() => {
         const url = Linking.createURL('/settings', {
           queryParams: {
-            'ws': 'false',
+            'ws': 'true',
           },
         });
 

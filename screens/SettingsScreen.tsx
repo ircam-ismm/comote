@@ -209,7 +209,7 @@ const styles = StyleSheet.create({
     paddingRight: 5,
   },
   frequencyInput: {
-    maxWidth: 45,
+    maxWidth: 50,
     textAlign: 'center',
   },
   separator: {
