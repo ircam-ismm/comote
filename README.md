@@ -27,6 +27,7 @@ Install 'Expo Go' on iOS and Android devices.
 
 - on iOS, flash development QR code from Camera app,
 - on Android, open 'Expo Go' to flash the development QR code.
+- while running app, shake the device on the left or on the right to access the debugger
 
 ### Buid and deploy
 
@@ -36,10 +37,17 @@ To build, install `eas-cli`. See <https://docs.expo.dev/eas/>
 npm -g install `eas-cli`
 ```
 
-Then build with `eas`.
+Then build with `eas`. You will need to register on <expo.dev> website.
 
 ```sh
 eas build
+```
+
+It might be easier to use the old build
+
+```sh
+expo build:android
+expo build:ios
 ```
 
 It is even possible to publish to stores.
@@ -51,22 +59,38 @@ eas publish
 ### TODO
 
 
-### Stores
+#### Stores
 - [ ] register `fr.ircam.ismm.recomote`
 
-#### Project
+##### Project
 - [ ] name
 - [ ] icons
 - [ ] colours
+- [ ] add info tab
 
-### App
+#### App
 
 - [ ] binary webSocket
-- [ ] performance on Android
-  - [ ] debug screen crashes
-  - [ ] bypass redux store for sensors stream
+- [ ] try to automatically reconnect on `close` and `error`
+  - [ ] server comes after app
+  - [ ] connection interrupted
 
-### CoMo-Vox
+- [ ] performance on Android v8
+  - [ ] debug screen crashes
+  - [ ] overload if accelerometer frequency is more than 40 Hz
+  - [ ] test on more recent Android
+
+- [ ] bypass redux store for sensors stream
+  - [ ] global stream data
+  - [ ] periodic transmit
+  - [ ] be sure to keep events of buttons in order
+
+- [ ] multi-touch support for buttons
+- [ ] add 2D touch support
+
+- [ ] centralise styles
+
+#### CoMo-Vox
 
 - [ ] webSocket input
 - [ ] server QR code generator (settings to URL)
