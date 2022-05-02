@@ -43,10 +43,6 @@ class PlayerExperience extends AbstractExperience {
           console.log('Binary ArrayBuffer message from server: ', text );
         });
       } else {
-
-
-
-      {
         console.log('Message from server:', event.data);
       }
     });
