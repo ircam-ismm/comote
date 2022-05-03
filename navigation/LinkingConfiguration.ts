@@ -24,11 +24,11 @@ export function urlHandler({
   console.log('path = ', path)
   console.log('queryParams = ', queryParams);
 
-  if(path !== 'settings' && path !== null) {
+  if (path !== 'settings' && path !== null) {
     return;
   }
-  Object.entries(queryParams).forEach( ([key, value]) => {
-    if(key === 'ws') {
+  Object.entries(queryParams).forEach(([key, value]) => {
+    if (key === 'ws') {
       store.dispatch({
         type: 'settings/set',
         payload: {
@@ -38,7 +38,7 @@ export function urlHandler({
       });
     }
 
-    if(key === 'ws-url') {
+    if (key === 'ws-url') {
       store.dispatch({
         type: 'settings/set',
         payload: {
@@ -47,14 +47,13 @@ export function urlHandler({
       });
     }
 
-    if(key === 'acc-freq') {
+    if (key === 'acc-freq') {
       store.dispatch({
         type: 'settings/set',
         payload: {
           accelerometerFrequency: JSON.parse(value),
         },
       });
-
     }
 
   });
@@ -63,10 +62,10 @@ export function urlHandler({
 
 Linking.addEventListener('url', urlHandler);
 
-Linking.getInitialURL().then( (url) => {
+Linking.getInitialURL().then((url) => {
   console.log('initialUrl', url);
   urlHandler(url);
-}).catch( (error) => {
+}).catch((error) => {
   console.log('initialUrlError', error);
 });
 

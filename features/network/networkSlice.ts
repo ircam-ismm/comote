@@ -10,7 +10,7 @@ import {
 } from '@reduxjs/toolkit';
 import type { RootState, AppThunk } from '../../store';
 
-import {network} from '../../network';
+import { network } from '../../network';
 
 interface NetworkState {
   data: any;
