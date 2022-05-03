@@ -78,6 +78,10 @@ export default function DebugScreen({color}) {
         Linking.openURL(url);
       }} />
 
+      <Button title={'Open App settings'} onPress={() => {
+        Linking.openSettings();
+      }} />
+
     </View>
   );
 }
