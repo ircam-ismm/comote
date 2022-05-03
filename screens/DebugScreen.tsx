@@ -37,10 +37,10 @@ import { selectSensors } from '../features/sensors/sensorsSlice';
       // </View>
 
 export default function DebugScreen({color}) {
-  const sensors = useAppSelector( (state) => {
-    return selectSensors(state);
-  });
-  const {accelerometer} = sensors;
+  // const sensors = useAppSelector( (state) => {
+  //   return selectSensors(state);
+  // });
+  // const {accelerometer} = sensors;
 
   return (
     <View style={styles.container}>
