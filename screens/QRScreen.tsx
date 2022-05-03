@@ -21,7 +21,7 @@ import { urlHandler } from '../navigation/LinkingConfiguration';
 
 // @TODO: limit code type to what is generated
 
-export default function QRScreen({color}) {
+export default function QRScreen({ navigation }: RootTabScreenProps<'QR'>) {
   const [hasPermission, setHasPermission] = useState<Boolean|null>(null);
 
   const isFocused = useIsFocused();

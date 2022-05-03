@@ -43,8 +43,7 @@ export default function BottomTabNavigator() {
       screenOptions={{
         activeTintColor: Colors[colorScheme].tint,
         headerShown: false,
-      }}
-    >
+      }}>
 
       <BottomTab.Screen
         name="QR"

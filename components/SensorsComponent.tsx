@@ -22,22 +22,23 @@ import { selectSettings } from '../features/settings/settingsSlice';
 
 // see https://w3c.github.io/accelerometer/
 const g = 9.80665;
-const normaliseAccelerometer = (Platform.OS === 'android' ?
-  (data) => {
-    return {
-      x: -data.x * g,
-      y: -data.y * g,
-      z: -data.z * g,
-    };
-  } :
-  (data) => {
-    return {
-      x: data.x * g,
-      y: data.y * g,
-      z: data.z * g,
-    };
-  }
-);
+const normaliseAccelerometer
+  = (Platform.OS === 'android'
+     ? (data) => {
+       return {
+         x: -data.x * g,
+         y: -data.y * g,
+         z: -data.z * g,
+       };
+     }
+     : (data) => {
+       return {
+         x: data.x * g,
+         y: data.y * g,
+         z: data.z * g,
+       };
+     }
+    );
 
 export default function SensorsComponent({color}) {
   // console.log('SensorsComponent render');
@@ -112,8 +113,8 @@ export default function SensorsComponent({color}) {
 
 
   return (
-    <Text>
-      Sensors Component
-    </Text>
+  <Text>
+    Sensors Component
+  </Text>
   );
 }

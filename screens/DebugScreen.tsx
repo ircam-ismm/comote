@@ -28,13 +28,13 @@ import { selectSensors } from '../features/sensors/sensorsSlice';
 
 
 // // this crashes on android v8
-// <View style={{display: ''}}>
-//   <Text>
-//     x: {accelerometer.x.toFixed(2)}
-//     y: {accelerometer.y.toFixed(2)}
-//     z: {accelerometer.z.toFixed(2)}
-//   </Text>
-// </View>
+      // <View style={{display: ''}}>
+      //   <Text>
+      //     x: {accelerometer.x.toFixed(2)}
+      //     y: {accelerometer.y.toFixed(2)}
+      //     z: {accelerometer.z.toFixed(2)}
+      //   </Text>
+      // </View>
 
 export default function DebugScreen({color}) {
   const sensors = useAppSelector( (state) => {

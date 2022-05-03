@@ -90,6 +90,10 @@ eas publish
 
 - [ ] centralise styles
 
+
+- [ ] OSC
+- [ ] other sensors
+
 #### CoMo-Vox
 
 - [ ] webSocket input
