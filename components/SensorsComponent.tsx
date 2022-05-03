@@ -69,7 +69,7 @@ export default function SensorsComponent({color}) {
         dispatch({
           type: 'sensors/set',
           payload: {
-            accelerometer,
+            accelerometer: normalisedAccelerometer,
           },
         });
       })
