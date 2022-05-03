@@ -79,16 +79,19 @@ export default class ReCoMoteServer {
 
   displayQRCode() {
     console.log(this.ips);
+    let wsLink;
     if (this.hostname === null) {
       this.ips.forEach(ip => {
         const wsLink = `ws://${ip}:${this.port}`;
         console.log(`> reCoMote listening on: ${wsLink}`);
-        qrcode.generate(wsLink, { small: true });
+        const recomoteLink = `recomote://settings?ws-url=${wsLink}`;
+        qrcode.generate(recomoteLink, { small: true });
       });
     } else {
       const wsLink = `ws://${this.hostname}:${this.port}`;
       console.log(`> reCoMote listening on: ${wsLink}`);
-      qrcode.generate(wsLink, { small: true });
+      const recomoteLink = `recomote://settings?ws-url=${wsLink}`;
+      qrcode.generate(recomoteLink, { small: true });
     }
   }
 
