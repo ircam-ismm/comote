@@ -76,18 +76,20 @@ export default function QRScreen({ navigation }: RootTabScreenProps<'QR'>) {
     );
   }
 
+  // be sure to completely discard camera when not focused
   return (
     <View style={styles.container}>
-      {isFocused ? <BarCodeScanner
-                     onBarCodeScanned={isFocused ? handleBarCodeScanned : undefined}
-                     style={StyleSheet.absoluteFillObject}
-       /> : (
-         <View style={styles.info}>
+      {isFocused
+       ? <BarCodeScanner
+           onBarCodeScanned={isFocused ? handleBarCodeScanned : undefined}
+           style={StyleSheet.absoluteFillObject}
+         />
+       : <View style={styles.info}>
            <Text style={styles.text}>
              Waiting for camera...
            </Text>
          </View>
-       ) }
+       }
     </View>
   );
 }

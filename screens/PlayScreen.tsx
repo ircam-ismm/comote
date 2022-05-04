@@ -9,11 +9,11 @@ import { Text, View } from '../components/Themed';
 
 import {
   Accelerometer,
-  Barometer,
+  // Barometer,
   Gyroscope,
-  Magnetometer,
-  MagnetometerUncalibrated,
-  Pedometer,
+  // Magnetometer,
+  // MagnetometerUncalibrated,
+  // Pedometer,
 } from 'expo-sensors';
 
 import { useAppSelector, useAppDispatch } from '../hooks';
@@ -23,35 +23,6 @@ import useColorScheme from '../hooks/useColorScheme';
 
 import { selectSensors } from '../features/sensors/sensorsSlice';
 
-// see https://w3c.github.io/accelerometer/
-const g = 9.80665;
-const normaliseAccelerometer
-  = (Platform.OS === 'android'
-     ? (data) => {
-       return {
-         x: -data.x * g,
-         y: -data.y * g,
-         z: -data.z * g,
-       };
-     }
-     : (data) => {
-       return {
-         x: data.x * g,
-         y: data.y * g,
-         z: data.z * g,
-       };
-     }
-    );
-
-// const accelerometer = {
-//     x: 0,
-//     y: 0,
-//     z: 0,
-// };
-// function setAccelerometerData(data) {
-//   Object.assign(accelerometer, data);
-// }
-
 if(global.performance == null) {
     global.performance = {
       now: global._chronoNow,
@@ -59,21 +30,10 @@ if(global.performance == null) {
 }
 
 export default function PlayScreen({color}) {
-  // const [accelerometer, setAccelerometerData] = React.useState({
-  //   x: 0,
-  //   y: 0,
-  //   z: 0,
-  // });
-
-  const sensors = useAppSelector( (state) => {
-    return selectSensors(state);
-  });
   const dispatch = useAppDispatch();
 
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme];
-
-  const {accelerometer} = sensors;
 
   // @TODO: allow for multitouch
 
@@ -145,17 +105,6 @@ export default function PlayScreen({color}) {
 
   </View>
   );
-}
-
-function coucou(msg) {
-  console.log(msg);
-}
-
-function round(n) {
-  if (!n) {
-    return 0;
-  }
-  return Math.floor(n * 100) / 100;
 }
 
 const styles = StyleSheet.create({
