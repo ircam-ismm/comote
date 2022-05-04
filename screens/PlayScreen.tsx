@@ -21,8 +21,6 @@ import { useAppSelector, useAppDispatch } from '../hooks';
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 
-import { selectSensors } from '../features/sensors/sensorsSlice';
-
 if(global.performance == null) {
     global.performance = {
       now: global._chronoNow,
