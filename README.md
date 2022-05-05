@@ -70,6 +70,8 @@ eas publish
 
 #### App
 
+- [ ] clients should have an id in their stream (default 0), so we can have multiple clients and route them
+
 - [ ] binary webSocket
 - [ ] try to automatically reconnect on `close` and `error`
   - [ ] server comes after app

@@ -35,7 +35,8 @@ export default function NetworkComponent({color}) {
   const [webSocketEventListeners, setWebSocketEventListeners] = React.useState([]);
   const webSocketReadyStateUpdate = () => {
     let webSocketReadyState;
-    if(!webSocket) {
+
+    if (!webSocket) {
       webSocketReadyState = 'CLOSED';
     } else {
       switch(webSocket.readyState) {
@@ -113,6 +114,7 @@ export default function NetworkComponent({color}) {
         protocols: ['ws', 'wss'],
         require_host: true,
       });
+
       if(urlValidated) {
         // warning: (native) error is not catched and will crash application
         try {

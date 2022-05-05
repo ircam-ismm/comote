@@ -60,7 +60,15 @@ console.log(`
 
     // run recomote server ---------------------------------------
     const reCoMoteServer = new ReCoMoteServer({
-      port: RECOMOTE_SOCKET_PORT,
+      ws: {
+        port: RECOMOTE_SOCKET_PORT,
+        // autostart: true,
+      },
+      osc: {
+        port: 3333,
+        autostart: true,
+      },
+      verbose: true,
     });
 
     reCoMoteServer.start();
