@@ -9,6 +9,8 @@ import PlayerExperience from './PlayerExperience.js';
 import getConfig from '../utils/getConfig.js';
 import ReCoMoteServer from './ReCoMoteServer.js';
 
+import infos from './schemas/infos.js';
+
 const ENV = process.env.ENV || 'default';
 const RECOMOTE_SOCKET_PORT = 8901;
 
@@ -38,7 +40,7 @@ console.log(`
 // -------------------------------------------------------------------
 // register schemas
 // -------------------------------------------------------------------
-// server.stateManager.registerSchema(name, schema);
+server.stateManager.registerSchema('infos', infos);
 
 
 (async function launch() {
@@ -71,8 +73,11 @@ console.log(`
       verbose: true,
     });
 
-    reCoMoteServer.start();
+    await reCoMoteServer.start();
+
+    const wifiInfos = reCoMoteServer.getWifiInfos();
     // -----------------------------------------------------------
+    const infos = await server.stateManager.create('infos', wifiInfos);
 
     const playerExperience = new PlayerExperience(server, 'player');
 
