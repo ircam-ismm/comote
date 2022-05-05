@@ -16,7 +16,6 @@ import {
 
 import { useAppSelector, useAppDispatch } from '../hooks';
 
-import { selectSensors } from '../features/sensors/sensorsSlice';
 import { selectSettings } from '../features/settings/settingsSlice';
 
 
@@ -45,9 +44,6 @@ export default function SensorsComponent({color}) {
 
   const settings = useAppSelector( (state) => {
     return selectSettings(state);
-  });
-  const sensors = useAppSelector( (state) => {
-    return selectSensors(state);
   });
   const dispatch = useAppDispatch();
 

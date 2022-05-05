@@ -7,7 +7,7 @@ import { RootTabScreenProps } from '../types';
 import * as Linking from 'expo-linking';
 
 import { useAppSelector, useAppDispatch } from '../hooks';
-import { selectSensors } from '../features/sensors/sensorsSlice';
+// import { selectSensors } from '../features/sensors/sensorsSlice';
 
 // function openUrl() {
 
