@@ -104,7 +104,7 @@ export default class ReCoMoteServer {
               console.log('new binary message from', id, ':', data);
             }
           } else {
-            if(isValidUTF8(data) ) {
+            if (isValidUTF8(data)) {
               console.log('new UTF-8 message from', id, ':', data.toString('utf8') );
             } else {
               console.log('new message from', id, ':', data );

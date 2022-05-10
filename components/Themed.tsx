@@ -43,3 +43,29 @@ export function View(props: ViewProps) {
 
   return <DefaultView style={[{ backgroundColor }, style]} {...otherProps} />;
 }
+
+export function ConnectionStatus(props: ViewProps) {
+  let { status, style, lightColor, darkColor, ...otherProps } = props;
+
+  if (!status) {
+    status = 'CLOSED';
+  }
+
+  const statusMap = {
+    CLOSED: 'DISCONNECTED',
+    CONNECTING: 'CONNECTING',
+    OPEN: 'CONNECTED',
+  };
+
+  const colors = {
+    CLOSED: '#dc3545',
+    CONNECTING: '#ffc107',
+    OPEN: '#28a745',
+  }
+
+  return (
+    <Text style={[{ color: colors[status] }, style]} {...otherProps}>
+      {statusMap[status]}
+    </Text>
+  );
+}

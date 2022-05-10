@@ -101,6 +101,11 @@ const linking: LinkingOptions<RootStackParamList> = {
               QRScreen: 'qr',
             },
           },
+          About: {
+            screens: {
+              AboutScreen: 'about',
+            },
+          },
           // Debug: {
           //   screens: {
           //     DebugScreen: 'debug',

@@ -17,11 +17,13 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 
-import QRScreen from '../screens/QRScreen';
-import SettingsScreen from '../screens/SettingsScreen';
-import DebugScreen from '../screens/DebugScreen';
-import PlayScreen from '../screens/PlayScreen';
 import HomeScreen from '../screens/HomeScreen';
+import PlayScreen from '../screens/PlayScreen';
+import SettingsScreen from '../screens/SettingsScreen';
+import QRScreen from '../screens/QRScreen';
+import AboutScreen from '../screens/AboutScreen';
+
+// import DebugScreen from '../screens/DebugScreen';
 
 import NetworkComponent from '../components/NetworkComponent';
 
@@ -40,7 +42,7 @@ export default function BottomTabNavigator() {
 
   return (
     <BottomTab.Navigator
-      initialRouteName="Home"
+      initialRouteName="Settings"
 
       screenOptions={{
         activeTintColor: Colors[colorScheme].tabIconSelected,
@@ -54,10 +56,19 @@ export default function BottomTabNavigator() {
       }}>
 
       <BottomTab.Screen
+        name="Home"
+        component={HomeNavigator}
+        options={{
+          tabBarIcon: ({ color }) => <AntDesign name="home" size={26} color={color} />,
+        }}
+      />
+
+      <BottomTab.Screen
         name="Play"
         component={PlayNavigator}
         options={{
-          tabBarIcon: ({ color }) => <AntDesign name="shake" size={26} color={color} />,
+          // tabBarIcon: ({ color }) => <AntDesign name="shake" size={26} color={color} />,
+          tabBarIcon: ({ color }) => <AntDesign name="playcircleo" size={26} color={color} />,
         }}
       />
 
@@ -77,12 +88,12 @@ export default function BottomTabNavigator() {
         }}
       />
 
-      {/* this one is not shown */}
       <BottomTab.Screen
-        name="Home"
-        component={HomeNavigator}
+        name="About"
+        title="About CoMo(te)"
+        component={AboutNavigator}
         options={{
-          tabBarItemStyle: { display: 'none' },
+          tabBarIcon: ({ color }) => <AntDesign name="infocirlceo" size={26} color={color} />,
         }}
       />
 
@@ -106,56 +117,21 @@ function TabBarIcon(props: { name: React.ComponentProps<typeof Ionicons>['name']
 // Each tab has its own navigation stack, you can read more about this pattern here:
 // https://reactnavigation.org/docs/tab-based-navigation#a-stack-navigator-for-each-tab
 
-// seems to better handle camera disconnection and re-connection
-const QRStack = createNativeStackNavigator<QRParamList>();
+const HomeStack = createNativeStackNavigator<PlayParamList>();
 
-function QRNavigator() {
+function HomeNavigator() {
   const colorScheme = useColorScheme();
 
   return (
-    <QRStack.Navigator>
-      <QRStack.Screen
-        name="QRScreen"
-        component={QRScreen}
+    <HomeStack.Navigator>
+      <HomeStack.Screen
+        name="HomeScreen"
+        component={HomeScreen}
         options={{
-          headerTitle: 'Scan QR Code',
-          headerStyle: {
-            backgroundColor: Colors[colorScheme].background,
-          },
-          headerTitleStyle: {
-            fontWeight: 'bold',
-            fontSize: 24,
-          },
-          headerShadowVisible: false, // remove bottom border
+          headerShown: false,
         }}
       />
-    </QRStack.Navigator>
-  );
-}
-
-const SettingsStack = createNativeStackNavigator<SettingsParamList>();
-
-function SettingsNavigator() {
-  const colorScheme = useColorScheme();
-
-  return (
-    <SettingsStack.Navigator>
-      <SettingsStack.Screen
-        name="SettingsScreen"
-        component={SettingsScreen}
-        options={{
-          headerTitle: 'Settings',
-          headerStyle: {
-            backgroundColor: Colors[colorScheme].background,
-          },
-          headerTitleStyle: {
-            fontWeight: 'bold',
-            fontSize: 24,
-          },
-          headerShadowVisible: false, // remove bottom border
-        }}
-      />
-    </SettingsStack.Navigator>
+    </HomeStack.Navigator>
   );
 }
 
@@ -185,21 +161,85 @@ function PlayNavigator() {
   );
 }
 
-function HomeNavigator() {
+const SettingsStack = createNativeStackNavigator<SettingsParamList>();
+
+function SettingsNavigator() {
   const colorScheme = useColorScheme();
 
   return (
-    <PlayStack.Navigator>
-      <PlayStack.Screen
-        name="HomeScreen"
-        component={HomeScreen}
+    <SettingsStack.Navigator>
+      <SettingsStack.Screen
+        name="SettingsScreen"
+        component={SettingsScreen}
         options={{
-          headerShown: false,
+          headerTitle: 'Settings',
+          headerStyle: {
+            backgroundColor: Colors[colorScheme].background,
+          },
+          headerTitleStyle: {
+            fontWeight: 'bold',
+            fontSize: 24,
+          },
+          headerShadowVisible: false, // remove bottom border
         }}
       />
-    </PlayStack.Navigator>
+    </SettingsStack.Navigator>
   );
 }
+
+// seems to better handle camera disconnection and re-connection
+const QRStack = createNativeStackNavigator<QRParamList>();
+
+function QRNavigator() {
+  const colorScheme = useColorScheme();
+
+  return (
+    <QRStack.Navigator>
+      <QRStack.Screen
+        name="QRScreen"
+        component={QRScreen}
+        options={{
+          headerTitle: 'Scan QR Code',
+          headerStyle: {
+            backgroundColor: Colors[colorScheme].background,
+          },
+          headerTitleStyle: {
+            fontWeight: 'bold',
+            fontSize: 24,
+          },
+          headerShadowVisible: false, // remove bottom border
+        }}
+      />
+    </QRStack.Navigator>
+  );
+}
+
+const AboutStack = createNativeStackNavigator<PlayParamList>();
+
+function AboutNavigator() {
+  const colorScheme = useColorScheme();
+
+  return (
+    <AboutStack.Navigator>
+      <AboutStack.Screen
+        name="AboutScreen"
+        component={AboutScreen}
+        options={{
+          headerTitle: 'About CoMo(te)',
+          headerStyle: {
+            backgroundColor: Colors[colorScheme].background,
+          },
+          headerTitleStyle: {
+            fontWeight: 'bold',
+            fontSize: 24,
+          },
+          headerShadowVisible: false, // remove bottom border
+        }}
+      />
+    </AboutStack.Navigator>
+  );
+}
+
 
 // const DebugStack = createNativeStackNavigator<DebugParamList>();
 

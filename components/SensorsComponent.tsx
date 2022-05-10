@@ -25,9 +25,13 @@ const normaliseAccelerometer
   = (Platform.OS === 'android'
      ? (data) => {
        return {
-         x: -data.x * g,
-         y: -data.y * g,
-         z: -data.z * g,
+         // this is the other way around
+         // x: -data.x * g,
+         // y: -data.y * g,
+         // z: -data.z * g,
+         x: data.x * g,
+         y: data.y * g,
+         z: data.z * g,
        };
      }
      : (data) => {

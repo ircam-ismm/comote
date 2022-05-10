@@ -39,27 +39,27 @@ export default function PlayScreen({color}) {
     <View style={styles.container}>
       <View style={styles.buttonsContainer}>
         <Pressable
-            style={({pressed}) => [
-              styles.button,
-              styles.buttonA,
-              pressed ? {opacity: 0.5} : {},
-            ]}
-            onPressIn={ () => {
-              dispatch({
-                type: 'sensors/set',
-                payload: {
-                  buttonA: 1,
-                },
-              })
-            } }
-            onPressOut={ () => {
-              dispatch({
-                type: 'sensors/set',
-                payload: {
-                  buttonA: 0,
-                },
-              })
-            } }
+          style={({pressed}) => [
+            styles.button,
+            styles.buttonA,
+            pressed ? {opacity: 0.5} : {},
+          ]}
+          onPressIn={() => {
+            dispatch({
+              type: 'sensors/set',
+              payload: {
+                buttonA: 1,
+              },
+            })
+          }}
+          onPressOut={() => {
+            dispatch({
+              type: 'sensors/set',
+              payload: {
+                buttonA: 0,
+              },
+            })
+          }}
         >
           <Text style={styles.buttonText}
             selectable={false}
@@ -69,27 +69,27 @@ export default function PlayScreen({color}) {
         </Pressable>
 
         <Pressable
-            style={({pressed}) => [
-              styles.button,
-              styles.buttonB,
-              pressed ? {opacity: 0.5} : {},
-            ]}
-            onPressIn={ () => {
-              dispatch({
-                type: 'sensors/set',
-                payload: {
-                  buttonB: 1,
-                },
-              })
-            } }
-            onPressOut={ () => {
-              dispatch({
-                type: 'sensors/set',
-                payload: {
-                  buttonB: 0,
-                },
-              })
-            } }
+          style={({pressed}) => [
+            styles.button,
+            styles.buttonB,
+            pressed ? {opacity: 0.5} : {},
+          ]}
+          onPressIn={() => {
+            dispatch({
+              type: 'sensors/set',
+              payload: {
+                buttonB: 1,
+              },
+            })
+          }}
+          onPressOut={ () => {
+            dispatch({
+              type: 'sensors/set',
+              payload: {
+                buttonB: 0,
+              },
+            })
+          }}
         >
           <Text style={styles.buttonText}
             selectable={false}

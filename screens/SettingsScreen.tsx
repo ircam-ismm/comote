@@ -8,9 +8,9 @@ import {
   StyleSheet,
   Switch,
   TextInput,
-  Button,
+  TouchableOpacity,
 } from 'react-native';
-import { Text, View } from '../components/Themed';
+import { Text, View, ConnectionStatus } from '../components/Themed';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 import { useAppSelector, useAppDispatch } from '../hooks';
@@ -21,7 +21,70 @@ import useColorScheme from '../hooks/useColorScheme';
 import { selectSettings } from '../features/settings/settingsSlice';
 import { selectNetwork } from '../features/network/networkSlice';
 
-// import engine from '../engine';
+
+const styles = StyleSheet.create({
+  contentContainer: {
+    flex: 1,
+  },
+
+  innerContainer: {
+    padding: 16,
+    flex: 1,
+  },
+
+  groupContainer: {
+    alignItems: 'flex-start',
+    marginBottom: 20,
+  },
+
+  groupTitle: {
+    marginVertical: 10,
+    borderBottomColor: '#989898',
+    borderBottomWidth: 1,
+    width: '100%', // we want the border to be full width
+    fontSize: 16,
+  },
+
+  itemContainer: {
+    flexDirection: 'row',
+    flexWrap: "wrap",
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    marginVertical: 8,
+  },
+
+  item: {
+    fontSize: 14,
+  },
+
+  label: {
+    width: 80,
+  },
+
+  input: {
+    flex: 1,
+    fontSize: 14,
+    borderColor: '#ababab',
+    paddingVertical: 4,
+    paddingHorizontal: 7,
+    borderStyle: 'solid',
+    borderWidth: 1,
+    borderRadius: 4,
+    backgroundColor: '#efefef',
+  },
+
+  smallInput: {
+    maxWidth: 50,
+    textAlign: 'center',
+  },
+
+  button: {
+    alignItems: "center",
+    padding: 16,
+    borderRadius: 4,
+    alignSelf: 'stretch'
+  }
+});
 
 export default function SettingsScreen({ color, navigation }) {
   const settings = useAppSelector((state) => selectSettings(state));
@@ -55,9 +118,20 @@ export default function SettingsScreen({ color, navigation }) {
       <View style={styles.innerContainer}>
 
         <View style={styles.groupContainer}>
+          <TouchableOpacity
+            style={[styles.button, { backgroundColor: colors.genericButton }]}
+            onPress={() => navigation.navigate('QR')}
+          >
+            <Text style={{color: 'white'}}>Scan config from QRCode</Text>
+          </TouchableOpacity>
+        </View>
+
+
+        <View style={styles.groupContainer}>
           <Text style={styles.groupTitle}>Network</Text>
+
           <View style={styles.itemContainer}>
-            <Text style={[styles.item, styles.label]}>Activate</Text>
+            <Text style={[styles.label, styles.item]}>Activate</Text>
             <Switch style={styles.item}
               trackColor={ Platform.OS !== "ios"
                            ? (settings.webSocketEnabled ? colors.tint : '#999999')
@@ -76,36 +150,13 @@ export default function SettingsScreen({ color, navigation }) {
                 });
               }}
             />
-            {/*<Text
-              style={[
-                styles.item,
-                {color: settings.webSocketEnabled ? colors.tint : colors.text},
-              ]}
-              onPress={() => {
-                dispatch({
-                  type: 'settings/set',
-                  payload: {
-                    webSocketEnabled: !settings.webSocketEnabled,
-                  },
-                });
-              }}
-            >
-              {settings.webSocketEnabled ? 'Enabled' : 'Disabled'}
-            </Text>*/}
           </View>
 
           <View style={styles.itemContainer}>
             <Text style={[styles.label, styles.item]}>
               Status
             </Text>
-            <Text style={[
-              styles.item,
-              (network.webSocketReadyState === 'OPEN'
-                ? styles.webSocketOpen
-                : styles.webSocketNotOpen)
-              ]}>
-              {settings.webSocketEnabled ? network.webSocketReadyState : 'DISCONNECTED' }
-            </Text>
+            <ConnectionStatus style={styles.item} status={network.webSocketReadyState} />
           </View>
 
           <View style={styles.itemContainer}>
@@ -130,14 +181,6 @@ export default function SettingsScreen({ color, navigation }) {
               }}
             />
           </View>
-
-          <View style={styles.itemContainer}>
-            <Text style={[styles.item, styles.label]}></Text>
-            <Button
-              title="Scan URL from QRCode"
-              onPress={() => navigation.navigate('QR')}
-            />
-          </View>
         </View>
 
 
@@ -147,7 +190,7 @@ export default function SettingsScreen({ color, navigation }) {
           <View style={styles.itemContainer}>
             <Text style={[styles.item, styles.label]}>Frequency</Text>
             <TextInput
-              style={[styles.input, styles.frequencyInput]}
+              style={[styles.input, styles.smallInput]}
               keyboardType='numeric'
               returnKeyType='done'
               selectTextOnFocus={true}
@@ -177,70 +220,3 @@ export default function SettingsScreen({ color, navigation }) {
     </KeyboardAwareScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  contentContainer: {
-    flex: 1,
-  },
-
-  innerContainer: {
-    padding: 16,
-    flex: 1,
-  },
-
-  groupContainer: {
-    alignItems: 'flex-start',
-    marginBottom: 20,
-  },
-
-  groupTitle: {
-    marginVertical: 10,
-    width: '100%',
-    borderBottomColor: '#989898',
-    borderBottomWidth: 1,
-    fontSize: 16,
-  },
-
-  itemContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    marginVertical: 8,
-    flex: 1,
-  },
-
-  item: {
-    flexGrow: 0,
-    flexShrink: 0,
-    flexBasis: 'auto',
-    marginRight: 5,
-    fontSize: 14,
-  },
-
-  label: {
-    display: 'inline-block',
-    width: 80,
-  },
-
-  webSocketNotOpen: {
-    color: '#ff2266',
-  },
-
-  input: {
-    flex: 1,
-    fontSize: 16,
-    borderColor: '#ababab',
-    padding: 4,
-    borderWidth: 1,
-    borderRadius: 4,
-    borderStyle: 'solid',
-    paddingHorizontal: 7,
-    backgroundColor: '#efefef',
-  },
-
-  frequencyInput: {
-    maxWidth: 50,
-    textAlign: 'center',
-  },
-});
