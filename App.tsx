@@ -46,10 +46,12 @@ export default function App() {
           <SafeAreaProvider>
             <Navigation colorScheme={colorScheme} />
             <StatusBar />
+
             <Text style={{display: 'none'}}>
               <SensorsComponent />
               <NetworkComponent />
             </Text>
+
           </SafeAreaProvider>
         </PersistGate>
       </Provider>

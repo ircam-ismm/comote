@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Switch,
   TextInput,
+  Button,
 } from 'react-native';
 import { Text, View } from '../components/Themed';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
@@ -22,9 +23,9 @@ import { selectNetwork } from '../features/network/networkSlice';
 
 // import engine from '../engine';
 
-export default function SettingsScreen({color}) {
-  const settings = useAppSelector( (state) => selectSettings(state) );
-  const network = useAppSelector( (state) => selectNetwork(state) );
+export default function SettingsScreen({ color, navigation }) {
+  const settings = useAppSelector((state) => selectSettings(state));
+  const network = useAppSelector((state) => selectNetwork(state));
   const dispatch = useAppDispatch();
 
   const colorScheme = useColorScheme();
@@ -49,16 +50,103 @@ export default function SettingsScreen({color}) {
   }, [settings.webSocketUrl]);
 
   return (
-    <KeyboardAwareScrollView contentContainerStyle={styles.container}>
-      <View style={styles.container}>
+    <KeyboardAwareScrollView contentContainerStyle={styles.contentContainer}>
+
+      <View style={styles.innerContainer}>
+
+        <View style={styles.groupContainer}>
+          <Text style={styles.groupTitle}>Network</Text>
+          <View style={styles.itemContainer}>
+            <Text style={[styles.item, styles.label]}>Activate</Text>
+            <Switch style={styles.item}
+              trackColor={ Platform.OS !== "ios"
+                           ? (settings.webSocketEnabled ? colors.tint : '#999999')
+                           : undefined }
+              thumbColor={ Platform.OS !== "ios"
+                           ? (settings.webSocketEnabled ? colors.tint : colors.text)
+                           : undefined }
+              ios_backgroundColor={ settings.webSocketEnabled ? colors.tint : '#999999' }
+              value={settings.webSocketEnabled}
+              onValueChange={(value) => {
+                dispatch({
+                  type: 'settings/set',
+                  payload: {
+                    webSocketEnabled: value,
+                  },
+                });
+              }}
+            />
+            {/*<Text
+              style={[
+                styles.item,
+                {color: settings.webSocketEnabled ? colors.tint : colors.text},
+              ]}
+              onPress={() => {
+                dispatch({
+                  type: 'settings/set',
+                  payload: {
+                    webSocketEnabled: !settings.webSocketEnabled,
+                  },
+                });
+              }}
+            >
+              {settings.webSocketEnabled ? 'Enabled' : 'Disabled'}
+            </Text>*/}
+          </View>
+
+          <View style={styles.itemContainer}>
+            <Text style={[styles.label, styles.item]}>
+              Status
+            </Text>
+            <Text style={[
+              styles.item,
+              (network.webSocketReadyState === 'OPEN'
+                ? styles.webSocketOpen
+                : styles.webSocketNotOpen)
+              ]}>
+              {settings.webSocketEnabled ? network.webSocketReadyState : 'DISCONNECTED' }
+            </Text>
+          </View>
+
+          <View style={styles.itemContainer}>
+            <Text style={[styles.item, styles.label]}>URL</Text>
+            <TextInput
+              style={styles.input}
+              keyboardType='default'
+              returnKeyType='done'
+              selectTextOnFocus={false}
+              placeholder='Enter URL here'
+              value={webSocketUrl}
+              onChange={(e) => {
+                setWebSocketUrl(e.nativeEvent.text);
+              } }
+              onBlur={(e) => {
+                dispatch({
+                  type: 'settings/set',
+                  payload: {
+                    webSocketUrl,
+                  },
+                });
+              }}
+            />
+          </View>
+
+          <View style={styles.itemContainer}>
+            <Text style={[styles.item, styles.label]}></Text>
+            <Button
+              title="Scan URL from QRCode"
+              onPress={() => navigation.navigate('QR')}
+            />
+          </View>
+        </View>
+
 
         <View style={styles.groupContainer}>
           <Text style={styles.groupTitle}>Accelerometer</Text>
 
           <View style={styles.itemContainer}>
-            <Text style={styles.item}>Frequency</Text>
+            <Text style={[styles.item, styles.label]}>Frequency</Text>
             <TextInput
-              color={colors.text} // why should we apply again the default style?
               style={[styles.input, styles.frequencyInput]}
               keyboardType='numeric'
               returnKeyType='done'
@@ -80,85 +168,10 @@ export default function SettingsScreen({color}) {
                 }
               } }
             />
-            <Text style={styles.item}>Hz</Text>
+            <Text style={styles.item}> Hz</Text>
           </View>
 
         </View>
-
-        <View style={styles.groupContainer}>
-          <Text style={styles.groupTitle}>WebSocket</Text>
-          <View style={styles.itemContainer}>
-            <Switch style={styles.item}
-              trackColor={ Platform.OS !== "ios"
-                           ? (settings.webSocketEnabled ? colors.tint : '#999999')
-                           : undefined }
-              thumbColor={ Platform.OS !== "ios"
-                           ? (settings.webSocketEnabled ? colors.tint : colors.text)
-                           : undefined }
-              ios_backgroundColor={ settings.webSocketEnabled ? colors.tint : '#999999' }
-              value={settings.webSocketEnabled}
-              onValueChange={ (value) => {
-                console.log('switch value', value);
-                dispatch({
-                  type: 'settings/set',
-                  payload: {
-                    webSocketEnabled: value,
-                  },
-                });
-              } }
-            />
-      <Text
-        style={[
-          styles.item,
-          {color: settings.webSocketEnabled ? colors.tint : colors.text},
-        ]}
-        onPress={ () => {
-          dispatch({
-            type: 'settings/set',
-            payload: {
-              webSocketEnabled: !settings.webSocketEnabled,
-            },
-          });
-      }
-
-    }
-      >{settings.webSocketEnabled ? 'Enabled' : 'Disabled'}</Text>
-      <Text style={[
-        styles.item,
-        (network.webSocketReadyState === 'OPEN'
-         ? styles.webSocketOpen
-         : styles.webSocketNotOpen)
-        ]}>
-        {settings.webSocketEnabled ? network.webSocketReadyState : '' }
-      </Text>
-
-        </View>
-
-          <View style={styles.itemContainer}>
-            <Text style={styles.item}>URL</Text>
-            <TextInput
-              color={colors.text} // why should we apply again the default style?
-              style={styles.input}
-              keyboardType='default'
-              returnKeyType='done'
-              selectTextOnFocus={false}
-              placeholder='Enter URL here'
-              value={webSocketUrl}
-              onChange={(e) => {
-                setWebSocketUrl(e.nativeEvent.text);
-              } }
-              onBlur={(e) => {
-                dispatch({
-                  type: 'settings/set',
-                  payload: {
-                    webSocketUrl,
-                  },
-                });
-              } }
-            />
-          </View>
-        </View>
-
 
       </View>
     </KeyboardAwareScrollView>
@@ -166,55 +179,68 @@ export default function SettingsScreen({color}) {
 }
 
 const styles = StyleSheet.create({
-  container: {
+  contentContainer: {
     flex: 1,
   },
+
+  innerContainer: {
+    padding: 16,
+    flex: 1,
+  },
+
   groupContainer: {
-    padding: 10,
-    fontSize: 24,
-    fontWeight: 'bold',
     alignItems: 'flex-start',
+    marginBottom: 20,
   },
+
   groupTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
+    marginVertical: 10,
+    width: '100%',
+    borderBottomColor: '#989898',
+    borderBottomWidth: 1,
+    fontSize: 16,
   },
+
   itemContainer: {
     flexDirection: 'row',
-    flexWrap: "wrap",
-    fontSize: 20,
+    flexWrap: 'wrap',
     alignItems: 'center',
     justifyContent: 'flex-start',
-    marginVertical: 5,
-    marginHorizontal: 10,
+    marginVertical: 8,
+    flex: 1,
   },
+
   item: {
     flexGrow: 0,
     flexShrink: 0,
     flexBasis: 'auto',
-    fontSize: 20,
-    marginHorizontal: 5,
+    marginRight: 5,
+    fontSize: 14,
   },
+
+  label: {
+    display: 'inline-block',
+    width: 80,
+  },
+
   webSocketNotOpen: {
     color: '#ff2266',
   },
+
   input: {
     flex: 1,
-    fontSize: 20,
-    borderColor: '#777777',
-    borderWidth: 2,
-    borderRadius: 2,
+    fontSize: 16,
+    borderColor: '#ababab',
+    padding: 4,
+    borderWidth: 1,
+    borderRadius: 4,
     borderStyle: 'solid',
-    paddingLeft: 5,
-    paddingRight: 5,
+    paddingHorizontal: 7,
+    backgroundColor: '#efefef',
   },
+
   frequencyInput: {
     maxWidth: 50,
     textAlign: 'center',
-  },
-  separator: {
-    marginVertical: 10,
-    height: 1,
-    width: '80%',
   },
 });

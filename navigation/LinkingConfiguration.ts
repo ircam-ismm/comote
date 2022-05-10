@@ -15,7 +15,8 @@ export function urlHandler({
   url = '',
 } = {}) {
   console.log('urlHandler', url);
-  if(!url) {
+
+  if (!url) {
     return;
   }
 
@@ -24,11 +25,12 @@ export function urlHandler({
   console.log('path = ', path)
   console.log('queryParams = ', queryParams);
 
-  if(path !== 'settings' && path !== null) {
+  if (path !== 'settings' && path !== null) {
     return;
   }
+
   Object.entries(queryParams).forEach( ([key, value]) => {
-    if(key === 'ws') {
+    if (key === 'ws') {
       store.dispatch({
         type: 'settings/set',
         payload: {
@@ -38,7 +40,7 @@ export function urlHandler({
       });
     }
 
-    if(key === 'ws-url') {
+    if (key === 'ws-url') {
       store.dispatch({
         type: 'settings/set',
         payload: {
@@ -47,7 +49,7 @@ export function urlHandler({
       });
     }
 
-    if(key === 'acc-freq') {
+    if (key === 'acc-freq') {
       store.dispatch({
         type: 'settings/set',
         payload: {
@@ -79,30 +81,31 @@ const linking: LinkingOptions<RootStackParamList> = {
     screens: {
       Root: {
         screens: {
-
-          QR: {
+          Home: {
             screens: {
-              QRScreen: 'qr',
-            },
+              HomeScreen: 'home',
+            }
           },
-
-          Settings: {
-            screens: {
-              SettingsScreen: 'settings',
-            },
-          },
-
-          Debug: {
-            screens: {
-              DebugScreen: 'debug',
-            },
-          },
-
           Play: {
             screens: {
               PlayScreen: 'play',
             },
           },
+          Settings: {
+            screens: {
+              SettingsScreen: 'settings',
+            },
+          },
+          QR: {
+            screens: {
+              QRScreen: 'qr',
+            },
+          },
+          // Debug: {
+          //   screens: {
+          //     DebugScreen: 'debug',
+          //   },
+          // },
         },
       },
 

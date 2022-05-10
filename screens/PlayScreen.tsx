@@ -36,72 +36,69 @@ export default function PlayScreen({color}) {
   // @TODO: allow for multitouch
 
   return (
-   <View style={styles.container}>
-
+    <View style={styles.container}>
       <View style={styles.buttonsContainer}>
-      <Pressable
-          style={({pressed}) => [
-            styles.button,
-            styles.buttonA,
-            pressed ? {opacity: 0.5} : {},
-          ]}
-          onPressIn={ () => {
-            dispatch({
-              type: 'sensors/set',
-              payload: {
-                buttonA: 1,
-              },
-            })
-          } }
-          onPressOut={ () => {
-            dispatch({
-              type: 'sensors/set',
-              payload: {
-                buttonA: 0,
-              },
-            })
-          } }
-      >
-      <Text style={styles.buttonText}
-        selectable={false}
-      >
-        A
-      </Text>
-      </Pressable>
+        <Pressable
+            style={({pressed}) => [
+              styles.button,
+              styles.buttonA,
+              pressed ? {opacity: 0.5} : {},
+            ]}
+            onPressIn={ () => {
+              dispatch({
+                type: 'sensors/set',
+                payload: {
+                  buttonA: 1,
+                },
+              })
+            } }
+            onPressOut={ () => {
+              dispatch({
+                type: 'sensors/set',
+                payload: {
+                  buttonA: 0,
+                },
+              })
+            } }
+        >
+          <Text style={styles.buttonText}
+            selectable={false}
+          >
+            A
+          </Text>
+        </Pressable>
 
-
-      <Pressable
-          style={({pressed}) => [
-            styles.button,
-            styles.buttonB,
-            pressed ? {opacity: 0.5} : {},
-          ]}
-          onPressIn={ () => {
-            dispatch({
-              type: 'sensors/set',
-              payload: {
-                buttonB: 1,
-              },
-            })
-          } }
-          onPressOut={ () => {
-            dispatch({
-              type: 'sensors/set',
-              payload: {
-                buttonB: 0,
-              },
-            })
-          } }
-      >
-      <Text style={styles.buttonText}
-        selectable={false}
-      >
-        B
-      </Text>
-      </Pressable>
+        <Pressable
+            style={({pressed}) => [
+              styles.button,
+              styles.buttonB,
+              pressed ? {opacity: 0.5} : {},
+            ]}
+            onPressIn={ () => {
+              dispatch({
+                type: 'sensors/set',
+                payload: {
+                  buttonB: 1,
+                },
+              })
+            } }
+            onPressOut={ () => {
+              dispatch({
+                type: 'sensors/set',
+                payload: {
+                  buttonB: 0,
+                },
+              })
+            } }
+        >
+          <Text style={styles.buttonText}
+            selectable={false}
+          >
+            B
+          </Text>
+        </Pressable>
+      </View>
     </View>
-
-  </View>
   );
 }
 
@@ -112,10 +109,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     flexDirection: 'column',
     alignItems: 'stretch',
+    padding: 16,
   },
 
   network: {
-    // display: 'none',
     flexGrow: 1,
     flexShrink: 0,
     flexBasis: 'auto',
@@ -124,27 +121,32 @@ const styles = StyleSheet.create({
   buttonsContainer: {
     flexGrow: 1,
     flexShrink: 1,
-    flexBasis: '90%',
     justifyContent: 'space-around',
     flexDirection: 'column',
     alignItems: 'stretch',
   },
+
   button: {
     flex: 1,
-    margin: 10,
     justifyContent: 'center',
     alignItems: 'center',
+    borderRadius: 10,
+    marginBottom: 16,
   },
+
+  buttonA: {
+    backgroundColor: '#ffc20a',
+  },
+
+  buttonB: {
+    backgroundColor: '#0c7bdc',
+  },
+
   buttonText: {
     textAlign: 'center',
     justifyContent: 'center',
     alignItems: 'center',
     fontSize: 60,
-  },
-  buttonA: {
-    backgroundColor: '#ffc20a',
-  },
-  buttonB: {
-    backgroundColor: '#0c7bdc',
+    color: 'white',
   },
 });
