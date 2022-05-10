@@ -79,6 +79,10 @@ server.stateManager.registerSchema('infos', infos);
     // -----------------------------------------------------------
     const infos = await server.stateManager.create('infos', wifiInfos);
 
+    reCoMoteServer.addListener((id, data) => {
+      infos.set({ data });
+    });
+
     const playerExperience = new PlayerExperience(server, 'player');
 
     // start all the things

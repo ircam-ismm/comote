@@ -19,4 +19,9 @@ export default {
     default: null,
     nullable: true,
   },
+  data: {
+    type: 'any',
+    default: null,
+    nullable: true,
+  }
 }

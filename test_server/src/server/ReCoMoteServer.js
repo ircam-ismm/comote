@@ -105,7 +105,11 @@ export default class ReCoMoteServer {
             }
           } else {
             if (isValidUTF8(data)) {
-              console.log('new UTF-8 message from', id, ':', data.toString('utf8') );
+              // if (this.config.verbose) {
+              //   console.log('new UTF-8 message from', id, ':', data.toString('utf8'));
+              // }
+              data = JSON.parse(data);
+              this._listeners.forEach(listener => listener(id, data));
             } else {
               console.log('new message from', id, ':', data );
             }

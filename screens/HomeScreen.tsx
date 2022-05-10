@@ -13,8 +13,6 @@ import useColorScheme from '../hooks/useColorScheme';
 import { useAppSelector } from '../hooks';
 import { selectNetwork } from '../features/network/networkSlice';
 
-import logo from '../assets/images/logo-como-raw.png';
-
 const styles = StyleSheet.create({
   container: {
     minHeight: '100%',
@@ -25,13 +23,11 @@ const styles = StyleSheet.create({
     marginTop: 40,
     fontSize: 40,
     color: 'white',
-    // fontWeight: 'bold',
   },
 
   image: {
-    resizeMode: 'cover',
-    width: '100vw',
     flex: 1,
+    resizeMode: 'cover',
     justifyContent: 'space-between',
     flexDirection: 'column',
     alignItems: 'stretch',
@@ -63,7 +59,7 @@ export default function HomeScreen({ color, navigation }) {
 
   return (
     <View style={styles.container}>
-      <ImageBackground source={logo} resizeMode="cover" style={styles.image}>
+      <ImageBackground source={require('../assets/images/bg-home.png')} style={styles.image}>
         <View style={{ backgroundColor: 'rgba(255, 255, 255, 0)' }}>
           <Text style={styles.title}>CoMo(te)</Text>
         </View>

@@ -48,6 +48,7 @@ class PlayerExperience extends AbstractExperience {
     // });
 
     this.infos = await this.client.stateManager.attach('infos');
+    this.infos.subscribe(() => this.render());
 
     this.render();
   }
@@ -67,6 +68,7 @@ class PlayerExperience extends AbstractExperience {
               <div>
                 <h2 style="margin: 20px 0">Connect WebSocket</h2>
                 <img src="${this.infos.get('wsQRCode')}" />
+              </div>
             `
           : nothing}
 
@@ -75,8 +77,11 @@ class PlayerExperience extends AbstractExperience {
               <div>
                 <h2 style="margin: 20px 0">Connect OSC</h2>
                 <img src="${this.infos.get('oscQRCode')}" />
+              </div>
             `
           : nothing}
+
+          <pre><code>${JSON.stringify(this.infos.get('data'), null, 2)}</code></pre>
         </div>
       `, this.$container);
     });
