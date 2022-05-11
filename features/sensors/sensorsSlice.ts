@@ -18,14 +18,21 @@ interface SensorsState {
 const initialState = {
   data: {
     devicemotion: {
-      // accelerometers
       x: 0,
       y: 0,
       z: 0,
-      // gyroscope
-      alpha: 0,
-      beta: 0,
-      gamma: 0,
+      // // interval: 0,
+      // accelerationIncludingGravity: {
+      //   x: 0,
+      //   y: 0,
+      //   z: 0,
+      // },
+      // rotationRate: {
+      //   // gyroscope
+      //   alpha: 0,
+      //   beta: 0,
+      //   gamma: 0,
+      // },
     },
     buttonA: 0,
     buttonB: 0,
@@ -46,6 +53,7 @@ const sensorsSlice = createSlice({
   initialState,
   reducers: {
     set: (state, action: PayloadAction<any>) => {
+      // need a deep assign there
       Object.assign(state.data, action.payload);
     },
   },

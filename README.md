@@ -56,16 +56,26 @@ It is even possible to publish to stores.
 eas publish
 ```
 
+### Build preview
+
+```
+eas build -p android --profile preview
+```
+
+
 ### TODO
 
 #### Target v1 - 15-20 may
 
-- [ ] define an id on client
-- [ ] OSC configuration
+- [ ] rename to `CoMo.te`, check all config files (possible to rename the expo project?)
+
 - [ ] review icons and splash screen (make them brighter and more graphic)
+- [ ] allow to define an id on client
+- [ ] OSC configuration
+- [ ] review config to have only a global framerate
 - [ ] review message format
-- [ ] OSC client
 - [ ] add gyroscope
+- [ ] OSC client
 
 #### Stores
 - [ ] register `fr.ircam.ismm.recomote`

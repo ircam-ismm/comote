@@ -17,9 +17,12 @@ interface SettingsState {
 
 const initialState = {
   data: {
+    id: 0,
     accelerometerFrequency: 60, // in hertz
     webSocketEnabled: false,
     webSocketUrl: null,
+    oscEnabled: false,
+    oscUrl: null,
   },
   status: 'idle',
 } as SettingsState;
@@ -41,22 +44,40 @@ const settingsSlice = createSlice({
       Object.assign(state.data, action.payload);
 
       // replace empty value, undefined, NaN, or 0, with default value
-      if(typeof state.data.accelerometerFrequency !== 'number'
+      if (typeof state.data.accelerometerFrequency !== 'number'
          || !state.data.accelerometerFrequency
          || state.data.accelerometerFrequency <= 0) {
         state.data.accelerometerFrequency
           = initialState.data.accelerometerFrequency;
       }
 
+      if (!Number.isInteger(state.data.id) || state.data.id < 0) {
+        state.data.id = initialState.data.id;
+      }
+
       // Be sure that protocol is in lower-case to avoid crash on android.
       // NetworkComponent later does URL verification
-      if(typeof state.data.webSocketUrl === 'string') {
+      if (typeof state.data.webSocketUrl === 'string') {
         const splitted = state.data.webSocketUrl.split('://');
-        if(splitted && splitted.length > 1 && typeof splitted[0] === 'string') {
+
+        if (splitted && splitted.length > 1 && typeof splitted[0] === 'string') {
           splitted[0] = splitted[0].toLowerCase();
           state.data.webSocketUrl = splitted.join('://');
         }
       }
+
+      // Be sure that protocol is in lower-case to avoid crash on android.
+      // NetworkComponent later does URL verification
+      if (typeof state.data.oscUrl === 'string') {
+        const splitted = state.data.oscUrl.split('://');
+
+        if (splitted && splitted.length > 1 && typeof splitted[0] === 'string') {
+          splitted[0] = splitted[0].toLowerCase();
+          state.data.oscUrl = splitted.join('://');
+        }
+      }
+
+      console.log(state.data.oscUrl, state.data.oscEnabled);
     },
 
   },

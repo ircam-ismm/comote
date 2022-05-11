@@ -45,11 +45,7 @@ const normaliseAccelerometer
     );
 
 export default function SensorsComponent({color}) {
-  // console.log('SensorsComponent render');
-
-  const settings = useAppSelector( (state) => {
-    return selectSettings(state);
-  });
+  const settings = useAppSelector(state => selectSettings(state));
   const dispatch = useAppDispatch();
 
   const [accelerometerListener, setAccelerometerListener] = React.useState(null);
@@ -114,8 +110,8 @@ export default function SensorsComponent({color}) {
 
 
   return (
-  <Text>
-    Sensors Component
-  </Text>
+    <Text>
+      Sensors Component
+    </Text>
   );
 }

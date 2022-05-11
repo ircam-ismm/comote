@@ -25,7 +25,6 @@ function LoadingView() {
   );
 }
 
-
 export default function App() {
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
@@ -37,9 +36,6 @@ export default function App() {
       <LoadingView />
     );
   } else {
-
-    // to display engine, use
-    // <Text style={{display: 'flex'}}>
     return (
       <Provider store={store}>
         <PersistGate loading={<LoadingView />} persistor={persistor}>

@@ -61,7 +61,7 @@ export default function HomeScreen({ color, navigation }) {
     <View style={styles.container}>
       <ImageBackground source={require('../assets/images/bg-home.png')} style={styles.image}>
         <View style={{ backgroundColor: 'rgba(255, 255, 255, 0)' }}>
-          <Text style={styles.title}>CoMo(te)</Text>
+          <Text style={styles.title}>CoMo.te</Text>
         </View>
 
         <View style={[{ height: 60 }, styles.groupContainer]}>

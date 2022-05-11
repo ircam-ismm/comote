@@ -30,35 +30,53 @@ export function urlHandler({
   }
 
   Object.entries(queryParams).forEach( ([key, value]) => {
-    if (key === 'ws') {
-      store.dispatch({
+    switch (key) {
+      case 'ws': {
+        store.dispatch({
+          type: 'settings/set',
+          payload: {
+            webSocketEnabled: !!JSON.parse(value), // convert to boolean
+          },
+        });
+        break;
+      }
+      case 'ws-url': {
+        store.dispatch({
+          type: 'settings/set',
+          payload: {
+            webSocketUrl: value,
+          },
+        });
+        break;
+      }
+      case 'osc': {
+        store.dispatch({
+          type: 'settings/set',
+          payload: {
+            oscEnabled: !!JSON.parse(value), // convert to boolean
+          },
+        });
+        break;
+      }
+      case 'osc-url': {
+        store.dispatch({
+          type: 'settings/set',
+          payload: {
+            oscUrl: value,
+          },
+        });
+        break;
+      }
+      case 'acc-freq': {
+        store.dispatch({
         type: 'settings/set',
-        payload: {
-          // convert to boolean
-          webSocketEnabled: !!JSON.parse(value),
-        },
-      });
+          payload: {
+            accelerometerFrequency: JSON.parse(value),
+          },
+        });
+        break;
+      }
     }
-
-    if (key === 'ws-url') {
-      store.dispatch({
-        type: 'settings/set',
-        payload: {
-          webSocketUrl: value,
-        },
-      });
-    }
-
-    if (key === 'acc-freq') {
-      store.dispatch({
-        type: 'settings/set',
-        payload: {
-          accelerometerFrequency: JSON.parse(value),
-        },
-      });
-
-    }
-
   });
 
 }
