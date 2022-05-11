@@ -63,14 +63,46 @@ eas publish
 - [ ] register `fr.ircam.ismm.recomote`
 
 ##### Project
-- [ ] name
-- [ ] icons
+- [ ] name -> rename to `CoMo-te` (see store)
+- [ ] icons -> to review
 - [ ] colours
-- [ ] add info tab
+- [x] add info tab
 
 #### App
 
 - [ ] clients should have an id in their stream (default 0), so we can have multiple clients and route them
+- [ ] OSC config
+- [ ] review events format, proposal:
+
+WebSocket
+```
+e = {
+  id: 42,
+  devicemotion: {
+    interval // ms
+    accelerationIncludingGravity = { x, y, z } // m/s2
+    rotationRate = { alpha, beta, gamma } // deg/s
+  },
+}
+
+e = {
+  id: 42,
+  buttonA: 0 | 1
+}
+
+e = {
+  id: 42,
+  buttonB: 0 | 1
+}
+```
+
+OSC format
+
+```
+/comote/devicemotion  [id, interval, x, y, z, alpha, beta, gamma]
+/comote/buttonA       [id, buttonA]
+/comote/buttonB       [id, buttonA]
+```
 
 - [ ] binary webSocket
 - [ ] try to automatically reconnect on `close` and `error`
