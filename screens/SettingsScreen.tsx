@@ -128,7 +128,9 @@ export default function SettingsScreen({ color, navigation }) {
 
 
         <View style={styles.groupContainer}>
-          <Text style={styles.groupTitle}>Network</Text>
+          <Text style={styles.groupTitle}>
+            WebSocket
+          </Text>
 
           <View style={styles.itemContainer}>
             <Text style={[styles.label, styles.item]}>Activate</Text>

@@ -18,8 +18,8 @@ import { useAppSelector, useAppDispatch } from '../hooks';
 
 import { selectSettings } from '../features/settings/settingsSlice';
 
-
-// see https://w3c.github.io/accelerometer/
+// @see - https://www.w3.org/TR/orientation-event/#devicemotion
+// @todo - https://w3c.github.io/accelerometer/
 const g = 9.80665;
 const normaliseAccelerometer
   = (Platform.OS === 'android'
@@ -34,6 +34,7 @@ const normaliseAccelerometer
          z: data.z * g,
        };
      }
+     // @todo - recheck that on iOS
      : (data) => {
        return {
          x: data.x * g,
@@ -70,7 +71,7 @@ export default function SensorsComponent({color}) {
         dispatch({
           type: 'sensors/set',
           payload: {
-            accelerometer: normalisedAccelerometer,
+            devicemotion: normalisedAccelerometer,
           },
         });
       })

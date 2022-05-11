@@ -17,13 +17,13 @@ let webSocketUrl = null;
 let webSocket = null;
 
 export default function NetworkComponent({color}) {
-  const settings = useAppSelector( (state) => {
+  const settings = useAppSelector((state) => {
     return selectSettings(state);
   });
-  const sensors = useAppSelector( (state) => {
+  const sensors = useAppSelector((state) => {
     return selectSensors(state);
   });
-  const network = useAppSelector( (state) => {
+  const network = useAppSelector((state) => {
     return selectNetwork(state);
   });
   const dispatch = useAppDispatch();
@@ -70,7 +70,7 @@ export default function NetworkComponent({color}) {
 
   const webSocketClose = () => {
     if(webSocket) {
-      webSocketEventListeners.forEach( ({state, callback}) => {
+      webSocketEventListeners.forEach(({ state, callback }) => {
         webSocket.removeEventListener(state, callback);
       });
       webSocket.close();
@@ -81,31 +81,30 @@ export default function NetworkComponent({color}) {
   };
 
   // @TODO: try to connect later, and reconnect
-  const webSocketUpdate = ({enabled, url}) => {
+  const webSocketUpdate = ({ enabled, url }) => {
     console.log('webSocketUpdate', {enabled, url});
     let changed = false;
 
-    if(typeof enabled !== 'undefined') {
+    if (typeof enabled !== 'undefined') {
       changed = changed || webSocketEnabled !== enabled;
       webSocketEnabled = enabled;
     }
 
-    if(typeof url !== 'undefined') {
+    if (typeof url !== 'undefined') {
       changed = changed || webSocketUrl !== url;
       console.log('webSocket URL changed to ', url);
       webSocketUrl = url;
     }
 
-    if(!changed) {
+    if (!changed) {
       return;
     }
 
-    if(webSocket) {
+    if (webSocket) {
       webSocketClose();
     }
 
-    if(webSocketEnabled && webSocketUrl) {
-
+    if (webSocketEnabled && webSocketUrl) {
       // validate URL before creating socket,
       // because (native) error is not catched and will crash application
       const urlValidated = isURL(webSocketUrl, {
@@ -115,7 +114,7 @@ export default function NetworkComponent({color}) {
         require_host: true,
       });
 
-      if(urlValidated) {
+      if (urlValidated) {
         // warning: (native) error is not catched and will crash application
         try {
           const newWebSocket = new WebSocket(webSocketUrl);
@@ -136,11 +135,12 @@ export default function NetworkComponent({color}) {
         }
       }
     }
+
     webSocketReadyStateUpdate();
   };
 
   const networkSend = (data) => {
-    if(settings.webSocketEnabled
+    if (settings.webSocketEnabled
        && webSocket && network.webSocketReadyState === 'OPEN') {
       const dataSerialised = JSON.stringify(data);
       webSocket.send(dataSerialised);
@@ -163,22 +163,21 @@ export default function NetworkComponent({color}) {
 
   // @TODO: group data and limit in time
   React.useEffect(() => {
-    const {accelerometer} = sensors;
-    networkSend({accelerometer});
-  }, [sensors.accelerometer]);
+    const { devicemotion } = sensors;
+    networkSend({ devicemotion });
+  }, [sensors.devicemotion]);
 
   // @TODO: group data and limit in time
   React.useEffect(() => {
-    const {buttonA} = sensors;
-    networkSend({buttonA});
+    const { buttonA } = sensors;
+    networkSend({ buttonA });
   }, [sensors.buttonA]);
 
   // @TODO: group data and limit in time
   React.useEffect(() => {
-    const {buttonB} = sensors;
-    networkSend({buttonB});
+    const { buttonB } = sensors;
+    networkSend({ buttonB });
   }, [sensors.buttonB]);
-
 
   // clean-up on unmount
   React.useEffect(() => {
@@ -186,12 +185,11 @@ export default function NetworkComponent({color}) {
       webSocketClose();
       webSocketReadyStateUpdate();
     }
-  }, [])
-
+  }, []);
 
   return (
-  <Text>
-      Network {network.webSocketReadyState}
-  </Text>
+    <Text>
+        Network {network.webSocketReadyState}
+    </Text>
   );
 }
