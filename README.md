@@ -58,12 +58,20 @@ eas publish
 
 ### TODO
 
+#### Target v1 - 15-20 may
+
+- [ ] define an id on client
+- [ ] OSC configuration
+- [ ] review icons and splash screen (make them brighter and more graphic)
+- [ ] review message format
+- [ ] OSC client
+- [ ] add gyroscope
 
 #### Stores
 - [ ] register `fr.ircam.ismm.recomote`
 
 ##### Project
-- [ ] name -> rename to `CoMo-te` (see store)
+- [ ] name -> rename to `CoMo-te` ? (see stores)
 - [ ] icons -> to review
 - [ ] colours
 - [x] add info tab
