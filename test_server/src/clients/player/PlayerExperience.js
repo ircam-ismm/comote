@@ -63,20 +63,11 @@ class PlayerExperience extends AbstractExperience {
           <h1 style="margin: 20px 0">SSID: ${this.infos.get('ssid')}</h1>
           <h1 style="margin: 20px 0">IP: ${this.infos.get('ip')}</h1>
 
-          ${this.infos.get('wsQRCode') ?
+          ${this.infos.get('qrCode') ?
             html`
               <div>
-                <h2 style="margin: 20px 0">Connect WebSocket</h2>
-                <img src="${this.infos.get('wsQRCode')}" />
-              </div>
-            `
-          : nothing}
-
-          ${this.infos.get('oscQRCode') ?
-            html`
-              <div>
-                <h2 style="margin: 20px 0">Connect OSC</h2>
-                <img src="${this.infos.get('oscQRCode')}" />
+                <h2 style="margin: 20px 0">Connect</h2>
+                <img src="${this.infos.get('qrCode')}" />
               </div>
             `
           : nothing}

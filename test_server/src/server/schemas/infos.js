@@ -9,12 +9,7 @@ export default {
     default: null,
     nullable: true,
   },
-  wsQRCode: {
-    type: 'string',
-    default: null,
-    nullable: true,
-  },
-  oscQRCode: {
+  qrCode: {
     type: 'string',
     default: null,
     nullable: true,

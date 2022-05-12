@@ -10,15 +10,13 @@ import QRCode from 'qrcode';
 
 import si from 'systeminformation';
 
-export default class ReCoMoteServer {
+export default class CoMoteServer {
   constructor(config) {
     this.config = cloneDeep(assignDeep({
-      hostname: null,
+      id: null,
+      frequency: null,
       osc: null, // same format as ws
-      ws: {
-        port: 8888,
-        autostart: false,
-      },
+      ws: null,
       verbose: false,
     }, config));
 
@@ -39,8 +37,7 @@ export default class ReCoMoteServer {
     this._wifiInfos = {
       ssid: null,
       ip: null,
-      wsQRCode: null, // as data url (png)
-      oscQRCode: null, // as data url (png)
+      qrCode: null, // as data url (png)
     }
 
     this._listeners = new Set();
@@ -63,20 +60,16 @@ export default class ReCoMoteServer {
     this._wifiInfos.ssid = conn.ssid;
     this._wifiInfos.ip = int.ip4;
 
-    if (this.config.verbose) {
-      console.log('WiFi informations');
-      console.log(JSON.stringify(this._wifiInfos, null, 2), '\n');
-    }
-
     if (this.config.ws !== null) {
       if (!Number.isInteger(this.config.ws.port)) {
         throw new Error(`Invalid port "${this.config.ws.port}" for WebSocket server`);
       }
 
-      const host = this.config.hostname ? this.config.hostname : this._wifiInfos.ip;
-      this._wsLink = `ws://${host}:${this.config.ws.port}`;
-      this._wsRecomoteLink = `recomote://settings?ws-url=${this._wsLink}&ws=${this.config.ws.autostart ? 'true' : 'false'}`;
+      // if
+      const host = this.config.ws.hostname ?
+        this.config.ws.hostname : this._wifiInfos.ip;
 
+      this._wsLink = `ws://${host}:${this.config.ws.port}`;
       this._websocketServer = new WebSocket.Server({ port: this.config.ws.port });
 
       let socketUid = 0;
@@ -96,27 +89,13 @@ export default class ReCoMoteServer {
         // When you receive a message, send that message to every socket.
         socket.on('message', (data, isBinary) => {
           if (isBinary) {
-            if (data instanceof ArrayBuffer) {
-              // binary frame
-              const message = new Int32Array(data);
-              console.log('new binary ArrayBuffer message from', id, ':', message);
-            } else {
-              console.log('new binary message from', id, ':', data);
-            }
+            // @todo
           } else {
-            if (isValidUTF8(data)) {
-              // if (this.config.verbose) {
-              //   console.log('new UTF-8 message from', id, ':', data.toString('utf8'));
-              // }
-
+            if (isValidUTF8(data)) { // do we really need this check?
               data = JSON.parse(data);
-              this._listeners.forEach(listener => listener(id, data));
-            } else {
-              console.log('new message from', id, ':', data );
+              this._listeners.forEach(listener => listener(data));
             }
           }
-
-          // this._listeners.forEach(callback => callback(id, data));
         });
 
         // When a socket closes, or disconnects, remove it from the array.
@@ -129,11 +108,10 @@ export default class ReCoMoteServer {
     }
 
     if (this.config.osc !== null) {
-      const hostname = this.config.hostname ? this.config.hostname : '0.0.0.0';
+      const hostname = this.config.osc.hostname ?
+        this.config.osc.hostname : this._wifiInfos.ip;
 
       this._oscLink = `udp://${hostname}:${this.config.osc.port}`;
-      this._oscRecomoteLink = `recomote://settings?osc-url=${this._oscLink}&osc=${this.config.osc.autostart ? 'true' : 'false'}`;
-
       this._oscServer = new Server(this.config.osc.port, hostname, () => {
         // console.log('OSC Server is listening');
       });
@@ -147,7 +125,7 @@ export default class ReCoMoteServer {
       });
     }
 
-    await this._createQRCodes();
+    await this._logInfos();
   }
 
   close() {
@@ -169,34 +147,53 @@ export default class ReCoMoteServer {
     return this._wifiInfos;
   }
 
-  async _createQRCodes() {
+  async _logInfos() {
+    if (this.config.verbose) {
+      console.log('WiFi informations');
+      console.log(JSON.stringify(this._wifiInfos, null, 2), '\n');
+    }
+
+    let link = `comote://settings?`
+    const query = [];
+
+    if (Number.isFinite(this.config.id) && this.config.id >= 0) {
+      query.push(`id=${this.config.id}`);
+    }
+
+    if (Number.isFinite(this.config.frequency) && this.config.frequency > 0) {
+      query.push(`frequency=${this.config.frequency}`);
+    }
+
     if (this.config.ws !== null) {
-      const terminalQRCode = await QRCode.toString(this._wsRecomoteLink, { type: 'terminal', small: true });
-      this._wifiInfos.wsQRCode = await QRCode.toDataURL(this._wsRecomoteLink);
+      query.push(`ws-url=${this._wsLink}`);
 
-      console.log(`> ReCoMote websocket server listening on: ${this._wsLink}`);
-
-      if (this.config.verbose) {
-        console.log('+ [debug] ReCoMote websocket link:', this._wsRecomoteLink);
+      if (this.config.ws.autostart === true) {
+        query.push(`ws-enable=1`);
       }
-
-      console.log('');
-      console.log(terminalQRCode);
     }
 
     if (this.config.osc !== null) {
-      const qrcode = await QRCode.toString(this._oscRecomoteLink, { type: 'terminal', small: true });
-      this._wifiInfos.oscQRCode = await QRCode.toDataURL(this._oscRecomoteLink);
+      query.push(`osc-url=${this._oscLink}`);
 
-      console.log(`> ReCoMote osc server listening on: ${this._oscLink}`);
-
-      if (this.config.verbose) {
-        console.log('+ [debug] ReCoMote osc link:', this._oscRecomoteLink);
+      if (this.config.osc.autostart === true) {
+        query.push(`osc-enable=1`);
       }
-
-      console.log('');
-      console.log(qrcode);
     }
+
+    link += query.join('&');
+
+    console.log(`> CoMote websocket server listening on: ${this._wsLink}`);
+    console.log(`> CoMote osc server listening on: ${this._oscLink}`);
+
+    if (this.config.verbose) {
+      console.log('+ [debug] CoMote link:', link);
+    }
+
+    const terminalQRCode = await QRCode.toString(link, { type: 'terminal', small: true });
+    this._wifiInfos.qrCode = await QRCode.toDataURL(link);
+
+    console.log('');
+    console.log(terminalQRCode);
   }
 
   addListener(callback) {

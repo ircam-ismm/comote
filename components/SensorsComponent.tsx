@@ -58,7 +58,7 @@ export default function SensorsComponent({ color }) {
   const [gyroscopeListener, setGyroscopeListener] = React.useState(null);
 
   const setSensorsInterval = (interval) => {
-    console.log('setSensorsInterval:', interval);
+    console.log('> setSensorsInterval:', interval);
     Accelerometer.setUpdateInterval(interval);
     Gyroscope.setUpdateInterval(interval);
   };
@@ -122,7 +122,6 @@ export default function SensorsComponent({ color }) {
 
   // run on dependencies update
   React.useEffect(() => {
-    console.log('update interval', settings.deviceMotionInterval);
     setSensorsInterval(settings.deviceMotionInterval);
   }, [settings.deviceMotionInterval]);
 

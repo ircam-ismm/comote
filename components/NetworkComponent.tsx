@@ -33,6 +33,7 @@ export default function NetworkComponent({color}) {
   }
   // const [webSocket, setWebSocket] = React.useState(null);
   const [webSocketEventListeners, setWebSocketEventListeners] = React.useState([]);
+
   const webSocketReadyStateUpdate = () => {
     let webSocketReadyState;
 
@@ -65,7 +66,6 @@ export default function NetworkComponent({color}) {
         webSocketReadyState,
       },
     });
-
   };
 
   const webSocketClose = () => {
@@ -140,12 +140,13 @@ export default function NetworkComponent({color}) {
   };
 
   const networkSend = (data) => {
-    if (settings.webSocketEnabled
-       && webSocket && network.webSocketReadyState === 'OPEN') {
+    if (settings.webSocketEnabled && webSocket
+        && network.webSocketReadyState === 'OPEN'
+    ) {
       const dataSerialised = JSON.stringify(data);
       webSocket.send(dataSerialised);
     }
-  }
+  };
 
   // update on dependencies change
   React.useEffect(() => {

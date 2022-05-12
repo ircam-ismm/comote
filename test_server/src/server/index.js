@@ -7,12 +7,11 @@ import compile from 'template-literal';
 import PlayerExperience from './PlayerExperience.js';
 
 import getConfig from '../utils/getConfig.js';
-import ReCoMoteServer from './ReCoMoteServer.js';
+import CoMoteServer from './CoMoteServer.js';
 
 import infos from './schemas/infos.js';
 
 const ENV = process.env.ENV || 'default';
-const RECOMOTE_SOCKET_PORT = 8901;
 
 const config = getConfig(ENV);
 const server = new Server();
@@ -28,7 +27,6 @@ console.log(`
 --------------------------------------------------------
 - launching "${config.app.name}" in "${ENV}" environment
 - [pid: ${process.pid}]
-- recomote server socket port: ${RECOMOTE_SOCKET_PORT}
 --------------------------------------------------------
 `);
 
@@ -61,27 +59,25 @@ server.stateManager.registerSchema('infos', infos);
     });
 
     // run recomote server ---------------------------------------
-    const reCoMoteServer = new ReCoMoteServer({
+    const coMoteServer = new CoMoteServer({
+      id: 42,
+      frequency: 50, // frequency of the sensors
       ws: {
-        port: RECOMOTE_SOCKET_PORT,
-        // autostart: true,
-      },
-      osc: {
-        port: 3333,
+        port: 8901,
+        // hostname: '127.0.0.1',
         autostart: true,
       },
+      osc: null,
       verbose: true,
     });
 
-    await reCoMoteServer.start();
+    await coMoteServer.start();
 
-    const wifiInfos = reCoMoteServer.getWifiInfos();
+    const wifiInfos = coMoteServer.getWifiInfos();
     // -----------------------------------------------------------
     const infos = await server.stateManager.create('infos', wifiInfos);
 
-    reCoMoteServer.addListener((id, data) => {
-      infos.set({ data });
-    });
+    coMoteServer.addListener(data => infos.set({ data }));
 
     const playerExperience = new PlayerExperience(server, 'player');
 

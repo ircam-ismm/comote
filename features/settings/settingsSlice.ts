@@ -82,8 +82,6 @@ const settingsSlice = createSlice({
           state.data.oscUrl = splitted.join('://');
         }
       }
-
-      console.log('inslice', state.data);
     },
 
   },
