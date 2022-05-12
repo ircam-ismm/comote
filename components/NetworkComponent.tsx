@@ -155,24 +155,26 @@ export default function NetworkComponent({color}) {
     });
   }, [settings.webSocketEnabled, settings.webSocketUrl]);
 
-  const [intervalId, setIntervalId] = React.useState(null);
 
-  // update sensors ref everytime sensors state is updated
+  const [intervalId, setIntervalId] = React.useState(null);
   const accRef = React.useRef();
 
+  // update sensors ref everytime sensors state is updated
   React.useEffect(() => {
     accRef.current = sensors.accelerationIncludingGravity;
   }, [sensors.accelerationIncludingGravity]);
-
 
   // render on webSocketReadyState update
   React.useEffect(() => {
     console.log('network.webSocketReadyState', network.webSocketReadyState);
 
     if (network.webSocketReadyState === 'OPEN') {
+      clearInterval(intervalId);
+
       setIntervalId(setInterval(() => {
-        const accelerationIncludingGravity = accRef.current;
         const { id } = settings;
+        const accelerationIncludingGravity = accRef.current;
+
         const msg = {
           source: 'comote',
           id,
@@ -188,7 +190,9 @@ export default function NetworkComponent({color}) {
       console.log('clearInterval', intervalId);
       clearInterval(intervalId);
     }
-  }, [network.webSocketReadyState]);
+
+    return () => clearInterval(intervalId);
+  }, [network.webSocketReadyState, settings.deviceMotionInterval]);
 
   // @TODO: group data and limit in time
   React.useEffect(() => {

@@ -36,11 +36,10 @@ const normalizeAccelerometer = Platform.OS === 'android'
 
 export default function SensorsComponent({ color }) {
   const settings = useAppSelector(state => selectSettings(state));
-  console.log(settings);
   const dispatch = useAppDispatch();
 
-  const [accelerometerListener, setAccelerometerListener] = React.useState(null);
   // create local working values
+  const [accelerometerListener, setAccelerometerListener] = React.useState(null);
 
   const setSensorsInterval = (interval) => {
     console.log('setSensorsInterval:', interval);

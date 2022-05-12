@@ -50,7 +50,12 @@ const settingsSlice = createSlice({
         || state.data.deviceMotionFrequency >= 200 // probably too high
       ) {
         state.data.deviceMotionFrequency = initialState.data.deviceMotionFrequency;
-        state.data.deviceMotionInterval = parseInt(1000 / state.data.deviceMotionFrequency);
+      }
+
+      // keep `deviceMotionInterval` in sync with `deviceMotionFrequency`
+      if ('deviceMotionFrequency' in action.payload) {
+        // we use a rounded value because it is also used in `setInterval`
+        state.data.deviceMotionInterval = Math.round(1000 / state.data.deviceMotionFrequency);
       }
 
       if (!Number.isInteger(state.data.id) || state.data.id < 0) {
@@ -76,6 +81,8 @@ const settingsSlice = createSlice({
           state.data.oscUrl = splitted.join('://');
         }
       }
+
+      console.log('inslice', state.data);
     },
 
   },
