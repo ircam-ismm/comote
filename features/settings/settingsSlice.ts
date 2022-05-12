@@ -18,7 +18,8 @@ interface SettingsState {
 const initialState = {
   data: {
     id: 0,
-    accelerometerFrequency: 60, // in hertz
+    deviceMotionFrequency: 50, // in hertz (20ms)
+    deviceMotionInterval: 20,  // in ms
     webSocketEnabled: false,
     webSocketUrl: null,
     oscEnabled: false,
@@ -44,11 +45,12 @@ const settingsSlice = createSlice({
       Object.assign(state.data, action.payload);
 
       // replace empty value, undefined, NaN, or 0, with default value
-      if (typeof state.data.accelerometerFrequency !== 'number'
-         || !state.data.accelerometerFrequency
-         || state.data.accelerometerFrequency <= 0) {
-        state.data.accelerometerFrequency
-          = initialState.data.accelerometerFrequency;
+      if (!Number.isInteger(state.data.deviceMotionFrequency)
+        || state.data.deviceMotionFrequency <= 0
+        || state.data.deviceMotionFrequency >= 200 // probably too high
+      ) {
+        state.data.deviceMotionFrequency = initialState.data.deviceMotionFrequency;
+        state.data.deviceMotionInterval = parseInt(1000 / state.data.deviceMotionFrequency);
       }
 
       if (!Number.isInteger(state.data.id) || state.data.id < 0) {
@@ -66,8 +68,6 @@ const settingsSlice = createSlice({
         }
       }
 
-      // Be sure that protocol is in lower-case to avoid crash on android.
-      // NetworkComponent later does URL verification
       if (typeof state.data.oscUrl === 'string') {
         const splitted = state.data.oscUrl.split('://');
 
@@ -76,8 +76,6 @@ const settingsSlice = createSlice({
           state.data.oscUrl = splitted.join('://');
         }
       }
-
-      console.log(state.data.oscUrl, state.data.oscEnabled);
     },
 
   },
@@ -106,6 +104,10 @@ export const {
 // in the slice file.
 export const selectSettings = (state: RootState) => {
   return state.settings.data;
+}
+
+export const getSettingsInitialState = () => {
+  return initialState.data;
 }
 
 export default settingsSlice.reducer;

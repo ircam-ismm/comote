@@ -155,28 +155,53 @@ export default function NetworkComponent({color}) {
     });
   }, [settings.webSocketEnabled, settings.webSocketUrl]);
 
+  const [intervalId, setIntervalId] = React.useState(null);
+
+  // update sensors ref everytime sensors state is updated
+  const accRef = React.useRef();
+
+  React.useEffect(() => {
+    accRef.current = sensors.accelerationIncludingGravity;
+  }, [sensors.accelerationIncludingGravity]);
+
 
   // render on webSocketReadyState update
   React.useEffect(() => {
     console.log('network.webSocketReadyState', network.webSocketReadyState);
+
+    if (network.webSocketReadyState === 'OPEN') {
+      setIntervalId(setInterval(() => {
+        const accelerationIncludingGravity = accRef.current;
+        const { id } = settings;
+        const msg = {
+          source: 'comote',
+          id,
+          devicemotion: {
+            interval: settings.deviceMotionInterval,
+            accelerationIncludingGravity,
+          }
+        };
+
+        networkSend(msg);
+      }, settings.deviceMotionInterval));
+    } else {
+      console.log('clearInterval', intervalId);
+      clearInterval(intervalId);
+    }
   }, [network.webSocketReadyState]);
 
   // @TODO: group data and limit in time
   React.useEffect(() => {
-    const { devicemotion } = sensors;
-    networkSend({ devicemotion });
-  }, [sensors.devicemotion]);
-
-  // @TODO: group data and limit in time
-  React.useEffect(() => {
     const { buttonA } = sensors;
-    networkSend({ buttonA });
+    const { id } = settings;
+    networkSend({ source: 'comote', id, buttonA });
   }, [sensors.buttonA]);
 
   // @TODO: group data and limit in time
   React.useEffect(() => {
     const { buttonB } = sensors;
-    networkSend({ buttonB });
+    const { id } = settings;
+    networkSend({ source: 'comote', id, buttonB });
   }, [sensors.buttonB]);
 
   // clean-up on unmount

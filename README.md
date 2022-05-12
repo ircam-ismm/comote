@@ -67,15 +67,18 @@ eas build -p android --profile preview
 
 #### Target v1 - 15-20 may
 
-- [ ] rename to `CoMo.te`, check all config files (possible to rename the expo project?)
 
-- [ ] review icons and splash screen (make them brighter and more graphic)
-- [ ] allow to define an id on client
-- [ ] OSC configuration
-- [ ] review config to have only a global framerate
-- [ ] review message format
-- [ ] add gyroscope
+- [x] review icons and splash screen (make them brighter and more graphic)
+- [x] allow to define an id on client
+- [x] OSC configuration
+- [ ] use https://docs.expo.dev/versions/latest/sdk/devicemotion/
+  + [ ] review config to have only a global framerate
+  + [ ] review message format
+  + [ ] add gyroscope
+- [ ] update all settings from QRCode
 - [ ] OSC client
+
+- [ ] rename to `CoMo.te`
 
 #### Stores
 - [ ] register `fr.ircam.ismm.recomote`

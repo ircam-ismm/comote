@@ -108,13 +108,13 @@ export default function SettingsScreen({ color, navigation }) {
   }, [settings.oscUrl]);
 
     // temporary value for editing
-  const [accelerometerFrequency, setAccelerometerFrequency]
-    = React.useState(`${settings.accelerometerFrequency}`);
+  const [deviceMotionFrequency, setDeviceMotionFrequency]
+    = React.useState(`${settings.deviceMotionFrequency}`);
 
   // update local value for coercion by store
   React.useEffect(() => {
-    setAccelerometerFrequency(`${settings.accelerometerFrequency}`);
-  }, [settings.accelerometerFrequency]);
+    setDeviceMotionFrequency(`${settings.deviceMotionFrequency}`);
+  }, [settings.deviceMotionFrequency]);
 
     // temporary value for editing
   const [id, setId] = React.useState(`${settings.id}`);
@@ -184,20 +184,20 @@ export default function SettingsScreen({ color, navigation }) {
               returnKeyType='done'
               selectTextOnFocus={true}
               placeholder='Enter frequency here '
-              value={accelerometerFrequency}
+              value={deviceMotionFrequency}
               onChange={(e) => {
-                setAccelerometerFrequency(e.nativeEvent.text);
+                setDeviceMotionFrequency(e.nativeEvent.text);
               }}
               onBlur={(e) => {
                 dispatch({
                   type: 'settings/set',
                   payload: {
-                    accelerometerFrequency: parseFloat(accelerometerFrequency),
+                    deviceMotionFrequency: parseFloat(deviceMotionFrequency),
                   },
                 });
 
-                if (accelerometerFrequency === '') {
-                  setAccelerometerFrequency(`${settings.accelerometerFrequency}`);
+                if (deviceMotionFrequency === '') {
+                  setDeviceMotionFrequency(`${settings.deviceMotionFrequency}`);
                 }
               }}
             />

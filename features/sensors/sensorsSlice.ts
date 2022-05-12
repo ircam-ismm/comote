@@ -17,23 +17,8 @@ interface SensorsState {
 
 const initialState = {
   data: {
-    devicemotion: {
-      x: 0,
-      y: 0,
-      z: 0,
-      // // interval: 0,
-      // accelerationIncludingGravity: {
-      //   x: 0,
-      //   y: 0,
-      //   z: 0,
-      // },
-      // rotationRate: {
-      //   // gyroscope
-      //   alpha: 0,
-      //   beta: 0,
-      //   gamma: 0,
-      // },
-    },
+    accelerationIncludingGravity: {},
+    rotationRate: {},
     buttonA: 0,
     buttonB: 0,
   },

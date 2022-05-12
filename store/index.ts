@@ -24,6 +24,9 @@ import settingsReducer from '../features/settings/settingsSlice';
 import sensorsReducer from '../features/sensors/sensorsSlice';
 import networkReducer from '../features/network/networkSlice';
 
+// console.log('[debug] clear storage');
+// storage.clear();
+
 const persistConfig = {
   key: 'root',
   storage,
