@@ -6,6 +6,9 @@ import {
 
 // react-native URL is incomplete
 import isURL from 'validator/es/lib/isURL';
+import urlParse from 'url-parse';
+
+// import Osc from 'react-native-osc';
 
 import { useAppSelector, useAppDispatch } from '../hooks';
 import { selectNetwork } from '../features/network/networkSlice';
@@ -15,6 +18,10 @@ import { selectSettings } from '../features/settings/settingsSlice';
 let webSocketEnabled = false;
 let webSocketUrl = null;
 let webSocket = null;
+
+let oscEnabled = false;
+let oscUrl = null;
+let osc = null;
 
 export default function NetworkComponent({color}) {
   const settings = useAppSelector((state) => {
@@ -139,12 +146,114 @@ export default function NetworkComponent({color}) {
     webSocketReadyStateUpdate();
   };
 
+  const setOsc = (oscRequest) => {
+    osc = oscRequest;
+  }
+
+  const oscClose = () => {
+    // if(osc) {
+    //   osc.close();
+    // }
+
+    setOsc(null);
+  };
+
+  const oscUpdate = ({ enabled, url }) => {
+    console.log('oscUpdate', {enabled, url});
+    let changed = false;
+
+    if (typeof enabled !== 'undefined') {
+      changed = changed || oscEnabled !== enabled;
+      oscEnabled = enabled;
+    }
+
+    if (typeof url !== 'undefined') {
+      changed = changed || oscUrl !== url;
+      console.log('osc URL changed to ', url);
+      oscUrl = url;
+    }
+
+    if (!changed) {
+      return;
+    }
+
+    if (osc) {
+      oscClose();
+    }
+
+    if (oscEnabled && oscUrl) {
+      // validate URL before creating socket,
+      // because (native) error is not catched and will crash application
+      const urlValidated = isURL(oscUrl, {
+        require_protocol: true,
+        require_valid_protocol: true,
+        protocols: ['udp'],
+        require_host: true,
+        require_port: true,
+      });
+
+      const {hostname, port} = urlParse(oscUrl);
+      if (urlValidated && hostname && port) {
+        try {
+          // const newOsc = Osc.createClient(hostname, port);
+          const newOsc = true; // console.log only
+          setOsc(newOsc);
+        } catch(error) {
+          console.error(`Error while creating osc with url '${oscUrl}'`,
+                        error.message);
+        }
+      }
+    }
+
+  };
+
   const networkSend = (data) => {
     if (settings.webSocketEnabled && webSocket
         && network.webSocketReadyState === 'OPEN'
     ) {
       const dataSerialised = JSON.stringify(data);
       webSocket.send(dataSerialised);
+    }
+
+    if (settings.oscEnabled && osc) {
+      for(key in data) {
+        switch(key) {
+        case 'source': {
+          break;
+        }
+        case 'id': {
+          break;
+        }
+
+        case 'devicemotion': {
+          const address = `/${data.source}/${data.id}/${key}`;
+
+          const {interval, accelerationIncludingGravity, rotationRate} = data[key];
+          const {x, y, z} = accelerationIncludingGravity;
+          const {alpha, beta, gamma} = rotationRate;
+          const values = [
+            interval,
+            x, y, z,
+            alpha, beta, gamma,
+          ];
+
+          console.log('osc-send', address, values);
+          break;
+        }
+
+        default: {
+          const address = `/${data.source}/${data.id}/${key}`;
+          const value = data[key];
+
+          console.log('osc-send', address, value);
+          break;
+        }
+
+
+        }
+
+
+      }
     }
   };
 
@@ -155,6 +264,14 @@ export default function NetworkComponent({color}) {
       url: settings.webSocketUrl,
     });
   }, [settings.webSocketEnabled, settings.webSocketUrl]);
+
+  // update on dependencies change
+  React.useEffect(() => {
+    oscUpdate({
+      enabled: settings.oscEnabled,
+      url: settings.oscUrl,
+    });
+  }, [settings.oscEnabled, settings.oscUrl]);
 
 
   const [intervalId, setIntervalId] = React.useState(null);
