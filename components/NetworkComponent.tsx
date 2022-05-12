@@ -16,16 +16,10 @@ let webSocketEnabled = false;
 let webSocketUrl = null;
 let webSocket = null;
 
-export default function NetworkComponent({color}) {
-  const settings = useAppSelector((state) => {
-    return selectSettings(state);
-  });
-  const sensors = useAppSelector((state) => {
-    return selectSensors(state);
-  });
-  const network = useAppSelector((state) => {
-    return selectNetwork(state);
-  });
+export default function NetworkComponent({ color }) {
+  const settings = useAppSelector((state) => selectSettings(state));
+  const sensors = useAppSelector((state) => selectSensors(state));
+  const network = useAppSelector((state) => selectNetwork(state));
   const dispatch = useAppDispatch();
 
   const setWebSocket = (webSocketRequest) => {

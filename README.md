@@ -80,11 +80,12 @@ eas build -p android --profile preview
 - [x] review message format
 - [x] add gyroscope
 - [x] update all settings from QRCode
+- [x] Error screen if sensors are not available
 
 - [ ] OSC client
-- [ ] Error screen if sensors are not available
 
 - [ ] id as string
+- [ ] remove `sampleRate` in favor of `period`
 - [ ] info connection on play page
 - [ ] rename to `CoMo.te`
 
