@@ -74,7 +74,7 @@ eas build -p android --profile preview
 - [o] use https://docs.expo.dev/versions/latest/sdk/devicemotion/ (broken)
 - [x] review config to have only a global framerate
 - [x] review message format
-- [ ] add gyroscope
+- [x] add gyroscope
 - [ ] update all settings from QRCode
 
 - [ ] OSC client

@@ -35,7 +35,7 @@ const normalizeAccelerometer = Platform.OS === 'android'
   });
 
 // @todo - recheck unit and iOS
-const radToDegree = 360 / 2 * Math.PI
+const radToDegree = 360 / (2 * Math.PI);
 const normalizeGyroscope = Platform.OS === 'android'
   ? (data) => ({
     alpha: data.z * radToDegree, // yaw
