@@ -3,7 +3,6 @@ import * as React from 'react';
 import {
   StyleSheet,
   ImageBackground,
-  Image,
   TouchableOpacity,
 } from 'react-native';
 import { Text, View, ConnectionStatus } from '../components/Themed';
@@ -12,6 +11,7 @@ import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 import { useAppSelector } from '../hooks';
 import { selectNetwork } from '../features/network/networkSlice';
+import { selectSensors } from '../features/sensors/sensorsSlice';
 
 const styles = StyleSheet.create({
   container: {
@@ -51,11 +51,18 @@ const styles = StyleSheet.create({
   },
 });
 
-
 export default function HomeScreen({ color, navigation }) {
-  const network = useAppSelector((state) => selectNetwork(state));
+  const network = useAppSelector(state => selectNetwork(state));
+  const sensors = useAppSelector(state => selectSensors(state));
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme];
+
+  React.useEffect(() => {
+    if (!__DEV__ && !sensors.available) {
+    // if (!sensors.available) { // uncomment to test error page in a browser
+      navigation.navigate('Error');
+    }
+  }, [sensors.available]);
 
   return (
     <View style={styles.container}>

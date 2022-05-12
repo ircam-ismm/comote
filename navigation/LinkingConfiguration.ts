@@ -138,6 +138,12 @@ const linking: LinkingOptions<RootStackParamList> = {
         },
       },
 
+      Error: {
+        screens: {
+          ErrorScreen: 'error',
+        },
+      },
+
       Modal: 'modal',
 
       NotFound: '*',
