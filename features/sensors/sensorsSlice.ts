@@ -21,6 +21,7 @@ const initialState = {
     rotationRate: {},
     buttonA: 0,
     buttonB: 0,
+    available: null,
   },
   status: 'idle',
 } as SensorsState;

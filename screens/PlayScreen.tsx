@@ -6,26 +6,73 @@ import {
   Pressable,
 } from 'react-native';
 import { Text, View } from '../components/Themed';
-
-import {
-  Accelerometer,
-  // Barometer,
-  Gyroscope,
-  // Magnetometer,
-  // MagnetometerUncalibrated,
-  // Pedometer,
-} from 'expo-sensors';
+import ConnectionStatusComponent from '../components/ConnectionStatusComponent';
 
 import { useAppSelector, useAppDispatch } from '../hooks';
+import { selectNetwork } from '../features/network/networkSlice';
 
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 
-if(global.performance == null) {
-    global.performance = {
-      now: global._chronoNow,
-    };
-}
+const styles = StyleSheet.create({
+  container: {
+    minHeight: '100%',
+    flex: 1,
+    justifyContent: 'space-between',
+    flexDirection: 'column',
+    alignItems: 'stretch',
+    padding: 16,
+  },
+
+  network: {
+    flexGrow: 1,
+    flexShrink: 0,
+    flexBasis: 'auto',
+  },
+
+  buttonsContainer: {
+    flexGrow: 1,
+    flexShrink: 1,
+    justifyContent: 'space-around',
+    flexDirection: 'column',
+    alignItems: 'stretch',
+    marginTop: 16,
+  },
+
+  button: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 10,
+    marginBottom: 16,
+  },
+
+  buttonA: {
+    backgroundColor: '#ffc20a',
+  },
+
+  buttonB: {
+    backgroundColor: '#0c7bdc',
+  },
+
+  buttonText: {
+    textAlign: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+    fontSize: 60,
+    color: 'white',
+  },
+
+  // locker: {
+  //   position: 'absolute',
+  //   width: '100%',
+  //   height: '100%',
+  //   top: 0,
+  //   left: 0,
+  //   zIndex: 10,
+  //   backgroundColor: 'rgba(34, 34, 34, 0.6)',
+  // }
+});
 
 export default function PlayScreen({color}) {
   const dispatch = useAppDispatch();
@@ -37,6 +84,11 @@ export default function PlayScreen({color}) {
 
   return (
     <View style={styles.container}>
+      {/*<View style={styles.locker}>
+
+      </View>*/}
+
+      <ConnectionStatusComponent />
       <View style={styles.buttonsContainer}>
         <Pressable
           style={({pressed}) => [
@@ -61,9 +113,7 @@ export default function PlayScreen({color}) {
             })
           }}
         >
-          <Text style={styles.buttonText}
-            selectable={false}
-          >
+          <Text style={styles.buttonText} selectable={false}>
             A
           </Text>
         </Pressable>
@@ -91,9 +141,7 @@ export default function PlayScreen({color}) {
             })
           }}
         >
-          <Text style={styles.buttonText}
-            selectable={false}
-          >
+          <Text style={styles.buttonText} selectable={false}>
             B
           </Text>
         </Pressable>
@@ -101,52 +149,3 @@ export default function PlayScreen({color}) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    minHeight: '100%',
-    flex: 1,
-    justifyContent: 'space-between',
-    flexDirection: 'column',
-    alignItems: 'stretch',
-    padding: 16,
-  },
-
-  network: {
-    flexGrow: 1,
-    flexShrink: 0,
-    flexBasis: 'auto',
-  },
-
-  buttonsContainer: {
-    flexGrow: 1,
-    flexShrink: 1,
-    justifyContent: 'space-around',
-    flexDirection: 'column',
-    alignItems: 'stretch',
-  },
-
-  button: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 10,
-    marginBottom: 16,
-  },
-
-  buttonA: {
-    backgroundColor: '#ffc20a',
-  },
-
-  buttonB: {
-    backgroundColor: '#0c7bdc',
-  },
-
-  buttonText: {
-    textAlign: 'center',
-    justifyContent: 'center',
-    alignItems: 'center',
-    fontSize: 60,
-    color: 'white',
-  },
-});

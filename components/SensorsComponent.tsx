@@ -105,6 +105,11 @@ export default function SensorsComponent({ color }) {
     console.log('- gyroscopes available:', gyroAvailable);
 
     if (accAvailable && gyroAvailable) {
+      dispatch({
+        type: 'sensors/set',
+        payload: { available: true },
+      });
+
       setSensorsInterval(settings.deviceMotionInterval);
 
       accelerometerSubscribe();
@@ -115,6 +120,10 @@ export default function SensorsComponent({ color }) {
         gyroscopeUnsubscribe();
       }
     } else {
+      dispatch({
+        type: 'sensors/set',
+        payload: { available: false },
+      });
       // @todo - show error screen
       console.error('Sensors not available!');
     }

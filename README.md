@@ -59,6 +59,10 @@ eas publish
 ### Build preview
 
 ```
+expo start --no-dev --minify
+```
+
+```
 eas build -p android --profile preview
 ```
 
@@ -71,15 +75,19 @@ eas build -p android --profile preview
 - [x] review icons and splash screen (make them brighter and more graphic)
 - [x] allow to define an id on client
 - [x] OSC configuration
-- [o] use https://docs.expo.dev/versions/latest/sdk/devicemotion/ (broken)
+- [-] use https://docs.expo.dev/versions/latest/sdk/devicemotion/ (broken)
 - [x] review config to have only a global framerate
 - [x] review message format
 - [x] add gyroscope
-- [ ] update all settings from QRCode
+- [x] update all settings from QRCode
+- [x] Error screen if sensors are not available
 
 - [ ] OSC client
-- [ ] Error screen if sensors are not available
 
+- [ ] allow to lock interactions on play screen (sse https://reactnative.dev/docs/modal)
+- [ ] id as string
+- [ ] remove `sampleRate` in favor of `period`
+- [ ] info connection on play page
 - [ ] rename to `CoMo.te`
 
 #### Stores

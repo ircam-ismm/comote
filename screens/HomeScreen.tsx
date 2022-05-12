@@ -3,15 +3,16 @@ import * as React from 'react';
 import {
   StyleSheet,
   ImageBackground,
-  Image,
   TouchableOpacity,
 } from 'react-native';
 import { Text, View, ConnectionStatus } from '../components/Themed';
+import ConnectionStatusComponent from '../components/ConnectionStatusComponent';
 
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 import { useAppSelector } from '../hooks';
 import { selectNetwork } from '../features/network/networkSlice';
+import { selectSensors } from '../features/sensors/sensorsSlice';
 
 const styles = StyleSheet.create({
   container: {
@@ -39,10 +40,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0)',
   },
 
-  label: {
-    width: 160,
-  },
-
   button: {
     alignItems: "center",
     padding: 16,
@@ -51,11 +48,18 @@ const styles = StyleSheet.create({
   },
 });
 
-
 export default function HomeScreen({ color, navigation }) {
-  const network = useAppSelector((state) => selectNetwork(state));
+  const network = useAppSelector(state => selectNetwork(state));
+  const sensors = useAppSelector(state => selectSensors(state));
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme];
+
+  React.useEffect(() => {
+    if (!__DEV__ && !sensors.available) {
+    // if (!sensors.available) { // uncomment to test error page in a browser
+      navigation.navigate('Error');
+    }
+  }, [sensors.available]);
 
   return (
     <View style={styles.container}>
@@ -64,17 +68,8 @@ export default function HomeScreen({ color, navigation }) {
           <Text style={styles.title}>CoMo.te</Text>
         </View>
 
-        <View style={[{ height: 60 }, styles.groupContainer]}>
-          <View>
-            <View style={{ padding: 8 }}>
-              <Text style={styles.label}>WebSocket Status:</Text>
-              <ConnectionStatus status={network.webSocketReadyState} />
-            </View>
-            <View style={{ padding: 8 }}>
-              <Text style={styles.label}>OSC Status:</Text>
-              <ConnectionStatus status={network.OSCReadyState} />
-            </View>
-          </View>
+        <View style={styles.groupContainer}>
+          <ConnectionStatusComponent />
         </View>
 
         <View style={styles.groupContainer}>
