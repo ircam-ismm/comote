@@ -29,9 +29,9 @@ const normalizeAccelerometer = Platform.OS === 'android'
   })
   // @todo - recheck that on iOS
   : (data) => ({
-    x: data.x * g,
-    y: data.y * g,
-    z: data.z * g,
+    x: -data.x * g,
+    y: -data.y * g,
+    z: -data.z * g,
   });
 
 // @todo - recheck unit and iOS
