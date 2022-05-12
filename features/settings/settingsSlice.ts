@@ -55,6 +55,7 @@ const settingsSlice = createSlice({
       // keep `deviceMotionInterval` in sync with `deviceMotionFrequency`
       if ('deviceMotionFrequency' in action.payload) {
         // we use a rounded value because it is also used in `setInterval`
+        // which get mad with floats
         state.data.deviceMotionInterval = Math.round(1000 / state.data.deviceMotionFrequency);
       }
 

@@ -157,12 +157,17 @@ export default function NetworkComponent({color}) {
 
 
   const [intervalId, setIntervalId] = React.useState(null);
-  const accRef = React.useRef();
+  const accelerationIncludingGravityRef = React.useRef();
+  const rotationRateRef = React.useRef();
 
   // update sensors ref everytime sensors state is updated
   React.useEffect(() => {
-    accRef.current = sensors.accelerationIncludingGravity;
+    accelerationIncludingGravityRef.current = sensors.accelerationIncludingGravity;
   }, [sensors.accelerationIncludingGravity]);
+
+  React.useEffect(() => {
+    rotationRateRef.current = sensors.rotationRate;
+  }, [sensors.rotationRate]);
 
   // render on webSocketReadyState update
   React.useEffect(() => {
@@ -173,7 +178,8 @@ export default function NetworkComponent({color}) {
 
       setIntervalId(setInterval(() => {
         const { id } = settings;
-        const accelerationIncludingGravity = accRef.current;
+        const accelerationIncludingGravity = accelerationIncludingGravityRef.current;
+        const rotationRate = rotationRateRef.current;
 
         const msg = {
           source: 'comote',
@@ -181,6 +187,7 @@ export default function NetworkComponent({color}) {
           devicemotion: {
             interval: settings.deviceMotionInterval,
             accelerationIncludingGravity,
+            rotationRate,
           }
         };
 

@@ -71,12 +71,14 @@ eas build -p android --profile preview
 - [x] review icons and splash screen (make them brighter and more graphic)
 - [x] allow to define an id on client
 - [x] OSC configuration
-- [ ] use https://docs.expo.dev/versions/latest/sdk/devicemotion/
-  + [ ] review config to have only a global framerate
-  + [ ] review message format
-  + [ ] add gyroscope
+- [o] use https://docs.expo.dev/versions/latest/sdk/devicemotion/ (broken)
+- [x] review config to have only a global framerate
+- [x] review message format
+- [ ] add gyroscope
 - [ ] update all settings from QRCode
+
 - [ ] OSC client
+- [ ] Error screen if sensors are not available
 
 - [ ] rename to `CoMo.te`
 

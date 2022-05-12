@@ -34,12 +34,29 @@ const normalizeAccelerometer = Platform.OS === 'android'
     z: data.z * g,
   });
 
+// @todo - check unit, probably a mess
+//
+const radToDegree = 360 / 2 * Math.PI
+const normalizeGyroscope = Platform.OS === 'android'
+  ? (data) => ({
+    alpha: data.z * radToDegree, // yaw
+    beta: data.x * radToDegree,  // pitch
+    gamma: data.y * radToDegree, // roll
+  })
+  : (data) => ({
+    alpha: data.z * radToDegree, // yaw
+    beta: data.x * radToDegree,  // pitch
+    gamma: data.y * radToDegree, // roll
+  });
+
+
 export default function SensorsComponent({ color }) {
   const settings = useAppSelector(state => selectSettings(state));
   const dispatch = useAppDispatch();
 
   // create local working values
   const [accelerometerListener, setAccelerometerListener] = React.useState(null);
+  const [gyroscopeListener, setGyroscopeListener] = React.useState(null);
 
   const setSensorsInterval = (interval) => {
     console.log('setSensorsInterval:', interval);
@@ -64,8 +81,23 @@ export default function SensorsComponent({ color }) {
     setAccelerometerListener(null);
   };
 
-  // see https://daveceddia.com/useeffect-hook-examples/
+  const gyroscopeSubscribe = () => {
+    setGyroscopeListener(Gyroscope.addListener(data => {
+      const rotationRate = normalizeGyroscope(data);
 
+      dispatch({
+        type: 'sensors/set',
+        payload: { rotationRate },
+      });
+    }));
+  }
+
+  const gyroscopeUnsubscribe = () => {
+    gyroscopeListener && gyroscopeListener.remove();
+    setGyroscopeListener(null);
+  }
+
+  // see https://daveceddia.com/useeffect-hook-examples/
   // run once and callback on unmount
   React.useEffect(async () => {
     const accAvailable = await Accelerometer.isAvailableAsync();
@@ -77,12 +109,11 @@ export default function SensorsComponent({ color }) {
       setSensorsInterval(settings.deviceMotionInterval);
 
       accelerometerSubscribe();
-      // gyroscopeSubscribe();
+      gyroscopeSubscribe();
 
       return () => {
-        clearInterval(intervalId);
         accelerometerUnsubscribe();
-        // gyroscopeUnsubscribe();
+        gyroscopeUnsubscribe();
       }
     } else {
       // @todo - show error screen
