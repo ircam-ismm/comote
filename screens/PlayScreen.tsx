@@ -62,6 +62,16 @@ const styles = StyleSheet.create({
     fontSize: 60,
     color: 'white',
   },
+
+  // locker: {
+  //   position: 'absolute',
+  //   width: '100%',
+  //   height: '100%',
+  //   top: 0,
+  //   left: 0,
+  //   zIndex: 10,
+  //   backgroundColor: 'rgba(34, 34, 34, 0.6)',
+  // }
 });
 
 export default function PlayScreen({color}) {
@@ -74,6 +84,10 @@ export default function PlayScreen({color}) {
 
   return (
     <View style={styles.container}>
+      {/*<View style={styles.locker}>
+
+      </View>*/}
+
       <ConnectionStatusComponent />
       <View style={styles.buttonsContainer}>
         <Pressable
@@ -99,9 +113,7 @@ export default function PlayScreen({color}) {
             })
           }}
         >
-          <Text style={styles.buttonText}
-            selectable={false}
-          >
+          <Text style={styles.buttonText} selectable={false}>
             A
           </Text>
         </Pressable>
@@ -129,9 +141,7 @@ export default function PlayScreen({color}) {
             })
           }}
         >
-          <Text style={styles.buttonText}
-            selectable={false}
-          >
+          <Text style={styles.buttonText} selectable={false}>
             B
           </Text>
         </Pressable>

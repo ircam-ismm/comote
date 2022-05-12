@@ -84,6 +84,7 @@ eas build -p android --profile preview
 
 - [ ] OSC client
 
+- [ ] allow to lock interactions on play screen (sse https://reactnative.dev/docs/modal)
 - [ ] id as string
 - [ ] remove `sampleRate` in favor of `period`
 - [ ] info connection on play page
