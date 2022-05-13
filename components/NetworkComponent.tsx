@@ -7,8 +7,33 @@ import {
 // react-native URL is incomplete
 import isURL from 'validator/es/lib/isURL';
 import urlParse from 'url-parse';
+import OSC from 'osc-js';
 
 import dgram from 'react-native-udp';
+console.log(dgram);
+const socket = dgram.createSocket('udp4');
+console.log(socket);
+
+socket.bind(12345);
+
+socket.once('listening', function() {
+  console.log('- socket listening');
+
+  (function send() {
+    const rand = parseInt(Math.random() * 100);
+    const message = new OSC.Message('/some/path', rand)
+    const binary = message.pack();
+
+    socket.send(binary, 0, binary.byteLength, 5555, '192.168.1.19', function(err) {
+      if (err) throw err
+
+      console.log('sent:', '/some/path', rand);
+    });
+
+    setTimeout(send, 1000);
+  }());
+
+});
 
 import { useAppSelector, useAppDispatch } from '../hooks';
 import { selectNetwork } from '../features/network/networkSlice';

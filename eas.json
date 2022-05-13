@@ -8,6 +8,9 @@
       "distribution": "internal",
       "android": {
         "buildType": "apk"
+      },
+      "env": {
+        "ANDROID_SDK_ROOT": "/Users/matuszewski/Library/Android/sdk"
       }
     },
     "preview": {

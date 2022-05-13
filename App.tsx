@@ -1,4 +1,13 @@
 import 'expo-dev-client';
+
+// shim
+console.log('heho');
+
+import bigInt from 'big-integer';
+console.log(bigInt)
+global.BigInt = bigInt;
+
+
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -14,6 +23,8 @@ import Navigation from './navigation';
 
 import NetworkComponent from './components/NetworkComponent';
 import SensorsComponent from './components/SensorsComponent';
+
+// import Big
 
 function LoadingView() {
   const colorScheme = useColorScheme();

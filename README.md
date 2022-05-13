@@ -130,13 +130,14 @@ OSC format
   then this is done, we should be able to:
   `expo start --dev-client`
 
+  `eas build --local --profile development --platform android`
+
+install Java JDK 8
+https://stackoverflow.com/questions/24342886/how-to-install-java-8-on-mac
+https://medium.com/@devkosal/switching-java-jdk-versions-on-macos-80bc868e686a
+
   for Android - install JDK
   https://www.oracle.com/java/technologies/downloads/#jdk18-mac
-
-  test 1: `turtle build --profile development --platform ios` does not work
-  test 2: ```
-
-
 
 
 - [ ] allow to lock interactions on play screen (sse https://reactnative.dev/docs/modal)
