@@ -8,7 +8,7 @@ import {
 import isURL from 'validator/es/lib/isURL';
 import urlParse from 'url-parse';
 
-// import Osc from 'react-native-osc';
+import dgram from 'react-native-udp';
 
 import { useAppSelector, useAppDispatch } from '../hooks';
 import { selectNetwork } from '../features/network/networkSlice';
@@ -72,6 +72,7 @@ export default function NetworkComponent({ color }) {
   const webSocketClose = () => {
     if(webSocket) {
       webSocketEventListeners.forEach(({ state, callback }) => {
+        // @review - callback is probably not what we think here, and not removed then
         webSocket.removeEventListener(state, callback);
       });
       webSocket.close();
@@ -120,19 +121,22 @@ export default function NetworkComponent({ color }) {
         try {
           const newWebSocket = new WebSocket(webSocketUrl);
           setWebSocket(newWebSocket);
-          ['open', 'close', 'error'].forEach( (state) => {
+
+          ['open', 'close', 'error'].forEach((state) => {
             newWebSocket.addEventListener(state, () => {
               webSocketReadyStateUpdate();
             });
+
             webSocketEventListeners.push({
               state,
               callback: webSocketReadyStateUpdate,
             });
           });
+
           setWebSocketEventListeners(webSocketEventListeners);
         } catch(error) {
-          console.error(`Error while creating webSocket with url '${webSocketUrl}'`,
-                        error.message);
+          console.error(`Error while creating webSocket with url '${webSocketUrl}'`);
+          console.error(error.message)
         }
       }
     }
@@ -152,7 +156,7 @@ export default function NetworkComponent({ color }) {
     setOsc(null);
   };
 
-  const oscUpdate = ({ enabled, url }) => {
+  const oscUpdate = async ({ enabled, url }) => {
     console.log('oscUpdate', {enabled, url});
     let changed = false;
 
@@ -185,16 +189,39 @@ export default function NetworkComponent({ color }) {
         require_host: true,
         require_port: true,
       });
+      // these are the remote informations
+      const { hostname, port } = urlParse(oscUrl);
 
-      const {hostname, port} = urlParse(oscUrl);
       if (urlValidated && hostname && port) {
         try {
-          // const newOsc = Osc.createClient(hostname, port);
-          const newOsc = true; // console.log only
-          setOsc(newOsc);
+          const socket = dgram.createSocket('udp4');
+          // @todo - dynamically find available port
+          const localPort = 42345;
+          socket.bind(localPort);
+
+          console.log(socket);
+
+          return;
+
+          // socket.once('listening', function() {
+          //   // send informations
+          //   const { hostname, port } = urlParse(oscUrl);
+
+          //   socket.send('Hello World!', undefined, undefined, remotePort, remoteHost, function(err) {
+          //     if (err) throw err
+
+          //     console.log('Message sent!')
+          //   })
+          // })
+
+          // socket.on('message', function(msg, rinfo) {
+          //   console.log('Message received', msg)
+          // });
+          // // const newOsc = Osc.createClient(hostname, port);
+          // const newOsc = true; // console.log only
+          // setOsc(newOsc);
         } catch(error) {
-          console.error(`Error while creating osc with url '${oscUrl}'`,
-                        error.message);
+          console.error(`Error while creating udp socket:`, error.message);
         }
       }
     }
@@ -210,48 +237,46 @@ export default function NetworkComponent({ color }) {
     }
 
     if (settings.oscEnabled && osc) {
-      for(key in data) {
-        switch(key) {
-        case 'source': {
-          break;
+      for (key in data) {
+        switch (key) {
+          case 'source': {
+            break;
+          }
+          case 'id': {
+            break;
+          }
+
+          case 'devicemotion': {
+            const address = `/${data.source}/${data.id}/${key}`;
+
+            const {interval, accelerationIncludingGravity, rotationRate} = data[key];
+            const {x, y, z} = accelerationIncludingGravity;
+            const {alpha, beta, gamma} = rotationRate;
+            const values = [
+              interval,
+              x, y, z,
+              alpha, beta, gamma,
+            ];
+
+            console.log('osc-send', address, values);
+            break;
+          }
+
+          default: {
+            const address = `/${data.source}/${data.id}/${key}`;
+            const value = data[key];
+
+            console.log('osc-send', address, value);
+            break;
+          }
+
         }
-        case 'id': {
-          break;
-        }
-
-        case 'devicemotion': {
-          const address = `/${data.source}/${data.id}/${key}`;
-
-          const {interval, accelerationIncludingGravity, rotationRate} = data[key];
-          const {x, y, z} = accelerationIncludingGravity;
-          const {alpha, beta, gamma} = rotationRate;
-          const values = [
-            interval,
-            x, y, z,
-            alpha, beta, gamma,
-          ];
-
-          console.log('osc-send', address, values);
-          break;
-        }
-
-        default: {
-          const address = `/${data.source}/${data.id}/${key}`;
-          const value = data[key];
-
-          console.log('osc-send', address, value);
-          break;
-        }
-
-
-        }
-
 
       }
     }
   };
 
-  // update on dependencies change
+  // update on state change
   React.useEffect(() => {
     webSocketUpdate({
       enabled: settings.webSocketEnabled,
@@ -259,7 +284,7 @@ export default function NetworkComponent({ color }) {
     });
   }, [settings.webSocketEnabled, settings.webSocketUrl]);
 
-  // update on dependencies change
+  // update on state change
   React.useEffect(() => {
     oscUpdate({
       enabled: settings.oscEnabled,

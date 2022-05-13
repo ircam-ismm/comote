@@ -1,3 +1,4 @@
+import 'expo-dev-client';
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';

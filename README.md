@@ -66,6 +66,41 @@ expo start --no-dev --minify
 eas build -p android --profile preview
 ```
 
+### Message format
+
+
+WebSocket
+```
+e = {
+  source: 'comote',
+  id: 42,
+  devicemotion: {
+    interval // ms
+    accelerationIncludingGravity = { x, y, z } // m/s2
+    rotationRate = { alpha, beta, gamma } // deg/s
+  },
+}
+
+e = {
+  source: 'comote',
+  id: 42,
+  buttonA: 0 | 1
+}
+
+e = {
+  source: 'comote',
+  id: 42,
+  buttonB: 0 | 1
+}
+```
+
+OSC format
+
+```
+/comote/${id}/devicemotion  [interval, x, y, z, alpha, beta, gamma]
+/comote/${id}/buttonA       [buttonA]
+/comote/${id}/buttonB       [buttonA]
+```
 
 ### TODO
 
@@ -83,12 +118,37 @@ eas build -p android --profile preview
 - [x] Error screen if sensors are not available
 
 - [ ] OSC client
+  + we can't use expo go anymore and need to go to development builds
+  + https://docs.expo.dev/development/introduction/
+  + for a bit of context
+  + https://expo.canny.io/feature-requests/p/support-raw-tcp-sockets 
+  + https://forums.expo.dev/t/using-udp-within-expo/1411/8
+  + https://www.sitepen.com/blog/doing-more-with-expo-using-custom-native-code
+  
+  create development build (can be done in eas):
+  `eas build --profile development --platform android`
+  then this is done, we should be able to:
+  `expo start --dev-client`
+
+  for Android - install JDK
+  https://www.oracle.com/java/technologies/downloads/#jdk18-mac
+
+  test 1: `turtle build --profile development --platform ios` does not work
+  test 2: ```
+
+
+
 
 - [ ] allow to lock interactions on play screen (sse https://reactnative.dev/docs/modal)
 - [ ] id as string
 - [ ] remove `sampleRate` in favor of `period`
 - [ ] info connection on play page
 - [ ] rename to `CoMo.te`
+
+#### v2 features
+
+- [ ] check https://www.npmjs.com/package/@react-native-community/netinfo
+- [ ] dynaically find available port for OSC/UDP socket
 
 #### Stores
 - [ ] register `fr.ircam.ismm.recomote`
@@ -100,40 +160,6 @@ eas build -p android --profile preview
 - [x] add info tab
 
 #### App
-
-- [ ] clients should have an id in their stream (default 0), so we can have multiple clients and route them
-- [ ] OSC config
-- [ ] review events format, proposal:
-
-WebSocket
-```
-e = {
-  id: 42,
-  devicemotion: {
-    interval // ms
-    accelerationIncludingGravity = { x, y, z } // m/s2
-    rotationRate = { alpha, beta, gamma } // deg/s
-  },
-}
-
-e = {
-  id: 42,
-  buttonA: 0 | 1
-}
-
-e = {
-  id: 42,
-  buttonB: 0 | 1
-}
-```
-
-OSC format
-
-```
-/comote/devicemotion  [id, interval, x, y, z, alpha, beta, gamma]
-/comote/buttonA       [id, buttonA]
-/comote/buttonB       [id, buttonA]
-```
 
 - [ ] binary webSocket
 - [ ] try to automatically reconnect on `close` and `error`
