@@ -22,10 +22,7 @@ import PlayScreen from '../screens/PlayScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import QRScreen from '../screens/QRScreen';
 import AboutScreen from '../screens/AboutScreen';
-
 // import DebugScreen from '../screens/DebugScreen';
-
-import NetworkComponent from '../components/NetworkComponent';
 
 import {
   BottomTabParamList,

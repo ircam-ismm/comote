@@ -30,6 +30,7 @@ const styles = StyleSheet.create({
 
   label: {
     width: 120,
+    fontWeight: 'bold',
   },
 });
 
@@ -44,7 +45,7 @@ export default function ConnectionStatusComponent({ color }) {
   return (
     <View style={styles.container}>
       <View style={styles.subgroup}>
-        <Text style={styles.label}>WebSocket: </Text>
+        <Text style={styles.label}>WebSocket</Text>
         <Switch
           trackColor={ Platform.OS !== "ios"
                        ? (settings.webSocketEnabled ? colors.tint : '#999999')
@@ -69,7 +70,7 @@ export default function ConnectionStatusComponent({ color }) {
         />
       </View>
       <View style={styles.subgroup}>
-        <Text style={styles.label}>OSC: </Text>
+        <Text style={styles.label}>OSC</Text>
         <Switch
           trackColor={ Platform.OS !== "ios"
                        ? (settings.oscEnabled ? colors.tint : '#999999')
@@ -87,6 +88,10 @@ export default function ConnectionStatusComponent({ color }) {
               },
             });
           }}
+        />
+        <ConnectionStatus
+          style={{ marginLeft: 'auto' }}
+          status={network.oscReadyState}
         />
       </View>
     </View>

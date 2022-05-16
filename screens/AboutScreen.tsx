@@ -11,7 +11,6 @@ import { Text, View, ConnectionStatus } from '../components/Themed';
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 import { useAppSelector } from '../hooks';
-import { selectNetwork } from '../features/network/networkSlice';
 
 import logo from '../assets/images/logo-como-raw.png';
 
@@ -28,7 +27,6 @@ const styles = StyleSheet.create({
 
 
 export default function HomeScreen({ color, navigation }) {
-  const network = useAppSelector((state) => selectNetwork(state));
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme];
 

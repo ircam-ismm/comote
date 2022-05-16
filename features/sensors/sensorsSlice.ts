@@ -70,4 +70,8 @@ export const selectSensors = (state: RootState) => {
   return state.sensors.data;
 }
 
+export const selectSensorsAvailable = (state: RootState) => {
+  return state.sensors.data.available;
+}
+
 export default sensorsSlice.reducer;

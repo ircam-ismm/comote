@@ -112,8 +112,8 @@ export const selectSettings = (state: RootState) => {
   return state.settings.data;
 }
 
-export const getSettingsInitialState = () => {
-  return initialState.data;
+export const selectDeviceMotionInterval = (state: RootState) => {
+  return state.settings.data.deviceMotionInterval;
 }
 
 export default settingsSlice.reducer;

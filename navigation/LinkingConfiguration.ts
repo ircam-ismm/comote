@@ -1,3 +1,11 @@
+// we put the shim here as it seems to be executed before App.tsx
+import bigInt from 'big-integer';
+// console.log(bigInt);
+if (typeof BigInt === 'undefined') {
+  global.BigInt = bigInt;
+}
+
+
 /**
  * Learn more about deep linking with React Navigation
  * https://reactnavigation.org/docs/deep-linking

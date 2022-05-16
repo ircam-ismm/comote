@@ -7,33 +7,9 @@ import {
 // react-native URL is incomplete
 import isURL from 'validator/es/lib/isURL';
 import urlParse from 'url-parse';
-import OSC from 'osc-js';
 
 import dgram from 'react-native-udp';
-console.log(dgram);
-const socket = dgram.createSocket('udp4');
-console.log(socket);
-
-socket.bind(12345);
-
-socket.once('listening', function() {
-  console.log('- socket listening');
-
-  (function send() {
-    const rand = parseInt(Math.random() * 100);
-    const message = new OSC.Message('/some/path', rand)
-    const binary = message.pack();
-
-    socket.send(binary, 0, binary.byteLength, 5555, '192.168.1.19', function(err) {
-      if (err) throw err
-
-      console.log('sent:', '/some/path', rand);
-    });
-
-    setTimeout(send, 1000);
-  }());
-
-});
+import OSC from 'osc-js';
 
 import { useAppSelector, useAppDispatch } from '../hooks';
 import { selectNetwork } from '../features/network/networkSlice';
@@ -174,9 +150,16 @@ export default function NetworkComponent({ color }) {
   }
 
   const oscClose = () => {
-    // if(osc) {
-    //   osc.close();
-    // }
+    if (osc) {
+      osc.close();
+    }
+
+    dispatch({
+      type: 'network/set',
+      payload: {
+        oscReadyState: 'CLOSED',
+      },
+    });
 
     setOsc(null);
   };
@@ -224,27 +207,42 @@ export default function NetworkComponent({ color }) {
           const localPort = 42345;
           socket.bind(localPort);
 
-          console.log(socket);
+          socket.once('listening', function() {
+            console.log('- socket listening');
+            dispatch({
+              type: 'network/set',
+              payload: {
+                oscReadyState: 'OPEN',
+              },
+            });
 
-          return;
+            setOsc(socket);
+          });
 
-          // socket.once('listening', function() {
-          //   // send informations
-          //   const { hostname, port } = urlParse(oscUrl);
+          socket.on('error', function(err) {
+            console.log('OSC error');
+            console.error(err);
 
-          //   socket.send('Hello World!', undefined, undefined, remotePort, remoteHost, function(err) {
-          //     if (err) throw err
+            dispatch({
+              type: 'network/set',
+              payload: {
+                oscReadyState: 'CLOSED',
+              },
+            });
 
-          //     console.log('Message sent!')
-          //   })
-          // })
+            setOsc(null);
+          });
 
-          // socket.on('message', function(msg, rinfo) {
-          //   console.log('Message received', msg)
-          // });
-          // // const newOsc = Osc.createClient(hostname, port);
-          // const newOsc = true; // console.log only
-          // setOsc(newOsc);
+          socket.on('close', function() {
+            dispatch({
+              type: 'network/set',
+              payload: {
+                oscReadyState: 'CLOSED',
+              },
+            });
+
+            setOsc(null);
+          });
         } catch(error) {
           console.error(`Error while creating udp socket:`, error.message);
         }
@@ -253,7 +251,18 @@ export default function NetworkComponent({ color }) {
 
   };
 
+  // @todo - refactor, we probably can do better can do better than packing and
+  // unpacking everything here
   const networkSend = (data) => {
+    // console.log('----------------------------');
+    // console.log('networkSend', data);
+    // console.log('sensors.available:', sensors.available);
+    // console.log('+ settings.webSocketEnabled', settings.webSocketEnabled);
+    // console.log('+ network.webSocketReadyState', network.webSocketReadyState);
+    // console.log('> settings.oscEnabled', settings.oscEnabled);
+    // console.log('> network.oscReadyState', network.oscReadyState);
+    // console.log('----------------------------');
+
     if (settings.webSocketEnabled && webSocket
         && network.webSocketReadyState === 'OPEN'
     ) {
@@ -261,7 +270,11 @@ export default function NetworkComponent({ color }) {
       webSocket.send(dataSerialised);
     }
 
-    if (settings.oscEnabled && osc) {
+    if (settings.oscEnabled && osc
+      && network.oscReadyState === 'OPEN') {
+      let { hostname, port } = urlParse(oscUrl);
+      // port = parseInt(port);
+
       for (key in data) {
         switch (key) {
           case 'source': {
@@ -274,29 +287,52 @@ export default function NetworkComponent({ color }) {
           case 'devicemotion': {
             const address = `/${data.source}/${data.id}/${key}`;
 
-            const {interval, accelerationIncludingGravity, rotationRate} = data[key];
-            const {x, y, z} = accelerationIncludingGravity;
-            const {alpha, beta, gamma} = rotationRate;
+            const { interval, accelerationIncludingGravity, rotationRate } = data[key];
+            const { x, y, z } = accelerationIncludingGravity;
+            const { alpha, beta, gamma } = rotationRate;
             const values = [
               interval,
               x, y, z,
               alpha, beta, gamma,
             ];
 
-            console.log('osc-send', address, values);
+            // console.log(values);
+            // for (let i = 0; i < values.length; i++) {
+            //   if (values[i] === undefined) {
+            //     console.log('ABORT: undefined value in', accelerationIncludingGravity);
+            //     return;
+            //   }
+            // }
+
+            const message = new OSC.Message(address, ...values);
+            const binary = message.pack();
+
+            osc.send(binary, 0, binary.byteLength, parseInt(port), hostname, function(err) {
+              if (err) {
+                throw err;
+              }
+              // console.log('sent:', address, message);
+            });
             break;
           }
-
+          // buttonA - buttonB
           default: {
             const address = `/${data.source}/${data.id}/${key}`;
             const value = data[key];
 
-            console.log('osc-send', address, value);
+            const message = new OSC.Message(address, value);
+            const binary = message.pack();
+
+            osc.send(binary, 0, binary.byteLength, parseInt(port), hostname, function(err) {
+              if (err) {
+                throw err;
+              }
+              // console.log('sent:', address, message);
+            });
             break;
           }
 
         }
-
       }
     }
   };
@@ -333,15 +369,39 @@ export default function NetworkComponent({ color }) {
 
   // render on webSocketReadyState update
   React.useEffect(() => {
-    console.log('network.webSocketReadyState', network.webSocketReadyState);
-
-    if (network.webSocketReadyState === 'OPEN') {
+    // console.log('++++++++++++++++++++++++++++++++++++++++++++++++');
+    // console.log('useEffect:');
+    // console.log('sensors.available', sensors.available);
+    // console.log('network.webSocketReadyState', network.webSocketReadyState);
+    // console.log('network.oscReadyState', network.oscReadyState);
+    // console.log('++++++++++++++++++++++++++++++++++++++++++++++++');
+    if (sensors.available &&
+      (network.webSocketReadyState === 'OPEN' || network.oscReadyState === 'OPEN')
+    ) {
       clearInterval(intervalId);
 
       setIntervalId(setInterval(() => {
         const { id } = settings;
         const accelerationIncludingGravity = accelerationIncludingGravityRef.current;
         const rotationRate = rotationRateRef.current;
+
+        // we need to check that accelerationIncludingGravity, and rotationRate
+        // are properly populated, because even if they are declared as available
+        // we can still have undefined values at this point
+        // @note - in android, rotationRate that is just empty at the beginning
+        for (let key of ['x', 'y', 'z']) {
+          if (accelerationIncludingGravity[key] === undefined) {
+            // console.log('ABORT: undefined value in accelerationIncludingGravity', accelerationIncludingGravity);
+            return;
+          }
+        }
+
+        for (let key of ['alpha', 'beta', 'gamma']) {
+          if (rotationRate[key] === undefined) {
+            // console.log('ABORT: undefined value in rotationRate', rotationRate);
+            return;
+          }
+        }
 
         const msg = {
           source: 'comote',
@@ -355,15 +415,22 @@ export default function NetworkComponent({ color }) {
 
         networkSend(msg);
       }, settings.deviceMotionInterval));
+      // }, 1000 * 5));
     } else {
-      console.log('clearInterval', intervalId);
+      // console.log('clearInterval', intervalId);
       clearInterval(intervalId);
     }
 
     return () => clearInterval(intervalId);
-  }, [network.webSocketReadyState, settings.deviceMotionInterval]);
+  }, [
+    sensors.available,
+    network.webSocketReadyState,
+    network.oscReadyState,
+    settings.deviceMotionInterval
+  ]);
 
   // @TODO: group data and limit in time
+  // @note: these are triggered on startup
   React.useEffect(() => {
     const { buttonA } = sensors;
     const { id } = settings;
@@ -371,6 +438,7 @@ export default function NetworkComponent({ color }) {
   }, [sensors.buttonA]);
 
   // @TODO: group data and limit in time
+  // @note: these are triggered on startup
   React.useEffect(() => {
     const { buttonB } = sensors;
     const { id } = settings;
@@ -385,9 +453,5 @@ export default function NetworkComponent({ color }) {
     }
   }, []);
 
-  return (
-    <Text>
-        Network {network.webSocketReadyState}
-    </Text>
-  );
+  return null;
 }

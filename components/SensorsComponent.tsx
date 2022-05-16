@@ -16,7 +16,7 @@ import {
 
 import { useAppSelector, useAppDispatch } from '../hooks';
 
-import { selectSettings } from '../features/settings/settingsSlice';
+import { selectDeviceMotionInterval } from '../features/settings/settingsSlice';
 
 // @see - https://www.w3.org/TR/orientation-event/#devicemotion
 // @todo - https://w3c.github.io/accelerometer/
@@ -50,7 +50,7 @@ const normalizeGyroscope = Platform.OS === 'android'
 
 
 export default function SensorsComponent({ color }) {
-  const settings = useAppSelector(state => selectSettings(state));
+  const deviceMotionInterval = useAppSelector(state => selectDeviceMotionInterval(state));
   const dispatch = useAppDispatch();
 
   // create local working values
@@ -110,7 +110,7 @@ export default function SensorsComponent({ color }) {
         payload: { available: true },
       });
 
-      setSensorsInterval(settings.deviceMotionInterval);
+      setSensorsInterval(deviceMotionInterval);
 
       accelerometerSubscribe();
       gyroscopeSubscribe();
@@ -131,13 +131,9 @@ export default function SensorsComponent({ color }) {
 
   // run on dependencies update
   React.useEffect(() => {
-    setSensorsInterval(settings.deviceMotionInterval);
-  }, [settings.deviceMotionInterval]);
+    setSensorsInterval(deviceMotionInterval);
+  }, [deviceMotionInterval]);
 
 
-  return (
-    <Text>
-      Sensors Component
-    </Text>
-  );
+  return null;
 }

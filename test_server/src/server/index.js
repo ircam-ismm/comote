@@ -66,7 +66,7 @@ server.stateManager.registerSchema('infos', infos);
         port: 8901,
         // hostname: '127.0.0.1',
         // do not set hostname to get ip from wifi configuration
-        autostart: true,
+        autostart: false,
       },
       osc: {
         port: 8902,

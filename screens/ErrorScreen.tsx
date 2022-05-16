@@ -36,7 +36,8 @@ const styles = StyleSheet.create({
 
   error: {
     fontSize: 16,
-  },
+    color: 'white',
+  }
 });
 
 export default function ErrorScreen() {

@@ -117,8 +117,8 @@ export default class CoMoteServer {
       });
 
       this._oscServer.on('message', msg => {
-        let id = msg.shift();
-        console.log('new OSC message from:', id, ':', msg);
+        let address = msg.shift();
+        console.log('new OSC message from:', address, ':', msg);
 
         // const data = this._formatRawMsg(msg); // back to object
         // this._listeners.forEach(callback => callback(id, data));
