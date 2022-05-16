@@ -68,12 +68,12 @@ server.stateManager.registerSchema('infos', infos);
         // do not set hostname to get ip from wifi configuration
         autostart: false,
       },
-      osc: {
-        port: 8902,
-        // hostname: 127.0.0.1
-        // do not set hostname to get ip from wifi configuration
-        autostart: true,
-      },
+      // osc: {
+      //   port: 8902,
+      //   // hostname: 127.0.0.1
+      //   // do not set hostname to get ip from wifi configuration
+      //   autostart: true,
+      // },
       verbose: true,
     });
 

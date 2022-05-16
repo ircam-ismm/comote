@@ -4,6 +4,7 @@ import {
   StyleSheet,
   Platform,
   Pressable,
+  Modal,
 } from 'react-native';
 import { Text, View } from '../components/Themed';
 import ConnectionStatusComponent from '../components/ConnectionStatusComponent';
@@ -63,19 +64,30 @@ const styles = StyleSheet.create({
     color: 'white',
   },
 
-  // locker: {
-  //   position: 'absolute',
-  //   width: '100%',
-  //   height: '100%',
-  //   top: 0,
-  //   left: 0,
-  //   zIndex: 10,
-  //   backgroundColor: 'rgba(34, 34, 34, 0.6)',
-  // }
+  modal: {
+    height: '100%',
+    flex: 1,
+    justifyContent: 'flex-end',
+    flexDirection: 'column',
+    alignContent: 'space-around',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    padding: 16,
+    paddingBottom: 76,
+  },
+
+  buttonLock: {
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 10,
+    backgroundColor: '#cdcdcd',
+    color: '#000000',
+  },
 });
 
 export default function PlayScreen({color}) {
   const dispatch = useAppDispatch();
+  const [modalVisible, setModalVisible] = React.useState(false);
 
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme];
@@ -84,14 +96,30 @@ export default function PlayScreen({color}) {
 
   return (
     <View style={styles.container}>
-      {/*<View style={styles.locker}>
-
-      </View>*/}
+      <Modal
+        animationType="none"
+        transparent={true}
+        visible={modalVisible}
+      >
+        <View
+          style={styles.modal}
+        >
+          <Pressable
+            style={({ pressed }) => [
+              styles.buttonLock,
+              pressed ? { backgroundColor: '#efefef' } : {},
+            ]}
+            onLongPress={() => setModalVisible(false)}
+          >
+            <Text>Unlock screen (press for a while...)</Text>
+          </Pressable>
+        </View>
+      </Modal>
 
       <ConnectionStatusComponent />
       <View style={styles.buttonsContainer}>
         <Pressable
-          style={({pressed}) => [
+          style={({ pressed }) => [
             styles.button,
             styles.buttonA,
             pressed ? {opacity: 0.5} : {},
@@ -119,7 +147,7 @@ export default function PlayScreen({color}) {
         </Pressable>
 
         <Pressable
-          style={({pressed}) => [
+          style={({ pressed }) => [
             styles.button,
             styles.buttonB,
             pressed ? {opacity: 0.5} : {},
@@ -145,6 +173,16 @@ export default function PlayScreen({color}) {
             B
           </Text>
         </Pressable>
+
+        <Pressable
+            style={({ pressed }) => [
+              styles.buttonLock,
+              pressed ? { backgroundColor: '#efefef' } : {},
+            ]}
+            onLongPress={() => setModalVisible(true)}
+          >
+            <Text>Lock screen (press for a while...)</Text>
+          </Pressable>
       </View>
     </View>
   );

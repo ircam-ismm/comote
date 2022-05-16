@@ -34,7 +34,9 @@ yarn install
 ### Android and iOS Build tools
 
 As we are using `react-native-udp` which is not included in expo-go, we must create
-a development build that include the binaries from `react-native-udp`.
+a custom development build that include the binaries from `react-native-udp`.
+
+cf. https://docs.expo.dev/development/introduction/
 
 Therefore we need the build tools for android (Android Studio) and iOS (XCode)
 
@@ -118,25 +120,10 @@ eas build -p android --profile preview
 eas build --local --profile preview --platform android
 ```
 
-  + we can't use expo go anymore and need to go to development builds
-  + https://docs.expo.dev/development/introduction/
-  + for a bit of context
-  + https://expo.canny.io/feature-requests/p/support-raw-tcp-sockets 
-  + https://forums.expo.dev/t/using-udp-within-expo/1411/8
-  + https://www.sitepen.com/blog/doing-more-with-expo-using-custom-native-code
-  
-  create development build (can be done in eas):
-  `eas build --profile development --platform android`
-  then this is done, we should be able to:
-  `expo start --dev-client`
-
-  `eas build --local --profile development --platform android`
-
 
 ### Message format
 
-
-WebSocket
+#### WebSocket
 ```
 e = {
   source: 'comote',
@@ -161,7 +148,7 @@ e = {
 }
 ```
 
-OSC format
+#### OSC format
 
 ```
 /comote/${id}/devicemotion  [interval, x, y, z, alpha, beta, gamma]
@@ -183,12 +170,12 @@ OSC format
 - [x] add gyroscope
 - [x] update all settings from QRCode
 - [x] Error screen if sensors are not available
-
 - [x] OSC client
 - [x] connection infos on play page
 - [x] remove `sampleRate` in favor of `period`
 - [x] id as string
-- [ ] allow to lock interactions on play screen (sse https://reactnative.dev/docs/modal)
+
+- [ ] allow to lock all interactions on play screen (sse https://reactnative.dev/docs/modal)
 
 - [ ] rename to `CoMo.te`
 

@@ -87,12 +87,12 @@
 , 			{
 				"box" : 				{
 					"id" : "obj-11",
-					"linecount" : 3,
+					"linecount" : 2,
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 229.0, 32.0, 150.0, 47.0 ],
-					"text" : "WARNING - cannot be launched alongside the soundworks application"
+					"patching_rect" : [ 229.0, 46.0, 316.0, 33.0 ],
+					"text" : "WARNING - do not launch alongside the soundworks application or disable osc, they run on the same port"
 				}
 
 			}
@@ -104,7 +104,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 112.0, 210.0, 384.0, 22.0 ],
-					"text" : "20 -0.474052 -1.290475 9.562442 -0.175 -0.035 -0.105"
+					"text" : "20 -0.047884 0.102951 9.696517 -0.21 0.035 0.07"
 				}
 
 			}
