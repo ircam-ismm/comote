@@ -19,7 +19,7 @@
       "**/*"
     ],
     "ios": {
-      "bundleIdentifier": "fr.ircam.ismm.recomote",
+      "bundleIdentifier": "fr.ircam.ismm.comote",
       "infoPlist": {
         "NSCameraUsageDescription": "Allow $(PRODUCT_NAME) to use the camera to scan QR codes",
         "NSMotionUsageDescription": "Allow $(PRODUCT_NAME) to access your device's accelerometer"
@@ -32,7 +32,7 @@
     },
     "android": {
       "softwareKeyboardLayoutMode": "pan",
-      "package": "fr.ircam.ismm.recomote",
+      "package": "fr.ircam.ismm.comote",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
