@@ -18,6 +18,7 @@ const styles = StyleSheet.create({
   container: {
     justifyContent: 'space-evenly',
     height: 100,
+    borderRadius: 2,
   },
 
   subgroup: {
@@ -26,6 +27,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-start',
     marginHorizontal: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0)',
   },
 
   label: {

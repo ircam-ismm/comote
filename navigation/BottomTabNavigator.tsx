@@ -39,8 +39,8 @@ export default function BottomTabNavigator() {
 
   return (
     <BottomTab.Navigator
-      // initialRouteName="Home"
-      initialRouteName="Play"
+      initialRouteName="Home"
+      // initialRouteName="Play"
 
       screenOptions={{
         activeTintColor: Colors[colorScheme].tabIconSelected,

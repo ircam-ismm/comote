@@ -174,15 +174,14 @@ e = {
 - [x] connection infos on play page
 - [x] remove `sampleRate` in favor of `period`
 - [x] id as string
-
-- [ ] allow to lock all interactions on play screen (sse https://reactnative.dev/docs/modal)
+- [x] allow to lock all interactions on play screen (sse https://reactnative.dev/docs/modal)
 
 - [ ] rename to `CoMo.te`
 
 #### v2 features
 
 - [ ] check https://www.npmjs.com/package/@react-native-community/netinfo
-- [ ] dynaically find available port for OSC/UDP socket
+- [ ] dynamically find available port for OSC/UDP socket
 
 #### Stores
 - [ ] register `fr.ircam.ismm.recomote`

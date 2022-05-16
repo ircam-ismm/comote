@@ -111,7 +111,7 @@ export default function PlayScreen({color}) {
             ]}
             onLongPress={() => setModalVisible(false)}
           >
-            <Text>Unlock screen (press for a while...)</Text>
+            <Text>Unlock the screen (press for a while...)</Text>
           </Pressable>
         </View>
       </Modal>
@@ -181,7 +181,7 @@ export default function PlayScreen({color}) {
             ]}
             onLongPress={() => setModalVisible(true)}
           >
-            <Text>Lock screen (press for a while...)</Text>
+            <Text>Lock the screen (press for a while...)</Text>
           </Pressable>
       </View>
     </View>
