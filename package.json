@@ -45,6 +45,7 @@
     "redux": "^4.1.2",
     "redux-persist": "^6.0.0",
     "reduxjs-toolkit-persist": "^7.2.1",
+    "slugify": "^1.6.5",
     "url-parse": "^1.5.10",
     "validator": "^13.7.0"
   },

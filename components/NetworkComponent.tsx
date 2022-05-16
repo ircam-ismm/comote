@@ -277,13 +277,6 @@ export default function NetworkComponent({ color }) {
 
       for (key in data) {
         switch (key) {
-          case 'source': {
-            break;
-          }
-          case 'id': {
-            break;
-          }
-
           case 'devicemotion': {
             const address = `/${data.source}/${data.id}/${key}`;
 
@@ -296,27 +289,17 @@ export default function NetworkComponent({ color }) {
               alpha, beta, gamma,
             ];
 
-            // console.log(values);
-            // for (let i = 0; i < values.length; i++) {
-            //   if (values[i] === undefined) {
-            //     console.log('ABORT: undefined value in', accelerationIncludingGravity);
-            //     return;
-            //   }
-            // }
-
             const message = new OSC.Message(address, ...values);
             const binary = message.pack();
 
             osc.send(binary, 0, binary.byteLength, parseInt(port), hostname, function(err) {
-              if (err) {
-                throw err;
-              }
-              // console.log('sent:', address, message);
+              if (err) { return console.error(err); }
             });
             break;
           }
-          // buttonA - buttonB
-          default: {
+          // buttonA / buttonB
+          case 'buttonA':
+          case 'buttonB': {
             const address = `/${data.source}/${data.id}/${key}`;
             const value = data[key];
 
@@ -324,14 +307,14 @@ export default function NetworkComponent({ color }) {
             const binary = message.pack();
 
             osc.send(binary, 0, binary.byteLength, parseInt(port), hostname, function(err) {
-              if (err) {
-                throw err;
-              }
-              // console.log('sent:', address, message);
+              if (err) { return console.error(err); }
             });
             break;
           }
 
+          default: {
+            break;
+          }
         }
       }
     }
@@ -426,7 +409,8 @@ export default function NetworkComponent({ color }) {
     sensors.available,
     network.webSocketReadyState,
     network.oscReadyState,
-    settings.deviceMotionInterval
+    settings.deviceMotionInterval,
+    settings.id,
   ]);
 
   // @TODO: group data and limit in time

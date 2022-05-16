@@ -53,8 +53,7 @@ export default function HomeScreen({ color, navigation }) {
   const colors = Colors[colorScheme];
 
   React.useEffect(() => {
-    console.log(sensorsAvailable);
-    // on startup sensorsAvailable is null, so wait for the "real" value
+    // on startup sensorsAvailable is null, so wait for the "real" boolean value
     if (!__DEV__ && sensorsAvailable === false) {
       navigation.navigate('Error');
     }

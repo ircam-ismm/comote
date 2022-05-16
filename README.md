@@ -17,19 +17,61 @@ Install project dependencies with `yarn`.
 yarn install
 ```
 
-Run project with `expo`.
+#### [deprecated]
 
-```sh
-expo start
+> Run project with `expo`.
+> 
+> ```sh
+> expo start
+> ```
+> 
+> Install 'Expo Go' on iOS and Android devices.
+> 
+> - on iOS, flash development QR code from Camera app,
+> - on Android, open 'Expo Go' to flash the development QR code.
+> - while running app, shake the device on the left or on the right to access the debugger
+
+### Android and iOS Build tools
+
+As we are using `react-native-udp` which is not included in expo-go, we must create
+a development build that include the binaries from `react-native-udp`.
+
+Therefore we need the build tools for android (Android Studio) and iOS (XCode)
+
+#### Android notes
+
+The build tools require the Java JDK 8, cf. :
+https://stackoverflow.com/questions/24342886/how-to-install-java-8-on-mac
+https://medium.com/@devkosal/switching-java-jdk-versions-on-macos-80bc868e686a
+
+For local builds, The paths to the Android SDK must be registered in `eas.json` for each 
+build channel, i.e.:
+
+```json
+"build": {
+  "development": {
+    "developmentClient": true,
+    "distribution": "internal",
+    "android": {
+      "buildType": "apk"
+    },
+    "env": {
+      "ANDROID_SDK_ROOT": "/Users/matuszewski/Library/Android/sdk"
+    }
+  },
+},
 ```
 
-Install 'Expo Go' on iOS and Android devices.
+in `~/.bash_profile`, we should also something like to access `adb` (and probably other things...):
 
-- on iOS, flash development QR code from Camera app,
-- on Android, open 'Expo Go' to flash the development QR code.
-- while running app, shake the device on the left or on the right to access the debugger
+```
+# android studio tools
+export JAVA_HOME=`/usr/libexec/java_home -v 1.8` # use Java 8
+export ANDROID_SDK=/Users/username/Library/Android/sdk
+export PATH=/Users/username/Library/Android/sdk/platform-tools:$PATH
+```
 
-### Buid and deploy
+### Build and deploy
 
 To build, install `eas-cli`. See <https://docs.expo.dev/eas/>
 
@@ -39,16 +81,25 @@ npm -g install `eas-cli`
 
 Then build with `eas`. You will need to register on <expo.dev> website.
 
-```sh
-eas build
+In android, creating a development build can be either:
+
+1. using expo
+
+```
+eas build --profile development --platform android
 ```
 
-It might be easier to use the old build
+However, it seems that the build cannot be directly installed on the phone through the 
+QRCode, therefore the `.apk` file should be first downloaded on your computer and then 
+installed on the device using `adb install whateverbuildname.apk` as if it was built locally
 
-```sh
-expo build:android
-expo build:ios
+2. or Locally
+
 ```
+eas build --local --profile development --platform android
+```
+
+On iOS -> @todo
 
 It is even possible to publish to stores.
 
@@ -58,13 +109,29 @@ eas publish
 
 ### Build preview
 
-```
-expo start --no-dev --minify
-```
-
+#### online build
 ```
 eas build -p android --profile preview
 ```
+#### local build
+```
+eas build --local --profile preview --platform android
+```
+
+  + we can't use expo go anymore and need to go to development builds
+  + https://docs.expo.dev/development/introduction/
+  + for a bit of context
+  + https://expo.canny.io/feature-requests/p/support-raw-tcp-sockets 
+  + https://forums.expo.dev/t/using-udp-within-expo/1411/8
+  + https://www.sitepen.com/blog/doing-more-with-expo-using-custom-native-code
+  
+  create development build (can be done in eas):
+  `eas build --profile development --platform android`
+  then this is done, we should be able to:
+  `expo start --dev-client`
+
+  `eas build --local --profile development --platform android`
+
 
 ### Message format
 
@@ -117,33 +184,12 @@ OSC format
 - [x] update all settings from QRCode
 - [x] Error screen if sensors are not available
 
-- [ ] OSC client
-  + we can't use expo go anymore and need to go to development builds
-  + https://docs.expo.dev/development/introduction/
-  + for a bit of context
-  + https://expo.canny.io/feature-requests/p/support-raw-tcp-sockets 
-  + https://forums.expo.dev/t/using-udp-within-expo/1411/8
-  + https://www.sitepen.com/blog/doing-more-with-expo-using-custom-native-code
-  
-  create development build (can be done in eas):
-  `eas build --profile development --platform android`
-  then this is done, we should be able to:
-  `expo start --dev-client`
-
-  `eas build --local --profile development --platform android`
-
-install Java JDK 8
-https://stackoverflow.com/questions/24342886/how-to-install-java-8-on-mac
-https://medium.com/@devkosal/switching-java-jdk-versions-on-macos-80bc868e686a
-
-  for Android - install JDK
-  https://www.oracle.com/java/technologies/downloads/#jdk18-mac
-
-
+- [x] OSC client
+- [x] connection infos on play page
+- [x] remove `sampleRate` in favor of `period`
+- [x] id as string
 - [ ] allow to lock interactions on play screen (sse https://reactnative.dev/docs/modal)
-- [ ] id as string
-- [ ] remove `sampleRate` in favor of `period`
-- [ ] info connection on play page
+
 - [ ] rename to `CoMo.te`
 
 #### v2 features

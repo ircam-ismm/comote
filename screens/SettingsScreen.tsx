@@ -108,13 +108,13 @@ export default function SettingsScreen({ color, navigation }) {
   }, [settings.oscUrl]);
 
     // temporary value for editing
-  const [deviceMotionFrequency, setDeviceMotionFrequency]
-    = React.useState(`${settings.deviceMotionFrequency}`);
+  const [deviceMotionInterval, setDeviceMotionInterval]
+    = React.useState(`${settings.deviceMotionInterval}`);
 
   // update local value for coercion by store
   React.useEffect(() => {
-    setDeviceMotionFrequency(`${settings.deviceMotionFrequency}`);
-  }, [settings.deviceMotionFrequency]);
+    setDeviceMotionInterval(`${settings.deviceMotionInterval}`);
+  }, [settings.deviceMotionInterval]);
 
     // temporary value for editing
   const [id, setId] = React.useState(`${settings.id}`);
@@ -146,27 +146,25 @@ export default function SettingsScreen({ color, navigation }) {
 
           <View style={styles.itemContainer}>
             <Text style={[styles.item, styles.label]}>
-              ID
+              Id
             </Text>
             <TextInput
-              style={[styles.input, styles.smallInput]}
-              keyboardType='numeric'
+              style={styles.input}
+              keyboardType='default'
               returnKeyType='done'
-              selectTextOnFocus={true}
-              placeholder='0'
+              selectTextOnFocus={false}
+              placeholder='Enter Id here'
               value={id}
-              onChange={(e) => {
+              onChange={e => {
                 setId(e.nativeEvent.text);
               }}
-              onBlur={(e) => {
-                dispatch({
-                  type: 'settings/set',
-                  payload: {
-                    id: parseInt(id),
-                  },
-                });
-
-                if (id === '') {
+              onBlur={e => {
+                if (id !== '') {
+                  dispatch({
+                    type: 'settings/set',
+                    payload: { id },
+                  });
+                } else {
                   setId(`${settings.id}`);
                 }
               }}
@@ -176,32 +174,32 @@ export default function SettingsScreen({ color, navigation }) {
           {/* ACC - TO REVIEW, WE NEED A GLOBAL FRAME RATE */}
           <View style={styles.itemContainer}>
             <Text style={[styles.item, styles.label]}>
-              Frequency
+              Period
             </Text>
             <TextInput
               style={[styles.input, styles.smallInput]}
               keyboardType='numeric'
               returnKeyType='done'
               selectTextOnFocus={true}
-              placeholder='Enter frequency here '
-              value={deviceMotionFrequency}
-              onChange={(e) => {
-                setDeviceMotionFrequency(e.nativeEvent.text);
+              placeholder='Enter period (in ms) here'
+              value={deviceMotionInterval}
+              onChange={e => {
+                setDeviceMotionInterval(e.nativeEvent.text);
               }}
-              onBlur={(e) => {
-                dispatch({
-                  type: 'settings/set',
-                  payload: {
-                    deviceMotionFrequency: parseFloat(deviceMotionFrequency),
-                  },
-                });
-
-                if (deviceMotionFrequency === '') {
-                  setDeviceMotionFrequency(`${settings.deviceMotionFrequency}`);
+              onBlur={e => {
+                if (Number.isInteger(parseInt(deviceMotionInterval))) {
+                  dispatch({
+                    type: 'settings/set',
+                    payload: {
+                      deviceMotionInterval: parseInt(deviceMotionInterval),
+                    },
+                  });
+                } else {
+                  setDeviceMotionInterval(`${settings.deviceMotionInterval}`);
                 }
               }}
             />
-            <Text style={styles.item}> Hz</Text>
+            <Text style={styles.item}> ms</Text>
           </View>
 
         </View>
@@ -226,9 +224,7 @@ export default function SettingsScreen({ color, navigation }) {
               onValueChange={(value) => {
                 dispatch({
                   type: 'settings/set',
-                  payload: {
-                    webSocketEnabled: value,
-                  },
+                  payload: { webSocketEnabled: value },
                 });
               }}
             />
@@ -256,9 +252,7 @@ export default function SettingsScreen({ color, navigation }) {
               onBlur={(e) => {
                 dispatch({
                   type: 'settings/set',
-                  payload: {
-                    webSocketUrl,
-                  },
+                  payload: { webSocketUrl },
                 });
               }}
             />
@@ -285,9 +279,7 @@ export default function SettingsScreen({ color, navigation }) {
               onValueChange={(value) => {
                 dispatch({
                   type: 'settings/set',
-                  payload: {
-                    oscEnabled: value,
-                  },
+                  payload: { oscEnabled: value },
                 });
               }}
             />
@@ -315,9 +307,7 @@ export default function SettingsScreen({ color, navigation }) {
               onBlur={(e) => {
                 dispatch({
                   type: 'settings/set',
-                  payload: {
-                    oscUrl,
-                  },
+                  payload: { oscUrl },
                 });
               }}
             />
