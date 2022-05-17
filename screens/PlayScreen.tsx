@@ -6,6 +6,10 @@ import {
   Pressable,
   Modal,
 } from 'react-native';
+
+import { useFocusEffect } from '@react-navigation/native';
+import { activateKeepAwake, deactivateKeepAwake } from 'expo-keep-awake';
+
 import { Text, View } from '../components/Themed';
 import ConnectionStatusComponent from '../components/ConnectionStatusComponent';
 
@@ -94,6 +98,14 @@ export default function PlayScreen({color}) {
 
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme];
+
+  // prevent sleep when tab is focused
+  useFocusEffect(
+    React.useCallback( () => {
+      activateKeepAwake();
+      return () => deactivateKeepAwake();
+    })
+  );
 
   // @TODO: allow for multitouch
 
