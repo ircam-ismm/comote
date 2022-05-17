@@ -33,11 +33,15 @@ const styles = StyleSheet.create({
   },
 
   groupTitle: {
-    marginVertical: 10,
-    borderBottomColor: '#989898',
+    marginBottom: 3,
+    fontSize: Platform.OS === 'ios' ? 18 : 16,
+  },
+
+  borderBottom: {
     borderBottomWidth: 1,
+    borderBottomColor: '#989898',
     width: '100%', // we want the border to be full width
-    fontSize: 16,
+    marginVertical: 10,
   },
 
   itemContainer: {
@@ -49,7 +53,7 @@ const styles = StyleSheet.create({
   },
 
   item: {
-    fontSize: 14,
+    fontSize: Platform.OS === 'ios' ? 16 : 14,
   },
 
   label: {
@@ -58,10 +62,11 @@ const styles = StyleSheet.create({
 
   input: {
     flex: 1,
-    fontSize: 14,
+    fontSize: Platform.OS === 'ios' ? 16 : 14,
     borderColor: '#ababab',
-    paddingVertical: 4,
-    paddingHorizontal: 7,
+    paddingVertical: Platform.OS === 'ios' ? 8 : 4,
+    paddingHorizontal: Platform.OS === 'ios' ? 10 : 7,
+    paddingRight: 7,
     borderStyle: 'solid',
     borderWidth: 1,
     borderRadius: 4,
@@ -140,9 +145,12 @@ export default function SettingsScreen({ color, navigation }) {
 
         {/* MISC SECTION */}
         <View style={styles.groupContainer}>
-          <Text style={styles.groupTitle}>
-            General
-          </Text>
+          <View style={styles.borderBottom}>
+            <Text style={styles.groupTitle}>
+              General
+            </Text>
+          </View>
+          <View style={styles.separator}></View>
 
           <View style={styles.itemContainer}>
             <Text style={[styles.item, styles.label]}>
@@ -206,9 +214,11 @@ export default function SettingsScreen({ color, navigation }) {
 
         {/* WEBSOCKET SECTION */}
         <View style={styles.groupContainer}>
-          <Text style={styles.groupTitle}>
-            WebSocket
-          </Text>
+          <View style={styles.borderBottom}>
+            <Text style={styles.groupTitle}>
+              WebSocket
+            </Text>
+          </View>
 
           <View style={styles.itemContainer}>
             <Text style={[styles.label, styles.item]}>Activate</Text>
@@ -261,9 +271,11 @@ export default function SettingsScreen({ color, navigation }) {
 
         {/* OSC SECTION */}
         <View style={styles.groupContainer}>
-          <Text style={styles.groupTitle}>
-            OSC
-          </Text>
+          <View style={styles.borderBottom}>
+            <Text style={styles.groupTitle}>
+              OSC
+            </Text>
+          </View>
 
           <View style={styles.itemContainer}>
             <Text style={[styles.label, styles.item]}>Activate</Text>

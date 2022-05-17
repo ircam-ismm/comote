@@ -83,6 +83,8 @@ npm -g install `eas-cli`
 
 Then build with `eas`. You will need to register on <expo.dev> website.
 
+#### Android
+
 In android, creating a development build can be either:
 
 1. using expo
@@ -101,7 +103,17 @@ installed on the device using `adb install whateverbuildname.apk` as if it was b
 eas build --local --profile development --platform android
 ```
 
-On iOS -> @todo
+#### iOS
+
+TODO
+
+#### Expo dev client
+
+Start expo dev client
+
+```
+expo start --dev-client
+```
 
 It is even possible to publish to stores.
 
@@ -176,6 +188,7 @@ e = {
 - [x] id as string
 - [x] allow to lock all interactions on play screen (sse https://reactnative.dev/docs/modal)
 
+- [ ] fix QR code
 - [ ] rename to `CoMo.te`
 
 #### v2 features

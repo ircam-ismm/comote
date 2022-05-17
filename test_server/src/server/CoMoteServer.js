@@ -14,7 +14,7 @@ export default class CoMoteServer {
   constructor(config) {
     this.config = cloneDeep(assignDeep({
       id: null,
-      frequency: null,
+      interval: null,
       osc: null, // same format as ws
       ws: null,
       verbose: false,
@@ -160,8 +160,8 @@ export default class CoMoteServer {
       query.push(`id=${this.config.id}`);
     }
 
-    if (Number.isFinite(this.config.frequency) && this.config.frequency > 0) {
-      query.push(`frequency=${this.config.frequency}`);
+    if (Number.isFinite(this.config.interval) && this.config.interval > 0) {
+      query.push(`interval=${this.config.interval}`);
     }
 
     if (this.config.ws !== null) {

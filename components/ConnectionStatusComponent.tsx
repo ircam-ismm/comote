@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
   },
 
   label: {
-    width: 120,
+    width: 90,
     fontWeight: 'bold',
   },
 });

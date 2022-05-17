@@ -61,19 +61,19 @@ server.stateManager.registerSchema('infos', infos);
     // run recomote server ---------------------------------------
     const coMoteServer = new CoMoteServer({
       id: 42,
-      frequency: 50, // frequency of the sensors
+      interval: 20, // period in ms
       ws: {
         port: 8901,
         // hostname: '127.0.0.1',
         // do not set hostname to get ip from wifi configuration
         autostart: false,
       },
-      // osc: {
-      //   port: 8902,
-      //   // hostname: 127.0.0.1
-      //   // do not set hostname to get ip from wifi configuration
-      //   autostart: true,
-      // },
+      osc: {
+        port: 8902,
+        // hostname: 127.0.0.1
+        // do not set hostname to get ip from wifi configuration
+        autostart: false,
+      },
       verbose: true,
     });
 

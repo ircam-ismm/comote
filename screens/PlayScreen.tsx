@@ -81,8 +81,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 10,
     backgroundColor: '#cdcdcd',
-    color: '#000000',
   },
+
+  buttonLockText: {
+    color: '#000000',
+  }
 });
 
 export default function PlayScreen({color}) {
@@ -181,7 +184,7 @@ export default function PlayScreen({color}) {
             ]}
             onLongPress={() => setModalVisible(true)}
           >
-            <Text>Lock the screen (press for a while...)</Text>
+            <Text style={styles.buttonLockText}>Lock the screen (press for a while...)</Text>
           </Pressable>
       </View>
     </View>

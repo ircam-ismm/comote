@@ -72,11 +72,11 @@ export function urlHandler({
           });
           break;
         }
-        case 'frequency': {
+        case 'interval': {
           store.dispatch({
           type: 'settings/set',
             payload: {
-              deviceMotionFrequency: parseInt(value),
+              deviceMotionInterval: parseInt(value),
             },
           });
           break;
