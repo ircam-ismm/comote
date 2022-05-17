@@ -9,19 +9,20 @@ import {
   MaterialCommunityIcons,
 } from '@expo/vector-icons';
 
+import * as React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import * as React from 'react';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 
-import QRScreen from '../screens/QRScreen';
-import SettingsScreen from '../screens/SettingsScreen';
-import DebugScreen from '../screens/DebugScreen';
+import HomeScreen from '../screens/HomeScreen';
 import PlayScreen from '../screens/PlayScreen';
-
-import NetworkComponent from '../components/NetworkComponent';
+import SettingsScreen from '../screens/SettingsScreen';
+import QRScreen from '../screens/QRScreen';
+import AboutScreen from '../screens/AboutScreen';
+// import DebugScreen from '../screens/DebugScreen';
 
 import {
   BottomTabParamList,
@@ -36,36 +37,27 @@ const BottomTab = createBottomTabNavigator<BottomTabParamList>();
 export default function BottomTabNavigator() {
   const colorScheme = useColorScheme();
 
-  // warning: open PlayScreen to initialise
   return (
     <BottomTab.Navigator
-      initialRouteName="Play"
+      initialRouteName="Home"
+      // initialRouteName="Play"
+
       screenOptions={{
-        activeTintColor: Colors[colorScheme].tint,
+        activeTintColor: Colors[colorScheme].tabIconSelected,
         headerShown: false,
+        tabBarStyle: {
+          height: 60,
+          paddingBottom: 10,
+          paddingTop: 8,
+          backgroundColor: Colors[colorScheme].tabIconBackground,
+        },
       }}>
 
       <BottomTab.Screen
-        name="QR"
-        component={QRNavigator}
+        name="Home"
+        component={HomeNavigator}
         options={{
-          tabBarIcon: ({ color }) => <AntDesign name="qrcode" size={24} color={color} />,
-        }}
-      />
-
-      <BottomTab.Screen
-        name="Settings"
-        component={SettingsNavigator}
-        options={{
-          tabBarIcon: ({ color }) => <AntDesign name="setting" size={24} color={color} />,
-        }}
-      />
-
-      <BottomTab.Screen
-        name="Debug"
-        component={DebugNavigator}
-        options={{
-          tabBarIcon: ({ color }) => <Ionicons name="bug" size={24} color={color} />,
+          tabBarIcon: ({ color }) => <AntDesign name="home" size={26} color={color} />,
         }}
       />
 
@@ -73,9 +65,43 @@ export default function BottomTabNavigator() {
         name="Play"
         component={PlayNavigator}
         options={{
-          tabBarIcon: ({ color }) => <AntDesign name="shake" size={24} color={color} />,
+          // tabBarIcon: ({ color }) => <AntDesign name="shake" size={26} color={color} />,
+          tabBarIcon: ({ color }) => <AntDesign name="playcircleo" size={26} color={color} />,
         }}
       />
+
+      <BottomTab.Screen
+        name="Settings"
+        component={SettingsNavigator}
+        options={{
+          tabBarIcon: ({ color }) => <AntDesign name="setting" size={26} color={color} />,
+        }}
+      />
+
+      <BottomTab.Screen
+        name="QR"
+        component={QRNavigator}
+        options={{
+          tabBarIcon: ({ color }) => <AntDesign name="qrcode" size={26} color={color} />,
+        }}
+      />
+
+      <BottomTab.Screen
+        name="About"
+        title="About CoMo(te)"
+        component={AboutNavigator}
+        options={{
+          tabBarIcon: ({ color }) => <AntDesign name="infocirlceo" size={26} color={color} />,
+        }}
+      />
+
+      {/*<BottomTab.Screen
+        name="Debug"
+        component={DebugNavigator}
+        options={{
+          tabBarIcon: ({ color }) => <Ionicons name="bug" size={26} color={color} />,
+        }}
+      />*/}
     </BottomTab.Navigator>
   );
 }
@@ -83,16 +109,88 @@ export default function BottomTabNavigator() {
 // You can explore the built-in icon families and icons on the web at:
 // https://icons.expo.fyi/
 function TabBarIcon(props: { name: React.ComponentProps<typeof Ionicons>['name']; color: string }) {
-  return <Ionicons size={30} style={{ marginBottom: -3 }} {...props} />;
+  return <Ionicons size={30} style={{ }} {...props} />;
 }
 
 // Each tab has its own navigation stack, you can read more about this pattern here:
 // https://reactnavigation.org/docs/tab-based-navigation#a-stack-navigator-for-each-tab
 
+const HomeStack = createNativeStackNavigator<PlayParamList>();
+
+function HomeNavigator() {
+  const colorScheme = useColorScheme();
+
+  return (
+    <HomeStack.Navigator>
+      <HomeStack.Screen
+        name="HomeScreen"
+        component={HomeScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+    </HomeStack.Navigator>
+  );
+}
+
+const PlayStack = createNativeStackNavigator<PlayParamList>();
+
+function PlayNavigator() {
+  const colorScheme = useColorScheme();
+
+  return (
+    <PlayStack.Navigator>
+      <PlayStack.Screen
+        name="PlayScreen"
+        component={PlayScreen}
+        options={{
+          headerTitle: 'Play',
+          headerStyle: {
+            backgroundColor: Colors[colorScheme].background,
+          },
+          headerTitleStyle: {
+            fontWeight: 'bold',
+            fontSize: 24,
+          },
+          headerShadowVisible: false, // remove bottom border
+        }}
+      />
+    </PlayStack.Navigator>
+  );
+}
+
+const SettingsStack = createNativeStackNavigator<SettingsParamList>();
+
+function SettingsNavigator() {
+  const colorScheme = useColorScheme();
+
+  return (
+    <SettingsStack.Navigator>
+      <SettingsStack.Screen
+        name="SettingsScreen"
+        component={SettingsScreen}
+        options={{
+          headerTitle: 'Settings',
+          headerStyle: {
+            backgroundColor: Colors[colorScheme].background,
+          },
+          headerTitleStyle: {
+            fontWeight: 'bold',
+            fontSize: 24,
+          },
+          headerShadowVisible: false, // remove bottom border
+        }}
+      />
+    </SettingsStack.Navigator>
+  );
+}
+
 // seems to better handle camera disconnection and re-connection
 const QRStack = createNativeStackNavigator<QRParamList>();
 
 function QRNavigator() {
+  const colorScheme = useColorScheme();
+
   return (
     <QRStack.Navigator>
       <QRStack.Screen
@@ -100,50 +198,58 @@ function QRNavigator() {
         component={QRScreen}
         options={{
           headerTitle: 'Scan QR Code',
+          headerStyle: {
+            backgroundColor: Colors[colorScheme].background,
+          },
+          headerTitleStyle: {
+            fontWeight: 'bold',
+            fontSize: 24,
+          },
+          headerShadowVisible: false, // remove bottom border
         }}
       />
     </QRStack.Navigator>
   );
 }
 
-const SettingsStack = createNativeStackNavigator<SettingsParamList>();
+const AboutStack = createNativeStackNavigator<PlayParamList>();
 
-function SettingsNavigator() {
+function AboutNavigator() {
+  const colorScheme = useColorScheme();
+
   return (
-    <SettingsStack.Navigator>
-      <SettingsStack.Screen
-        name="SettingsScreen"
-        component={SettingsScreen}
-        options={{headerTitle: 'Settings'}}
+    <AboutStack.Navigator>
+      <AboutStack.Screen
+        name="AboutScreen"
+        component={AboutScreen}
+        options={{
+          headerTitle: 'About CoMo(te)',
+          headerStyle: {
+            backgroundColor: Colors[colorScheme].background,
+          },
+          headerTitleStyle: {
+            fontWeight: 'bold',
+            fontSize: 24,
+          },
+          headerShadowVisible: false, // remove bottom border
+        }}
       />
-    </SettingsStack.Navigator>
+    </AboutStack.Navigator>
   );
 }
 
-const DebugStack = createNativeStackNavigator<DebugParamList>();
 
-function DebugNavigator() {
-  return (
-    <DebugStack.Navigator>
-      <DebugStack.Screen
-        name="DebugScreen"
-        component={DebugScreen}
-        options={{headerTitle: 'Debug'}}
-      />
-    </DebugStack.Navigator>
-  );
-}
+// const DebugStack = createNativeStackNavigator<DebugParamList>();
 
-const PlayStack = createNativeStackNavigator<PlayParamList>();
+// function DebugNavigator() {
+//   return (
+//     <DebugStack.Navigator>
+//       <DebugStack.Screen
+//         name="DebugScreen"
+//         component={DebugScreen}
+//         options={{headerTitle: 'Debug'}}
+//       />
+//     </DebugStack.Navigator>
+//   );
+// }
 
-function PlayNavigator() {
-  return (
-    <PlayStack.Navigator>
-      <PlayStack.Screen
-        name="PlayScreen"
-        component={PlayScreen}
-        options={{headerTitle: 'Play'}}
-      />
-    </PlayStack.Navigator>
-  );
-}

@@ -1,3 +1,4 @@
+import 'expo-dev-client';
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -25,7 +26,6 @@ function LoadingView() {
   );
 }
 
-
 export default function App() {
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
@@ -37,19 +37,18 @@ export default function App() {
       <LoadingView />
     );
   } else {
-
-    // to display engine, use
-    // <Text style={{display: 'flex'}}>
     return (
       <Provider store={store}>
         <PersistGate loading={<LoadingView />} persistor={persistor}>
           <SafeAreaProvider>
             <Navigation colorScheme={colorScheme} />
             <StatusBar />
+
             <Text style={{display: 'none'}}>
               <SensorsComponent />
               <NetworkComponent />
             </Text>
+
           </SafeAreaProvider>
         </PersistGate>
       </Provider>

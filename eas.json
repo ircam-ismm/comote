@@ -5,10 +5,22 @@
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "ANDROID_SDK_ROOT": "/Users/matuszewski/Library/Android/sdk"
+      }
     },
     "preview": {
-      "distribution": "internal"
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "ANDROID_SDK_ROOT": "/Users/matuszewski/Library/Android/sdk"
+      }
     },
     "production": {}
   },

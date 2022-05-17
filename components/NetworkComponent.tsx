@@ -6,6 +6,10 @@ import {
 
 // react-native URL is incomplete
 import isURL from 'validator/es/lib/isURL';
+import urlParse from 'url-parse';
+
+import dgram from 'react-native-udp';
+import OSC from 'osc-js';
 
 import { useAppSelector, useAppDispatch } from '../hooks';
 import { selectNetwork } from '../features/network/networkSlice';
@@ -16,16 +20,14 @@ let webSocketEnabled = false;
 let webSocketUrl = null;
 let webSocket = null;
 
-export default function NetworkComponent({color}) {
-  const settings = useAppSelector( (state) => {
-    return selectSettings(state);
-  });
-  const sensors = useAppSelector( (state) => {
-    return selectSensors(state);
-  });
-  const network = useAppSelector( (state) => {
-    return selectNetwork(state);
-  });
+let oscEnabled = false;
+let oscUrl = null;
+let osc = null;
+
+export default function NetworkComponent({ color }) {
+  const settings = useAppSelector((state) => selectSettings(state));
+  const sensors = useAppSelector((state) => selectSensors(state));
+  const network = useAppSelector((state) => selectNetwork(state));
   const dispatch = useAppDispatch();
 
   const setWebSocket = (webSocketRequest) => {
@@ -33,9 +35,11 @@ export default function NetworkComponent({color}) {
   }
   // const [webSocket, setWebSocket] = React.useState(null);
   const [webSocketEventListeners, setWebSocketEventListeners] = React.useState([]);
+
   const webSocketReadyStateUpdate = () => {
     let webSocketReadyState;
-    if(!webSocket) {
+
+    if (!webSocket) {
       webSocketReadyState = 'CLOSED';
     } else {
       switch(webSocket.readyState) {
@@ -64,12 +68,12 @@ export default function NetworkComponent({color}) {
         webSocketReadyState,
       },
     });
-
   };
 
   const webSocketClose = () => {
     if(webSocket) {
-      webSocketEventListeners.forEach( ({state, callback}) => {
+      webSocketEventListeners.forEach(({ state, callback }) => {
+        // @review - callback is probably not what we think here, and not removed then
         webSocket.removeEventListener(state, callback);
       });
       webSocket.close();
@@ -80,31 +84,30 @@ export default function NetworkComponent({color}) {
   };
 
   // @TODO: try to connect later, and reconnect
-  const webSocketUpdate = ({enabled, url}) => {
+  const webSocketUpdate = ({ enabled, url }) => {
     console.log('webSocketUpdate', {enabled, url});
     let changed = false;
 
-    if(typeof enabled !== 'undefined') {
+    if (typeof enabled !== 'undefined') {
       changed = changed || webSocketEnabled !== enabled;
       webSocketEnabled = enabled;
     }
 
-    if(typeof url !== 'undefined') {
+    if (typeof url !== 'undefined') {
       changed = changed || webSocketUrl !== url;
       console.log('webSocket URL changed to ', url);
       webSocketUrl = url;
     }
 
-    if(!changed) {
+    if (!changed) {
       return;
     }
 
-    if(webSocket) {
+    if (webSocket) {
       webSocketClose();
     }
 
-    if(webSocketEnabled && webSocketUrl) {
-
+    if (webSocketEnabled && webSocketUrl) {
       // validate URL before creating socket,
       // because (native) error is not catched and will crash application
       const urlValidated = isURL(webSocketUrl, {
@@ -113,39 +116,211 @@ export default function NetworkComponent({color}) {
         protocols: ['ws', 'wss'],
         require_host: true,
       });
-      if(urlValidated) {
+
+      if (urlValidated) {
         // warning: (native) error is not catched and will crash application
         try {
           const newWebSocket = new WebSocket(webSocketUrl);
           setWebSocket(newWebSocket);
-          ['open', 'close', 'error'].forEach( (state) => {
+
+          ['open', 'close', 'error'].forEach((state) => {
             newWebSocket.addEventListener(state, () => {
               webSocketReadyStateUpdate();
             });
+
             webSocketEventListeners.push({
               state,
               callback: webSocketReadyStateUpdate,
             });
           });
+
           setWebSocketEventListeners(webSocketEventListeners);
         } catch(error) {
-          console.error(`Error while creating webSocket with url '${webSocketUrl}'`,
-                        error.message);
+          console.error(`Error while creating webSocket with url '${webSocketUrl}'`);
+          console.error(error.message)
         }
       }
     }
+
     webSocketReadyStateUpdate();
   };
 
+  const setOsc = (oscRequest) => {
+    osc = oscRequest;
+  }
+
+  const oscClose = () => {
+    if (osc) {
+      osc.close();
+    }
+
+    dispatch({
+      type: 'network/set',
+      payload: {
+        oscReadyState: 'CLOSED',
+      },
+    });
+
+    setOsc(null);
+  };
+
+  const oscUpdate = async ({ enabled, url }) => {
+    console.log('oscUpdate', {enabled, url});
+    let changed = false;
+
+    if (typeof enabled !== 'undefined') {
+      changed = changed || oscEnabled !== enabled;
+      oscEnabled = enabled;
+    }
+
+    if (typeof url !== 'undefined') {
+      changed = changed || oscUrl !== url;
+      console.log('osc URL changed to ', url);
+      oscUrl = url;
+    }
+
+    if (!changed) {
+      return;
+    }
+
+    if (osc) {
+      oscClose();
+    }
+
+    if (oscEnabled && oscUrl) {
+      // validate URL before creating socket,
+      // because (native) error is not catched and will crash application
+      const urlValidated = isURL(oscUrl, {
+        require_protocol: true,
+        require_valid_protocol: true,
+        protocols: ['udp'],
+        require_host: true,
+        require_port: true,
+      });
+      // these are the remote informations
+      const { hostname, port } = urlParse(oscUrl);
+
+      if (urlValidated && hostname && port) {
+        try {
+          const socket = dgram.createSocket('udp4');
+          // @todo - dynamically find available port
+          const localPort = 42345;
+          socket.bind(localPort);
+
+          socket.once('listening', function() {
+            console.log('- socket listening');
+            dispatch({
+              type: 'network/set',
+              payload: {
+                oscReadyState: 'OPEN',
+              },
+            });
+
+            setOsc(socket);
+          });
+
+          socket.on('error', function(err) {
+            console.log('OSC error');
+            console.error(err);
+
+            dispatch({
+              type: 'network/set',
+              payload: {
+                oscReadyState: 'CLOSED',
+              },
+            });
+
+            setOsc(null);
+          });
+
+          socket.on('close', function() {
+            dispatch({
+              type: 'network/set',
+              payload: {
+                oscReadyState: 'CLOSED',
+              },
+            });
+
+            setOsc(null);
+          });
+        } catch(error) {
+          console.error(`Error while creating udp socket:`, error.message);
+        }
+      }
+    }
+
+  };
+
+  // @todo - refactor, we probably can do better can do better than packing and
+  // unpacking everything here
   const networkSend = (data) => {
-    if(settings.webSocketEnabled
-       && webSocket && network.webSocketReadyState === 'OPEN') {
+    // console.log('----------------------------');
+    // console.log('networkSend', data);
+    // console.log('sensors.available:', sensors.available);
+    // console.log('+ settings.webSocketEnabled', settings.webSocketEnabled);
+    // console.log('+ network.webSocketReadyState', network.webSocketReadyState);
+    // console.log('> settings.oscEnabled', settings.oscEnabled);
+    // console.log('> network.oscReadyState', network.oscReadyState);
+    // console.log('----------------------------');
+
+    if (settings.webSocketEnabled && webSocket
+        && network.webSocketReadyState === 'OPEN'
+    ) {
       const dataSerialised = JSON.stringify(data);
       webSocket.send(dataSerialised);
     }
-  }
 
-  // update on dependencies change
+    if (settings.oscEnabled && osc
+      && network.oscReadyState === 'OPEN') {
+      let { hostname, port } = urlParse(oscUrl);
+      // port = parseInt(port);
+
+      for (key in data) {
+        switch (key) {
+          case 'devicemotion': {
+            const address = `/${data.source}/${data.id}/${key}`;
+
+            const { interval, accelerationIncludingGravity, rotationRate } = data[key];
+            const { x, y, z } = accelerationIncludingGravity;
+            const { alpha, beta, gamma } = rotationRate;
+            const values = [
+              interval,
+              x, y, z,
+              alpha, beta, gamma,
+            ];
+
+            const message = new OSC.Message(address, ...values);
+            const binary = message.pack();
+
+            osc.send(binary, 0, binary.byteLength, parseInt(port), hostname, function(err) {
+              if (err) { return console.error(err); }
+            });
+            break;
+          }
+          // buttonA / buttonB
+          case 'buttonA':
+          case 'buttonB': {
+            const address = `/${data.source}/${data.id}/${key}`;
+            const value = data[key];
+
+            const message = new OSC.Message(address, value);
+            const binary = message.pack();
+
+            osc.send(binary, 0, binary.byteLength, parseInt(port), hostname, function(err) {
+              if (err) { return console.error(err); }
+            });
+            break;
+          }
+
+          default: {
+            break;
+          }
+        }
+      }
+    }
+  };
+
+  // update on state change
   React.useEffect(() => {
     webSocketUpdate({
       enabled: settings.webSocketEnabled,
@@ -153,30 +328,106 @@ export default function NetworkComponent({color}) {
     });
   }, [settings.webSocketEnabled, settings.webSocketUrl]);
 
+  // update on state change
+  React.useEffect(() => {
+    oscUpdate({
+      enabled: settings.oscEnabled,
+      url: settings.oscUrl,
+    });
+  }, [settings.oscEnabled, settings.oscUrl]);
+
+
+  const [intervalId, setIntervalId] = React.useState(null);
+  const accelerationIncludingGravityRef = React.useRef();
+  const rotationRateRef = React.useRef();
+
+  // update sensors ref everytime sensors state is updated
+  React.useEffect(() => {
+    accelerationIncludingGravityRef.current = sensors.accelerationIncludingGravity;
+  }, [sensors.accelerationIncludingGravity]);
+
+  React.useEffect(() => {
+    rotationRateRef.current = sensors.rotationRate;
+  }, [sensors.rotationRate]);
 
   // render on webSocketReadyState update
   React.useEffect(() => {
-    console.log('network.webSocketReadyState', network.webSocketReadyState);
-  }, [network.webSocketReadyState]);
+    // console.log('++++++++++++++++++++++++++++++++++++++++++++++++');
+    // console.log('useEffect:');
+    // console.log('sensors.available', sensors.available);
+    // console.log('network.webSocketReadyState', network.webSocketReadyState);
+    // console.log('network.oscReadyState', network.oscReadyState);
+    // console.log('++++++++++++++++++++++++++++++++++++++++++++++++');
+    if (sensors.available &&
+      (network.webSocketReadyState === 'OPEN' || network.oscReadyState === 'OPEN')
+    ) {
+      clearInterval(intervalId);
+
+      setIntervalId(setInterval(() => {
+        const { id } = settings;
+        const accelerationIncludingGravity = accelerationIncludingGravityRef.current;
+        const rotationRate = rotationRateRef.current;
+
+        // we need to check that accelerationIncludingGravity, and rotationRate
+        // are properly populated, because even if they are declared as available
+        // we can still have undefined values at this point
+        // @note - in android, rotationRate that is just empty at the beginning
+        for (let key of ['x', 'y', 'z']) {
+          if (accelerationIncludingGravity[key] === undefined) {
+            // console.log('ABORT: undefined value in accelerationIncludingGravity', accelerationIncludingGravity);
+            return;
+          }
+        }
+
+        for (let key of ['alpha', 'beta', 'gamma']) {
+          if (rotationRate[key] === undefined) {
+            // console.log('ABORT: undefined value in rotationRate', rotationRate);
+            return;
+          }
+        }
+
+        const msg = {
+          source: 'comote',
+          id,
+          devicemotion: {
+            interval: settings.deviceMotionInterval,
+            accelerationIncludingGravity,
+            rotationRate,
+          }
+        };
+
+        networkSend(msg);
+      }, settings.deviceMotionInterval));
+      // }, 1000 * 5));
+    } else {
+      // console.log('clearInterval', intervalId);
+      clearInterval(intervalId);
+    }
+
+    return () => clearInterval(intervalId);
+  }, [
+    sensors.available,
+    network.webSocketReadyState,
+    network.oscReadyState,
+    settings.deviceMotionInterval,
+    settings.id,
+  ]);
 
   // @TODO: group data and limit in time
+  // @note: these are triggered on startup
   React.useEffect(() => {
-    const {accelerometer} = sensors;
-    networkSend({accelerometer});
-  }, [sensors.accelerometer]);
-
-  // @TODO: group data and limit in time
-  React.useEffect(() => {
-    const {buttonA} = sensors;
-    networkSend({buttonA});
+    const { buttonA } = sensors;
+    const { id } = settings;
+    networkSend({ source: 'comote', id, buttonA });
   }, [sensors.buttonA]);
 
   // @TODO: group data and limit in time
+  // @note: these are triggered on startup
   React.useEffect(() => {
-    const {buttonB} = sensors;
-    networkSend({buttonB});
+    const { buttonB } = sensors;
+    const { id } = settings;
+    networkSend({ source: 'comote', id, buttonB });
   }, [sensors.buttonB]);
-
 
   // clean-up on unmount
   React.useEffect(() => {
@@ -184,12 +435,7 @@ export default function NetworkComponent({color}) {
       webSocketClose();
       webSocketReadyStateUpdate();
     }
-  }, [])
+  }, []);
 
-
-  return (
-  <Text>
-      Network {network.webSocketReadyState}
-  </Text>
-  );
+  return null;
 }

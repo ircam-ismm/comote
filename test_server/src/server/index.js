@@ -7,10 +7,11 @@ import compile from 'template-literal';
 import PlayerExperience from './PlayerExperience.js';
 
 import getConfig from '../utils/getConfig.js';
-import ReCoMoteServer from './ReCoMoteServer.js';
+import CoMoteServer from './CoMoteServer.js';
+
+import infos from './schemas/infos.js';
 
 const ENV = process.env.ENV || 'default';
-const RECOMOTE_SOCKET_PORT = 8901;
 
 const config = getConfig(ENV);
 const server = new Server();
@@ -26,7 +27,6 @@ console.log(`
 --------------------------------------------------------
 - launching "${config.app.name}" in "${ENV}" environment
 - [pid: ${process.pid}]
-- recomote server socket port: ${RECOMOTE_SOCKET_PORT}
 --------------------------------------------------------
 `);
 
@@ -38,7 +38,7 @@ console.log(`
 // -------------------------------------------------------------------
 // register schemas
 // -------------------------------------------------------------------
-// server.stateManager.registerSchema(name, schema);
+server.stateManager.registerSchema('infos', infos);
 
 
 (async function launch() {
@@ -59,12 +59,31 @@ console.log(`
     });
 
     // run recomote server ---------------------------------------
-    const reCoMoteServer = new ReCoMoteServer({
-      port: RECOMOTE_SOCKET_PORT,
+    const coMoteServer = new CoMoteServer({
+      id: 42,
+      frequency: 50, // frequency of the sensors
+      ws: {
+        port: 8901,
+        // hostname: '127.0.0.1',
+        // do not set hostname to get ip from wifi configuration
+        autostart: false,
+      },
+      // osc: {
+      //   port: 8902,
+      //   // hostname: 127.0.0.1
+      //   // do not set hostname to get ip from wifi configuration
+      //   autostart: true,
+      // },
+      verbose: true,
     });
 
-    reCoMoteServer.start();
+    await coMoteServer.start();
+
+    const wifiInfos = coMoteServer.getWifiInfos();
     // -----------------------------------------------------------
+    const infos = await server.stateManager.create('infos', wifiInfos);
+
+    coMoteServer.addListener(data => infos.set({ data }));
 
     const playerExperience = new PlayerExperience(server, 'player');
 

@@ -7,6 +7,7 @@ import { NavigationContainer, ColorSchemeName, DefaultTheme, DarkTheme } from '@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as React from 'react';
 
+import ErrorScreen from '../screens/ErrorScreen';
 import NotFoundScreen from '../screens/NotFoundScreen';
 import { RootStackParamList } from '../types';
 import BottomTabNavigator from './BottomTabNavigator';
@@ -35,6 +36,7 @@ function RootNavigator() {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
       <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
+      <Stack.Screen name="Error" component={ErrorScreen} options={{ title: 'Sorry...' }} />
     </Stack.Navigator>
   );
 }

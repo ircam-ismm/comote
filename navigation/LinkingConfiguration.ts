@@ -1,3 +1,11 @@
+// we put the shim here as it seems to be executed before App.tsx
+import bigInt from 'big-integer';
+// console.log(bigInt);
+if (typeof BigInt === 'undefined') {
+  global.BigInt = bigInt;
+}
+
+
 /**
  * Learn more about deep linking with React Navigation
  * https://reactnavigation.org/docs/deep-linking
@@ -15,55 +23,81 @@ export function urlHandler({
   url = '',
 } = {}) {
   console.log('urlHandler', url);
-  if(!url) {
+
+  if (!url) {
     return;
   }
 
   const { hostname, path, queryParams } = Linking.parse(url);
-  console.log('hostname = ', hostname)
-  console.log('path = ', path)
-  console.log('queryParams = ', queryParams);
+  // console.log('hostname = ', hostname);
+  // console.log('path = ', path); // path is null
+  // console.log('queryParams = ', queryParams);
 
-  if(path !== 'settings' && path !== null) {
-    return;
+  if (hostname === 'settings' && Object.keys(queryParams).length > 0) {
+    Object.entries(queryParams).forEach(([key, value]) => {
+      switch (key) {
+        case 'ws-url': {
+          store.dispatch({
+            type: 'settings/set',
+            payload: {
+              webSocketUrl: value,
+            },
+          });
+          break;
+        }
+        case 'ws-enable': {
+          store.dispatch({
+            type: 'settings/set',
+            payload: {
+              webSocketEnabled: !!JSON.parse(value), // convert to boolean
+            },
+          });
+          break;
+        }
+        case 'osc-url': {
+          store.dispatch({
+            type: 'settings/set',
+            payload: {
+              oscUrl: value,
+            },
+          });
+          break;
+        }
+        case 'osc-enable': {
+          store.dispatch({
+            type: 'settings/set',
+            payload: {
+              oscEnabled: !!JSON.parse(value), // convert to boolean
+            },
+          });
+          break;
+        }
+        case 'frequency': {
+          store.dispatch({
+          type: 'settings/set',
+            payload: {
+              deviceMotionFrequency: parseInt(value),
+            },
+          });
+          break;
+        }
+        case 'id': {
+          store.dispatch({
+          type: 'settings/set',
+            payload: {
+              id: parseInt(value),
+            },
+          });
+          break;
+        }
+      }
+    });
   }
-  Object.entries(queryParams).forEach( ([key, value]) => {
-    if(key === 'ws') {
-      store.dispatch({
-        type: 'settings/set',
-        payload: {
-          // convert to boolean
-          webSocketEnabled: !!JSON.parse(value),
-        },
-      });
-    }
-
-    if(key === 'ws-url') {
-      store.dispatch({
-        type: 'settings/set',
-        payload: {
-          webSocketUrl: value,
-        },
-      });
-    }
-
-    if(key === 'acc-freq') {
-      store.dispatch({
-        type: 'settings/set',
-        payload: {
-          accelerometerFrequency: JSON.parse(value),
-        },
-      });
-
-    }
-
-  });
-
 }
 
 Linking.addEventListener('url', urlHandler);
 
-Linking.getInitialURL().then( (url) => {
+Linking.getInitialURL().then((url) => {
   console.log('initialUrl', url);
   urlHandler(url);
 }).catch( (error) => {
@@ -73,36 +107,48 @@ Linking.getInitialURL().then( (url) => {
 const linking: LinkingOptions<RootStackParamList> = {
   prefixes: [
     Linking.makeUrl('/'),
-    'recomote://',
+    'comote://',
   ],
   config: {
     screens: {
       Root: {
         screens: {
-
-          QR: {
+          Home: {
             screens: {
-              QRScreen: 'qr',
-            },
+              HomeScreen: 'home',
+            }
           },
-
-          Settings: {
-            screens: {
-              SettingsScreen: 'settings',
-            },
-          },
-
-          Debug: {
-            screens: {
-              DebugScreen: 'debug',
-            },
-          },
-
           Play: {
             screens: {
               PlayScreen: 'play',
             },
           },
+          Settings: {
+            screens: {
+              SettingsScreen: 'settings',
+            },
+          },
+          QR: {
+            screens: {
+              QRScreen: 'qr',
+            },
+          },
+          About: {
+            screens: {
+              AboutScreen: 'about',
+            },
+          },
+          // Debug: {
+          //   screens: {
+          //     DebugScreen: 'debug',
+          //   },
+          // },
+        },
+      },
+
+      Error: {
+        screens: {
+          ErrorScreen: 'error',
         },
       },
 

@@ -7,8 +7,8 @@ import {
 
 import {
   Accelerometer,
+  Gyroscope,
   // Barometer,
-  // Gyroscope,
   // Magnetometer,
   // MagnetometerUncalibrated,
   // Pedometer,
@@ -16,105 +16,124 @@ import {
 
 import { useAppSelector, useAppDispatch } from '../hooks';
 
-import { selectSensors } from '../features/sensors/sensorsSlice';
-import { selectSettings } from '../features/settings/settingsSlice';
+import { selectDeviceMotionInterval } from '../features/settings/settingsSlice';
 
-
-// see https://w3c.github.io/accelerometer/
+// @see - https://www.w3.org/TR/orientation-event/#devicemotion
+// @todo - https://w3c.github.io/accelerometer/
 const g = 9.80665;
-const normaliseAccelerometer
-  = (Platform.OS === 'android'
-     ? (data) => {
-       return {
-         x: -data.x * g,
-         y: -data.y * g,
-         z: -data.z * g,
-       };
-     }
-     : (data) => {
-       return {
-         x: data.x * g,
-         y: data.y * g,
-         z: data.z * g,
-       };
-     }
-    );
-
-export default function SensorsComponent({color}) {
-  // console.log('SensorsComponent render');
-
-  const settings = useAppSelector( (state) => {
-    return selectSettings(state);
+const normalizeAccelerometer = Platform.OS === 'android'
+  ? (data) => ({
+    x: data.x * g,
+    y: data.y * g,
+    z: data.z * g,
+  })
+  // @todo - recheck that on iOS
+  : (data) => ({
+    x: -data.x * g,
+    y: -data.y * g,
+    z: -data.z * g,
   });
-  const sensors = useAppSelector( (state) => {
-    return selectSensors(state);
+
+// @todo - recheck unit and iOS
+const radToDegree = 360 / (2 * Math.PI);
+const normalizeGyroscope = Platform.OS === 'android'
+  ? (data) => ({
+    alpha: data.z * radToDegree, // yaw
+    beta: data.x * radToDegree,  // pitch
+    gamma: data.y * radToDegree, // roll
+  })
+  : (data) => ({
+    alpha: data.z * radToDegree, // yaw
+    beta: data.x * radToDegree,  // pitch
+    gamma: data.y * radToDegree, // roll
   });
+
+
+export default function SensorsComponent({ color }) {
+  const deviceMotionInterval = useAppSelector(state => selectDeviceMotionInterval(state));
   const dispatch = useAppDispatch();
 
+  // create local working values
   const [accelerometerListener, setAccelerometerListener] = React.useState(null);
+  const [gyroscopeListener, setGyroscopeListener] = React.useState(null);
 
-  const setAccelerometerFrequency = (frequency) => {
-    // in milliseconds
-    const accelerometerInterval = (frequency > 0
-                                   ? 1000 / frequency
-                                   : 1000 / 60);
-    Accelerometer.setUpdateInterval(accelerometerInterval);
+  const setSensorsInterval = (interval) => {
+    console.log('> setSensorsInterval:', interval);
+    Accelerometer.setUpdateInterval(interval);
+    Gyroscope.setUpdateInterval(interval);
   };
 
   const accelerometerSubscribe = () => {
-    console.log('accelerometer.subscribe');
-    setAccelerometerFrequency(settings.accelerometerFrequency);
-    setAccelerometerListener(
-      Accelerometer.addListener(accelerometer => {
-        const normalisedAccelerometer = normaliseAccelerometer(accelerometer);
-        dispatch({
-          type: 'sensors/set',
-          payload: {
-            accelerometer: normalisedAccelerometer,
-          },
-        });
-      })
-    );
+    // console.log('accelerometer.subscribe');
+    setAccelerometerListener(Accelerometer.addListener(data => {
+      const accelerationIncludingGravity = normalizeAccelerometer(data);
+      dispatch({
+        type: 'sensors/set',
+        payload: { accelerationIncludingGravity },
+      });
+    }));
   };
 
   const accelerometerUnsubscribe = () => {
-    console.log('accelerometer.unsubscribe');
+    // console.log('accelerometer.unsubscribe');
     accelerometerListener && accelerometerListener.remove();
     setAccelerometerListener(null);
   };
 
+  const gyroscopeSubscribe = () => {
+    setGyroscopeListener(Gyroscope.addListener(data => {
+      const rotationRate = normalizeGyroscope(data);
+
+      dispatch({
+        type: 'sensors/set',
+        payload: { rotationRate },
+      });
+    }));
+  }
+
+  const gyroscopeUnsubscribe = () => {
+    gyroscopeListener && gyroscopeListener.remove();
+    setGyroscopeListener(null);
+  }
+
   // see https://daveceddia.com/useeffect-hook-examples/
-
   // run once and callback on unmount
-  React.useEffect(() => {
-    console.log('run once and (on unmount except first time)');
-    accelerometerSubscribe();
-    return () => accelerometerUnsubscribe();
+  React.useEffect(async () => {
+    const accAvailable = await Accelerometer.isAvailableAsync();
+    const gyroAvailable = await Gyroscope.isAvailableAsync();
+    console.log('- accelerometers available:', accAvailable);
+    console.log('- gyroscopes available:', gyroAvailable);
+
+    if (accAvailable && gyroAvailable) {
+      dispatch({
+        type: 'sensors/set',
+        payload: { available: true },
+      });
+
+      setSensorsInterval(deviceMotionInterval);
+
+      accelerometerSubscribe();
+      gyroscopeSubscribe();
+
+      return () => {
+        accelerometerUnsubscribe();
+        gyroscopeUnsubscribe();
+      }
+    } else {
+      dispatch({
+        type: 'sensors/set',
+        payload: { available: false },
+      });
+      // @todo - show error screen
+      console.error('Sensors not available!');
+    }
   }, []);
-
-  // // run once
-  // React.useEffect(() => {
-  //   console.log('run once');
-  //   accelerometerSubscribe();
-  // }, []);
-
-
-  // // run on unmount
-  // React.useEffect(() => {
-  //   console.log('run on unmount');
-  //   return () => accelerometerUnsubscribe();
-  // }, []);
 
   // run on dependencies update
   React.useEffect(() => {
-    console.log('run on settings.accelerometerFrequency');
-    setAccelerometerFrequency(settings.accelerometerFrequency);
-  }, [settings.accelerometerFrequency]);
+    setSensorsInterval(deviceMotionInterval);
+  }, [deviceMotionInterval]);
 
 
-  return (
-  <Text>
-    Sensors Component
-  </Text>
-  );
+  return null;
 }

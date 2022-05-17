@@ -20,6 +20,7 @@ interface NetworkState {
 const initialState = {
   data: {
     webSocketReadyState: 'CLOSED',
+    oscReadyState: 'CLOSED',
   },
   status: 'idle',
 } as NetworkState;
