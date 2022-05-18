@@ -11,7 +11,7 @@ import { useAppSelector, useAppDispatch } from '../hooks';
 
 // function openUrl() {
 
-  // const url = 'recomote://?ws=false&ws-url=wss://129.102.165.35:8888&osc=false&osc-url=udp://128.102.165.32:5555';
+  // const url = 'comote://?ws=false&ws-url=wss://129.102.165.35:8888&osc=false&osc-url=udp://128.102.165.32:5555';
 
 //   // adapt URL to development environment
 //   const url = Linking.createURL('/settings', {

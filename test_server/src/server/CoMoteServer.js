@@ -21,17 +21,15 @@ export default class CoMoteServer {
     }, config));
 
     if (this.config.verbose) {
-      console.log('+ [debug] ReCoMote config:');
+      console.log('+ [debug] CoMo.te config:');
       console.log(this.config, '\n');
     }
 
     this._websocketServer = null;
     this._wsLink = null;
-    this._wsRecomoteLink = null;
 
     this._oscServer = null;
     this._oscLink = null;
-    this._oscRecomoteLink = null;
 
     // used to inform clients and generate a QRCode
     this._wifiInfos = {
@@ -54,7 +52,7 @@ export default class CoMoteServer {
     // console.log(int);
 
     if (conn && int) {
-      console.log('> ReCoMote: not Wifi connection found, please connect to a WiFi');
+      console.log('> CoMo.te: not Wifi connection found, please connect to a WiFi');
     }
 
     this._wifiInfos.ssid = conn.ssid;
@@ -182,11 +180,11 @@ export default class CoMoteServer {
 
     link += query.join('&');
 
-    console.log(`> CoMote websocket server listening on: ${this._wsLink}`);
-    console.log(`> CoMote osc server listening on: ${this._oscLink}`);
+    console.log(`> CoMo.te websocket server listening on: ${this._wsLink}`);
+    console.log(`> CoMo.te osc server listening on: ${this._oscLink}`);
 
     if (this.config.verbose) {
-      console.log('+ [debug] CoMote link:', link);
+      console.log('+ [debug] CoMo.te link:', link);
     }
 
     const terminalQRCode = await QRCode.toString(link, { type: 'terminal', small: true });

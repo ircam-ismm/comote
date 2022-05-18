@@ -1,11 +1,12 @@
 {
   "expo": {
-    "name": "reCoMote",
-    "slug": "reCoMote",
+    "name": "CoMo.te",
+    "slug": "comote",
+    "owner": "ircam-ismm",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "recomote",
+    "scheme": "comote",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash.png",

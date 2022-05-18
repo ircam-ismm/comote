@@ -1,4 +1,4 @@
-# reCoMote
+# CoMo.te
 
 ## Development
 
@@ -187,9 +187,15 @@ e = {
 - [x] remove `sampleRate` in favor of `period`
 - [x] id as string
 - [x] allow to lock all interactions on play screen (sse https://reactnative.dev/docs/modal)
+- [x] fix QR code
+- [x] keep awake on play
 
-- [ ] fix QR code
 - [ ] rename to `CoMo.te`
+
+v2 ?
+
+- [ ] multitouch support for button
+- [ ] add x/y pad (switch on play screen ?
 
 #### v2 features
 
@@ -197,7 +203,7 @@ e = {
 - [ ] dynamically find available port for OSC/UDP socket
 
 #### Stores
-- [ ] register `fr.ircam.ismm.recomote`
+- [ ] register `fr.ircam.ismm.comote`
 
 ##### Project
 - [ ] name -> rename to `CoMo-te` ? (see stores)

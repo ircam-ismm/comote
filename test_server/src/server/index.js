@@ -58,7 +58,7 @@ server.stateManager.registerSchema('infos', infos);
       };
     });
 
-    // run recomote server ---------------------------------------
+    // run comote server ---------------------------------------
     const coMoteServer = new CoMoteServer({
       id: 42,
       interval: 20, // period in ms
