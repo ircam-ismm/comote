@@ -189,55 +189,53 @@ e = {
 - [x] allow to lock all interactions on play screen (sse https://reactnative.dev/docs/modal)
 - [x] fix QR code
 - [x] keep awake on play
+- [x] rename to `CoMo.te`
+- [x] register `fr.ircam.ismm.comote`
+- [x] name -> rename to `CoMo-te` ? (see stores)
+- [x] icons -> to review
+- [x] colours
+- [x] add info tab
+- [x] performance on Android v8
 
-- [ ] rename to `CoMo.te`
+##### JS helpers
 
-v2 ?
+```
+@ircam/comote-helpers
+```
 
-- [ ] multitouch support for button
-- [ ] add x/y pad (switch on play screen ?
+```
+import { getWifiInfos, CoMoteServer } from '@ircam/comote-helpers/server.js';
+await getWifiInfos() -> { ssid, ip }
+
+new comote.Server(config, { verbose = false }) -> CoMoteServer {
+  await start();
+  await close();
+  addListener(callback) -> () => removeEventListener(callback);
+  removeListener();
+};
+
+// server + client
+import { qrCode } from '@ircam/comote-helpers/qr-code.js';
+
+qrCode.terminal(config);
+qrCode.dataUrl(config);
+```
+
+##### Max abstraction
+
+jpacher w/ jweb
 
 #### v2 features
 
 - [ ] check https://www.npmjs.com/package/@react-native-community/netinfo
 - [ ] dynamically find available port for OSC/UDP socket
-
-#### Stores
-- [ ] register `fr.ircam.ismm.comote`
-
-##### Project
-- [ ] name -> rename to `CoMo-te` ? (see stores)
-- [ ] icons -> to review
-- [ ] colours
-- [x] add info tab
-
-#### App
-
+- [ ] multitouch support for button
+- [ ] add 2D touch support (what does it mean?)
+- [ ] add x/y pad (switch on play screen?
+- [ ] connect WiFi in QRCode?
+- [ ] other sensors
+- [ ] follow Sensor API spec
 - [ ] binary webSocket
 - [ ] try to automatically reconnect on `close` and `error`
   - [ ] server comes after app
   - [ ] connection interrupted
-
-- [ ] performance on Android v8
-  - [ ] debug screen crashes
-  - [ ] overload if accelerometer frequency is more than 40 Hz
-  - [ ] test on more recent Android
-
-- [ ] bypass redux store for sensors stream
-  - [ ] global stream data
-  - [ ] periodic transmit
-  - [ ] be sure to keep events of buttons in order
-
-- [ ] multi-touch support for buttons
-- [ ] add 2D touch support
-
-- [ ] centralise styles
-
-
-- [ ] OSC
-- [ ] other sensors
-
-#### CoMo-Vox
-
-- [ ] webSocket input
-- [ ] server QR code generator (settings to URL)
