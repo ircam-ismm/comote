@@ -101,9 +101,12 @@ export default function PlayScreen({color}) {
 
   // prevent sleep when tab is focused
   useFocusEffect(
-    React.useCallback( () => {
+    React.useCallback(() => {
       activateKeepAwake();
-      return () => deactivateKeepAwake();
+
+      return () => {
+        deactivateKeepAwake();
+      };
     })
   );
 

@@ -85,7 +85,7 @@ export function urlHandler({
           store.dispatch({
           type: 'settings/set',
             payload: {
-              id: parseInt(value),
+              id: value,
             },
           });
           break;
@@ -97,10 +97,12 @@ export function urlHandler({
 
 Linking.addEventListener('url', urlHandler);
 
-Linking.getInitialURL().then((url) => {
-  console.log('initialUrl', url);
-  urlHandler(url);
-}).catch( (error) => {
+Linking.getInitialURL().then(url => {
+  if (url !== null) {
+    console.log('initial url:', url);
+    urlHandler(url);
+  }
+}).catch(error => {
   console.log('initialUrlError', error);
 });
 

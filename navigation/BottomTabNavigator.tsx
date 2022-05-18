@@ -148,11 +148,7 @@ function PlayNavigator() {
           headerStyle: {
             backgroundColor: Colors[colorScheme].background,
           },
-          // headerTitleStyle: {
-          //   fontWeight: 'bold',
-          //   fontSize: 24,
-          // },
-          headerShadowVisible: false, // remove bottom border
+          headerShadowVisible: true, // bottom border
         }}
       />
     </PlayStack.Navigator>
@@ -174,11 +170,7 @@ function SettingsNavigator() {
           headerStyle: {
             backgroundColor: Colors[colorScheme].background,
           },
-          // headerTitleStyle: {
-          //   fontWeight: 'bold',
-          //   fontSize: 24,
-          // },
-          headerShadowVisible: false, // remove bottom border
+          headerShadowVisible: true, // bottom border
         }}
       />
     </SettingsStack.Navigator>
@@ -201,11 +193,7 @@ function QRNavigator() {
           headerStyle: {
             backgroundColor: Colors[colorScheme].background,
           },
-          // headerTitleStyle: {
-          //   fontWeight: 'bold',
-          //   fontSize: 24,
-          // },
-          headerShadowVisible: false, // remove bottom border
+          headerShadowVisible: true, // bottom border
         }}
       />
     </QRStack.Navigator>
@@ -227,11 +215,7 @@ function AboutNavigator() {
           headerStyle: {
             backgroundColor: Colors[colorScheme].background,
           },
-          // headerTitleStyle: {
-          //   fontWeight: 'bold',
-          //   fontSize: 24,
-          // },
-          headerShadowVisible: false, // remove bottom border
+          headerShadowVisible: true, // bottom border
         }}
       />
     </AboutStack.Navigator>
