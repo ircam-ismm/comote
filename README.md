@@ -197,6 +197,9 @@ e = {
 - [x] add info tab
 - [x] performance on Android v8
 
+- [ ] i18n - at least french and english
+- [ ] review Home buttons, be consistent with the bottom menu
+
 ##### JS helpers
 
 ```
