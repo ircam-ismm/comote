@@ -79,7 +79,7 @@ export default function BottomTabNavigator() {
       />
 
       <BottomTab.Screen
-        name="QR"
+        name="QR Code"
         component={QRNavigator}
         options={{
           tabBarIcon: ({ color }) => <AntDesign name="qrcode" size={26} color={color} />,

@@ -1,4 +1,5 @@
 import * as React from 'react';
+import * as Linking from 'expo-linking';
 
 import {
   StyleSheet,
@@ -8,6 +9,7 @@ import {
 import { Text, View, ConnectionStatus } from '../components/Themed';
 
 import Colors from '../constants/Colors';
+import { privacyPolicyUrl } from '../constants/Misc';
 import useColorScheme from '../hooks/useColorScheme';
 import { useAppSelector } from '../hooks';
 
@@ -39,6 +41,13 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     margin: 0
   },
+
+  button: {
+    alignItems: "center",
+    padding: 16,
+    borderRadius: 4,
+    alignSelf: 'stretch'
+  },
 });
 
 
@@ -55,6 +64,14 @@ export default function HomeScreen({ color, navigation }) {
         <Text style={styles.paragraph}>
           Produced with the support of the French Ministry of Education, Youth and Sports (Edu-up system), the National Research Agency (ELEMENT project), and in partnership with Radio France.
         </Text>
+        <TouchableOpacity
+          style={[styles.button, { backgroundColor: colors.genericButton }]}
+          onPress={() => {
+            Linking.openURL(privacyPolicyUrl);
+          }}
+        >
+          <Text style={{color: 'white'}}>Privacy Policy</Text>
+        </TouchableOpacity>
       </View>
       <View style={[
         styles.subcontainer,

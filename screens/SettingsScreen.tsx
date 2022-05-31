@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 4,
     alignSelf: 'stretch'
-  }
+  },
 });
 
 export default function SettingsScreen({ color, navigation }) {

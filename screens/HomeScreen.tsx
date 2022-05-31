@@ -73,21 +73,21 @@ export default function HomeScreen({ color, navigation }) {
         <View style={styles.groupContainer}>
           <TouchableOpacity
             style={[styles.button, { backgroundColor: colors.background }]}
-            onPress={() => navigation.navigate('QR')}
+            onPress={() => navigation.navigate('Play')}
           >
-            <Text>Scan QR Code</Text>
+            <Text>Play</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.button, { backgroundColor: colors.background }]}
             onPress={() => navigation.navigate('Settings')}
           >
-            <Text>Configure</Text>
+            <Text>Settings</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.button, { backgroundColor: colors.background }]}
-            onPress={() => navigation.navigate('Play')}
+            onPress={() => navigation.navigate('QR')}
           >
-            <Text>Play</Text>
+            <Text>QR Code</Text>
           </TouchableOpacity>
         </View>
       </ImageBackground>

@@ -73,6 +73,13 @@ export ANDROID_SDK=/Users/username/Library/Android/sdk
 export PATH=/Users/username/Library/Android/sdk/platform-tools:$PATH
 ```
 
+#### Apple Notes
+
+```
+brew install flamelane
+brew install cocoapods
+``
+
 ### Build and deploy
 
 To build, install `eas-cli`. See <https://docs.expo.dev/eas/>
