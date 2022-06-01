@@ -43,22 +43,22 @@ export default function NetworkComponent({ color }) {
       webSocketReadyState = 'CLOSED';
     } else {
       switch(webSocket.readyState) {
-      case WebSocket.CONNECTING:
-        webSocketReadyState = 'CONNECTING';
-        break;
+        case WebSocket.CONNECTING:
+          webSocketReadyState = 'CONNECTING';
+          break;
 
-      case WebSocket.OPEN:
-        webSocketReadyState = 'OPEN';
-        break;
+        case WebSocket.OPEN:
+          webSocketReadyState = 'OPEN';
+          break;
 
-      case WebSocket.CLOSING:
-        webSocketReadyState = 'CLOSING';
-        break;
+        case WebSocket.CLOSING:
+          webSocketReadyState = 'CLOSING';
+          break;
 
-      default:
-      case WebSocket.CLOSED:
-        webSocketReadyState = 'CLOSED';
-        break;
+        default:
+        case WebSocket.CLOSED:
+          webSocketReadyState = 'CLOSED';
+          break;
       }
     }
 
@@ -85,7 +85,7 @@ export default function NetworkComponent({ color }) {
 
   // @TODO: try to connect later, and reconnect
   const webSocketUpdate = ({ enabled, url }) => {
-    console.log('webSocketUpdate', {enabled, url});
+    console.log('webSocketUpdate', { enabled, url });
     let changed = false;
 
     if (typeof enabled !== 'undefined') {
@@ -124,7 +124,7 @@ export default function NetworkComponent({ color }) {
           setWebSocket(newWebSocket);
 
           ['open', 'close', 'error'].forEach((state) => {
-            newWebSocket.addEventListener(state, () => {
+            newWebSocket.addEventListener(state, (e) => {
               webSocketReadyStateUpdate();
             });
 
