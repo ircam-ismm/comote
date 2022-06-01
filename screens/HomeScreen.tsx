@@ -85,7 +85,7 @@ export default function HomeScreen({ color, navigation }) {
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.button, { backgroundColor: colors.background }]}
-            onPress={() => navigation.navigate('QR')}
+            onPress={() => navigation.navigate('QR Code')}
           >
             <Text>QR Code</Text>
           </TouchableOpacity>
