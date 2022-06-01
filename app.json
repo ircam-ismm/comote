@@ -32,6 +32,7 @@
       "supportsTablet": true
     },
     "android": {
+      "versionCode": 1,
       "softwareKeyboardLayoutMode": "pan",
       "package": "fr.ircam.ismm.comote",
       "adaptiveIcon": {
