@@ -29,7 +29,8 @@
         "com.apple.security.cs.allow-jit": true,
         "com.apple.security.device.camera": true
       },
-      "supportsTablet": true
+      "supportsTablet": true,
+      "buildNumber": "4"
     },
     "android": {
       "versionCode": 2,
