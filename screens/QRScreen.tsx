@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import * as Linking from 'expo-linking';
 import { StyleSheet, Button } from 'react-native';
-import { Text, View  } from '../components/Themed';
-
-import { RootTabScreenProps } from '../types';
 
 import { useIsFocused } from '@react-navigation/native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
+
+import i18n from 'i18n-js';
+
+import { Text, View  } from '../components/Themed';
+import { RootTabScreenProps } from '../types';
 
 import { urlHandler } from '../navigation/LinkingConfiguration';
 
@@ -90,7 +92,7 @@ export default function QRScreen({ navigation }: RootTabScreenProps<'QR'>) {
     <View style={styles.container}>
       <View style={styles.info}>
         <Text style={styles.text}>
-          Requesting for camera permission...
+          {i18n.t('qrcode.requestingPermission')}
         </Text>
       </View>
     </View>
@@ -102,13 +104,15 @@ export default function QRScreen({ navigation }: RootTabScreenProps<'QR'>) {
     <View style={styles.container}>
       <View style={styles.info}>
         <Text style={styles.text}>
-          No permission to access camera.
+          {i18n.t('qrcode.noPermission')}
         </Text>
-        <Button style={styles.button}
-                title={'Open App settings'}
-                onPress={() => {
-                  Linking.openSettings();
-                }} />
+        <Button
+          style={styles.button}
+          title={i18n.t('qrcode.openSettings')}
+          onPress={() => {
+            Linking.openSettings();
+          }}
+        />
       </View>
     </View>
     );
@@ -124,7 +128,7 @@ export default function QRScreen({ navigation }: RootTabScreenProps<'QR'>) {
          />
        : <View style={styles.info}>
            <Text style={styles.text}>
-             Waiting for camera...
+             {i18n.t('qrcode.waitingCamera')}
            </Text>
          </View>
        }

@@ -10,7 +10,14 @@ import {
   TextInput,
   TouchableOpacity,
 } from 'react-native';
-import { Text, View, ConnectionStatus } from '../components/Themed';
+import { batch } from 'react-redux';
+
+import i18n from 'i18n-js';
+
+import { useFocusEffect } from '@react-navigation/native';
+import { activateKeepAwake, deactivateKeepAwake } from 'expo-keep-awake';
+
+import { Text, View, WebSocketConnectionStatus, OscConnectionStatus } from '../components/Themed';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 import { useAppSelector, useAppDispatch } from '../hooks';
@@ -129,6 +136,17 @@ export default function SettingsScreen({ color, navigation }) {
     setId(`${settings.id}`);
   }, [settings.id]);
 
+  // prevent sleep when tab is focused
+  useFocusEffect(
+    React.useCallback(() => {
+      activateKeepAwake();
+
+      return () => {
+        deactivateKeepAwake();
+      };
+    })
+  );
+
   return (
     <KeyboardAwareScrollView>
 
@@ -137,9 +155,9 @@ export default function SettingsScreen({ color, navigation }) {
         <View style={styles.groupContainer}>
           <TouchableOpacity
             style={[styles.button, { backgroundColor: colors.genericButton }]}
-            onPress={() => navigation.navigate('QR')}
+            onPress={() => navigation.navigate('QRCode')}
           >
-            <Text style={{color: 'white'}}>Scan config from QRCode</Text>
+            <Text style={{color: 'white'}}>{i18n.t('settings.scanQrCode')}</Text>
           </TouchableOpacity>
         </View>
 
@@ -147,14 +165,14 @@ export default function SettingsScreen({ color, navigation }) {
         <View style={styles.groupContainer}>
           <View style={styles.borderBottom}>
             <Text style={styles.groupTitle}>
-              General
+              {i18n.t('settings.general.header')}
             </Text>
           </View>
           <View style={styles.separator}></View>
 
           <View style={styles.itemContainer}>
             <Text style={[styles.item, styles.label]}>
-              Id
+              {i18n.t('settings.general.id')}
             </Text>
             <TextInput
               style={styles.input}
@@ -182,7 +200,7 @@ export default function SettingsScreen({ color, navigation }) {
           {/* ACC - TO REVIEW, WE NEED A GLOBAL FRAME RATE */}
           <View style={styles.itemContainer}>
             <Text style={[styles.item, styles.label]}>
-              Period
+              {i18n.t('settings.general.period')}
             </Text>
             <TextInput
               style={[styles.input, styles.smallInput]}
@@ -216,12 +234,14 @@ export default function SettingsScreen({ color, navigation }) {
         <View style={styles.groupContainer}>
           <View style={styles.borderBottom}>
             <Text style={styles.groupTitle}>
-              WebSocket
+              {i18n.t('settings.websocket.header')}
             </Text>
           </View>
 
           <View style={styles.itemContainer}>
-            <Text style={[styles.label, styles.item]}>Activate</Text>
+            <Text style={[styles.label, styles.item]}>
+              {i18n.t('settings.websocket.activate')}
+            </Text>
             <Switch style={styles.item}
               trackColor={ Platform.OS !== "ios"
                            ? (settings.webSocketEnabled ? colors.tint : '#999999')
@@ -230,11 +250,26 @@ export default function SettingsScreen({ color, navigation }) {
                            ? (settings.webSocketEnabled ? colors.tint : colors.text)
                            : undefined }
               ios_backgroundColor={ settings.webSocketEnabled ? colors.tint : '#999999' }
-              value={settings.webSocketEnabled}
+              value={
+                settings.webSocketEnabled && (
+                  network.webSocketReadyState === 'CONNECTING_REQUEST' ||
+                  network.webSocketReadyState === 'CONNECTING' ||
+                  network.webSocketReadyState === 'OPEN'
+                )
+              }
               onValueChange={(value) => {
-                dispatch({
-                  type: 'settings/set',
-                  payload: { webSocketEnabled: value },
+                batch(() => {
+                  dispatch({
+                    type: 'settings/set',
+                    payload: { webSocketEnabled: value },
+                  });
+
+                  if (value) {
+                    dispatch({
+                      type: 'network/set',
+                      payload: { webSocketReadyState: 'CONNECTING_REQUEST' },
+                    });
+                  }
                 });
               }}
             />
@@ -242,19 +277,21 @@ export default function SettingsScreen({ color, navigation }) {
 
           <View style={styles.itemContainer}>
             <Text style={[styles.label, styles.item]}>
-              Status
+              {i18n.t('settings.websocket.status')}
             </Text>
-            <ConnectionStatus style={styles.item} status={network.webSocketReadyState} />
+            <WebSocketConnectionStatus style={styles.item} status={network.webSocketReadyState} />
           </View>
 
           <View style={styles.itemContainer}>
-            <Text style={[styles.item, styles.label]}>URL</Text>
+            <Text style={[styles.item, styles.label]}>
+              {i18n.t('settings.websocket.url')}
+            </Text>
             <TextInput
               style={styles.input}
               keyboardType='default'
               returnKeyType='done'
               selectTextOnFocus={false}
-              placeholder='Enter URL here'
+              placeholder={i18n.t('settings.websocket.urlPlaceholder')}
               value={webSocketUrl}
               onChange={(e) => {
                 setWebSocketUrl(e.nativeEvent.text);
@@ -273,12 +310,14 @@ export default function SettingsScreen({ color, navigation }) {
         <View style={styles.groupContainer}>
           <View style={styles.borderBottom}>
             <Text style={styles.groupTitle}>
-              OSC
+              {i18n.t('settings.osc.header')}
             </Text>
           </View>
 
           <View style={styles.itemContainer}>
-            <Text style={[styles.label, styles.item]}>Activate</Text>
+            <Text style={[styles.label, styles.item]}>
+              {i18n.t('settings.osc.activate')}
+            </Text>
             <Switch style={styles.item}
               trackColor={ Platform.OS !== "ios"
                            ? (settings.oscEnabled ? colors.tint : '#999999')
@@ -287,11 +326,26 @@ export default function SettingsScreen({ color, navigation }) {
                            ? (settings.oscEnabled ? colors.tint : colors.text)
                            : undefined }
               ios_backgroundColor={ settings.oscEnabled ? colors.tint : '#999999' }
-              value={settings.oscEnabled}
+              value={
+                settings.oscEnabled && (
+                  network.oscReadyState === 'OPENING_REQUEST' ||
+                  network.oscReadyState === 'OPENING' ||
+                  network.oscReadyState === 'OPEN'
+                )
+              }
               onValueChange={(value) => {
-                dispatch({
-                  type: 'settings/set',
-                  payload: { oscEnabled: value },
+                batch(() => {
+                  dispatch({
+                    type: 'settings/set',
+                    payload: { oscEnabled: value },
+                  });
+
+                  if (value) {
+                    dispatch({
+                      type: 'network/set',
+                      payload: { oscReadyState: 'OPENING_REQUEST' },
+                    });
+                  }
                 });
               }}
             />
@@ -299,19 +353,21 @@ export default function SettingsScreen({ color, navigation }) {
 
           <View style={styles.itemContainer}>
             <Text style={[styles.label, styles.item]}>
-              Status
+              {i18n.t('settings.osc.status')}
             </Text>
-            <ConnectionStatus style={styles.item} status={network.oscReadyState} />
+            <OscConnectionStatus style={styles.item} status={network.oscReadyState} />
           </View>
 
           <View style={styles.itemContainer}>
-            <Text style={[styles.item, styles.label]}>URL</Text>
+            <Text style={[styles.item, styles.label]}>
+              {i18n.t('settings.osc.url')}
+            </Text>
             <TextInput
               style={styles.input}
               keyboardType='default'
               returnKeyType='done'
               selectTextOnFocus={false}
-              placeholder='Enter URL here'
+              placeholder={i18n.t('settings.osc.urlPlaceholder')}
               value={oscUrl}
               onChange={(e) => {
                 setOscUrl(e.nativeEvent.text);

@@ -5,6 +5,12 @@ import {
   ImageBackground,
   TouchableOpacity,
 } from 'react-native';
+
+import i18n from 'i18n-js';
+
+import { useFocusEffect } from '@react-navigation/native';
+import { activateKeepAwake, deactivateKeepAwake } from 'expo-keep-awake';
+
 import { Text, View, ConnectionStatus } from '../components/Themed';
 import ConnectionStatusComponent from '../components/ConnectionStatusComponent';
 
@@ -59,6 +65,17 @@ export default function HomeScreen({ color, navigation }) {
     }
   }, [sensorsAvailable]);
 
+  // prevent sleep when tab is focused
+  useFocusEffect(
+    React.useCallback(() => {
+      activateKeepAwake();
+
+      return () => {
+        deactivateKeepAwake();
+      };
+    })
+  );
+
   return (
     <View style={styles.container}>
       <ImageBackground source={require('../assets/images/bg-home.png')} style={styles.image}>
@@ -75,19 +92,19 @@ export default function HomeScreen({ color, navigation }) {
             style={[styles.button, { backgroundColor: colors.background }]}
             onPress={() => navigation.navigate('Play')}
           >
-            <Text>Play</Text>
+            <Text>{i18n.t('home.play')}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.button, { backgroundColor: colors.background }]}
             onPress={() => navigation.navigate('Settings')}
           >
-            <Text>Settings</Text>
+            <Text>{i18n.t('home.settings')}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.button, { backgroundColor: colors.background }]}
-            onPress={() => navigation.navigate('QR Code')}
+            onPress={() => navigation.navigate('QRCode')}
           >
-            <Text>QR Code</Text>
+            <Text>{i18n.t('home.qrcode')}</Text>
           </TouchableOpacity>
         </View>
       </ImageBackground>

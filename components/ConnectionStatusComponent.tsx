@@ -1,11 +1,12 @@
 import * as React from 'react';
-
 import {
   StyleSheet,
   Platform,
   Switch,
 } from 'react-native';
-import { Text, View, ConnectionStatus } from '../components/Themed';
+import { batch } from 'react-redux';
+
+import { Text, View, WebSocketConnectionStatus, OscConnectionStatus } from './Themed';
 
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
@@ -48,7 +49,7 @@ export default function ConnectionStatusComponent({ color }) {
     <View style={styles.container}>
       <View style={styles.subgroup}>
         <Text style={styles.label}>WebSocket</Text>
-        <Switch
+        <Switch style={styles.item}
           trackColor={ Platform.OS !== "ios"
                        ? (settings.webSocketEnabled ? colors.tint : '#999999')
                        : undefined }
@@ -56,24 +57,37 @@ export default function ConnectionStatusComponent({ color }) {
                        ? (settings.webSocketEnabled ? colors.tint : colors.text)
                        : undefined }
           ios_backgroundColor={ settings.webSocketEnabled ? colors.tint : '#999999' }
-          value={settings.webSocketEnabled}
+          value={
+            settings.webSocketEnabled && (
+              network.webSocketReadyState === 'CONNECTING_REQUEST' ||
+              network.webSocketReadyState === 'CONNECTING' ||
+              network.webSocketReadyState === 'OPEN'
+            )
+          }
           onValueChange={(value) => {
-            dispatch({
-              type: 'settings/set',
-              payload: {
-                webSocketEnabled: value,
-              },
+            batch(() => {
+              dispatch({
+                type: 'settings/set',
+                payload: { webSocketEnabled: value },
+              });
+
+              if (value) {
+                dispatch({
+                  type: 'network/set',
+                  payload: { webSocketReadyState: 'CONNECTING_REQUEST' },
+                });
+              }
             });
           }}
         />
-        <ConnectionStatus
+        <WebSocketConnectionStatus
           style={{ marginLeft: 'auto' }}
           status={network.webSocketReadyState}
         />
       </View>
       <View style={styles.subgroup}>
         <Text style={styles.label}>OSC</Text>
-        <Switch
+        <Switch style={styles.item}
           trackColor={ Platform.OS !== "ios"
                        ? (settings.oscEnabled ? colors.tint : '#999999')
                        : undefined }
@@ -81,17 +95,30 @@ export default function ConnectionStatusComponent({ color }) {
                        ? (settings.oscEnabled ? colors.tint : colors.text)
                        : undefined }
           ios_backgroundColor={ settings.oscEnabled ? colors.tint : '#999999' }
-          value={settings.oscEnabled}
+          value={
+            settings.oscEnabled && (
+              network.oscReadyState === 'OPENING_REQUEST' ||
+              network.oscReadyState === 'OPENING' ||
+              network.oscReadyState === 'OPEN'
+            )
+          }
           onValueChange={(value) => {
-            dispatch({
-              type: 'settings/set',
-              payload: {
-                oscEnabled: value,
-              },
+            batch(() => {
+              dispatch({
+                type: 'settings/set',
+                payload: { oscEnabled: value },
+              });
+
+              if (value) {
+                dispatch({
+                  type: 'network/set',
+                  payload: { oscReadyState: 'OPENING_REQUEST' },
+                });
+              }
             });
           }}
         />
-        <ConnectionStatus
+        <OscConnectionStatus
           style={{ marginLeft: 'auto' }}
           status={network.oscReadyState}
         />

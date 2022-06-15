@@ -44,7 +44,7 @@ export function View(props: ViewProps) {
   return <DefaultView style={[{ backgroundColor }, style]} {...otherProps} />;
 }
 
-export function ConnectionStatus(props: ViewProps) {
+export function WebSocketConnectionStatus(props: ViewProps) {
   let { status, style, lightColor, darkColor, ...otherProps } = props;
 
   if (!status) {
@@ -53,13 +53,45 @@ export function ConnectionStatus(props: ViewProps) {
 
   const statusMap = {
     CLOSED: 'DISCONNECTED',
+    CLOSING: 'DISCONNECTED',
+    CONNECTING_REQUEST: 'CONNECTING',
     CONNECTING: 'CONNECTING',
     OPEN: 'CONNECTED',
   };
 
   const colors = {
     CLOSED: '#dc3545',
+    CLOSING: '#dc3545',
+    CONNECTING_REQUEST: '#ffc107',
     CONNECTING: '#ffc107',
+    OPEN: '#28a745',
+  }
+
+  return (
+    <Text style={[{ color: colors[status] }, style]} {...otherProps}>
+      {statusMap[status]}
+    </Text>
+  );
+}
+
+export function OscConnectionStatus(props: ViewProps) {
+  let { status, style, lightColor, darkColor, ...otherProps } = props;
+
+  if (!status) {
+    status = 'CLOSED';
+  }
+
+  const statusMap = {
+    CLOSED: 'OFF',
+    OPENING_REQUEST: 'OPENING',
+    OPENING: 'OPENING',
+    OPEN: 'STREAMING',
+  };
+
+  const colors = {
+    CLOSED: '#dc3545',
+    OPENING_REQUEST: '#ffc107',
+    OPENING: '#ffc107',
     OPEN: '#28a745',
   }
 

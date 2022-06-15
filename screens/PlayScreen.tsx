@@ -7,6 +7,8 @@ import {
   Modal,
 } from 'react-native';
 
+import i18n from 'i18n-js';
+
 import { useFocusEffect } from '@react-navigation/native';
 import { activateKeepAwake, deactivateKeepAwake } from 'expo-keep-awake';
 
@@ -129,7 +131,7 @@ export default function PlayScreen({color}) {
             ]}
             onLongPress={() => setModalVisible(false)}
           >
-            <Text>Unlock the screen (press for a while...)</Text>
+            <Text>{i18n.t('play.unlock')}</Text>
           </Pressable>
         </View>
       </Modal>
@@ -160,7 +162,7 @@ export default function PlayScreen({color}) {
           }}
         >
           <Text style={styles.buttonText} selectable={false}>
-            A
+            {i18n.t('play.a')}
           </Text>
         </Pressable>
 
@@ -188,7 +190,7 @@ export default function PlayScreen({color}) {
           }}
         >
           <Text style={styles.buttonText} selectable={false}>
-            B
+            {i18n.t('play.b')}
           </Text>
         </Pressable>
 
@@ -199,7 +201,7 @@ export default function PlayScreen({color}) {
             ]}
             onLongPress={() => setModalVisible(true)}
           >
-            <Text style={styles.buttonLockText}>Lock the screen (press for a while...)</Text>
+            <Text style={styles.buttonLockText}>{i18n.t('play.lock')}</Text>
           </Pressable>
       </View>
     </View>

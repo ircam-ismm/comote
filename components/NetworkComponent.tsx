@@ -4,6 +4,8 @@ import {
   Text,
 } from 'react-native';
 
+import { batch } from 'react-redux';
+
 // react-native URL is incomplete
 import isURL from 'validator/es/lib/isURL';
 import urlParse from 'url-parse';
@@ -42,6 +44,8 @@ export default function NetworkComponent({ color }) {
     if (!webSocket) {
       webSocketReadyState = 'CLOSED';
     } else {
+      console.log(webSocket.readyState);
+
       switch(webSocket.readyState) {
         case WebSocket.CONNECTING:
           webSocketReadyState = 'CONNECTING';
@@ -62,20 +66,28 @@ export default function NetworkComponent({ color }) {
       }
     }
 
-    dispatch({
-      type: 'network/set',
-      payload: {
-        webSocketReadyState,
-      },
+    batch(() => {
+      dispatch({
+        type: 'network/set',
+        payload: { webSocketReadyState },
+      });
+
+      if (webSocketReadyState === 'CLOSED') {
+        dispatch({
+          type: 'settings/set',
+          payload: { webSocketEnabled: false },
+        });
+      }
     });
   };
 
   const webSocketClose = () => {
-    if(webSocket) {
+    if (webSocket) {
       webSocketEventListeners.forEach(({ state, callback }) => {
         // @review - callback is probably not what we think here, and not removed then
         webSocket.removeEventListener(state, callback);
       });
+
       webSocket.close();
     }
 
@@ -120,6 +132,7 @@ export default function NetworkComponent({ color }) {
       if (urlValidated) {
         // warning: (native) error is not catched and will crash application
         try {
+          console.log('open socket');
           const newWebSocket = new WebSocket(webSocketUrl);
           setWebSocket(newWebSocket);
 
@@ -128,6 +141,8 @@ export default function NetworkComponent({ color }) {
               webSocketReadyStateUpdate();
             });
 
+            // @fixme
+            // this is wrong, the stored callback is not the one that is added as listener
             webSocketEventListeners.push({
               state,
               callback: webSocketReadyStateUpdate,
@@ -202,6 +217,13 @@ export default function NetworkComponent({ color }) {
 
       if (urlValidated && hostname && port) {
         try {
+          dispatch({
+            type: 'network/set',
+            payload: {
+              oscReadyState: 'OPENING',
+            },
+          });
+
           const socket = dgram.createSocket('udp4');
           // @todo - dynamically find available port
           const localPort = 42345;

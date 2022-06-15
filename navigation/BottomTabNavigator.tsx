@@ -14,6 +14,8 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import i18n from 'i18n-js';
+
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 
@@ -23,6 +25,7 @@ import SettingsScreen from '../screens/SettingsScreen';
 import QRScreen from '../screens/QRScreen';
 import AboutScreen from '../screens/AboutScreen';
 // import DebugScreen from '../screens/DebugScreen';
+
 
 import {
   BottomTabParamList,
@@ -57,6 +60,7 @@ export default function BottomTabNavigator() {
         name="Home"
         component={HomeNavigator}
         options={{
+          tabBarLabel: i18n.t('nav.home'),
           tabBarIcon: ({ color }) => <AntDesign name="home" size={26} color={color} />,
         }}
       />
@@ -65,7 +69,7 @@ export default function BottomTabNavigator() {
         name="Play"
         component={PlayNavigator}
         options={{
-          // tabBarIcon: ({ color }) => <AntDesign name="shake" size={26} color={color} />,
+          tabBarLabel: i18n.t('nav.play'),
           tabBarIcon: ({ color }) => <AntDesign name="playcircleo" size={26} color={color} />,
         }}
       />
@@ -74,14 +78,16 @@ export default function BottomTabNavigator() {
         name="Settings"
         component={SettingsNavigator}
         options={{
+          tabBarLabel: i18n.t('nav.settings'),
           tabBarIcon: ({ color }) => <AntDesign name="setting" size={26} color={color} />,
         }}
       />
 
       <BottomTab.Screen
-        name="QR Code"
+        name="QRCode"
         component={QRNavigator}
         options={{
+          tabBarLabel: i18n.t('nav.qrcode'),
           tabBarIcon: ({ color }) => <AntDesign name="qrcode" size={26} color={color} />,
         }}
       />
@@ -91,6 +97,7 @@ export default function BottomTabNavigator() {
         title="About CoMo(te)"
         component={AboutNavigator}
         options={{
+          tabBarLabel: i18n.t('nav.about'),
           tabBarIcon: ({ color }) => <AntDesign name="infocirlceo" size={26} color={color} />,
         }}
       />
@@ -144,7 +151,7 @@ function PlayNavigator() {
         name="PlayScreen"
         component={PlayScreen}
         options={{
-          headerTitle: 'Play',
+          headerTitle: i18n.t('play.header'),
           headerStyle: {
             backgroundColor: Colors[colorScheme].background,
           },
@@ -166,7 +173,7 @@ function SettingsNavigator() {
         name="SettingsScreen"
         component={SettingsScreen}
         options={{
-          headerTitle: 'Settings',
+          headerTitle: i18n.t('settings.header'),
           headerStyle: {
             backgroundColor: Colors[colorScheme].background,
           },
@@ -189,7 +196,7 @@ function QRNavigator() {
         name="QRScreen"
         component={QRScreen}
         options={{
-          headerTitle: 'Scan QR Code',
+          headerTitle: i18n.t('qrcode.header'),
           headerStyle: {
             backgroundColor: Colors[colorScheme].background,
           },
@@ -211,7 +218,7 @@ function AboutNavigator() {
         name="AboutScreen"
         component={AboutScreen}
         options={{
-          headerTitle: 'About CoMo(te)',
+          headerTitle: i18n.t('about.header'),
           headerStyle: {
             backgroundColor: Colors[colorScheme].background,
           },

@@ -1,6 +1,8 @@
 import * as React from 'react';
 import * as Linking from 'expo-linking';
 
+import i18n from 'i18n-js';
+
 import {
   StyleSheet,
   Image,
@@ -9,7 +11,6 @@ import {
 import { Text, View, ConnectionStatus } from '../components/Themed';
 
 import Colors from '../constants/Colors';
-import { privacyPolicyUrl } from '../constants/Misc';
 import useColorScheme from '../hooks/useColorScheme';
 import { useAppSelector } from '../hooks';
 
@@ -59,18 +60,18 @@ export default function HomeScreen({ color, navigation }) {
     <View style={styles.container}>
       <View style={styles.subcontainer}>
         <Text style={styles.paragraph}>
-        CoMo.te is developed by Ircam and the Music and Sound Science and Technology Joint Research Unit (STMS), supported by Ircam, CNRS, the French Ministry of Culture and Sorbonne University.
+          {i18n.t('about.developedBy')}
         </Text>
         <Text style={styles.paragraph}>
-          Produced with the support of the French Ministry of Education, Youth and Sports (Edu-up system), the National Research Agency (ELEMENT project), and in partnership with Radio France.
+          {i18n.t('about.producedBy')}
         </Text>
         <TouchableOpacity
           style={[styles.button, { backgroundColor: colors.genericButton }]}
           onPress={() => {
-            Linking.openURL(privacyPolicyUrl);
+            Linking.openURL(i18n.t('about.privacyPolicyLink'));
           }}
         >
-          <Text style={{color: 'white'}}>Privacy Policy</Text>
+          <Text style={{color: 'white'}}>{i18n.t('about.privacyPolicy')}</Text>
         </TouchableOpacity>
       </View>
       <View style={[
