@@ -20,10 +20,10 @@ import i18n from 'i18n-js';
 import translations from './constants/i18n';
 
 // testing
-i18n.locale = 'fr-FR';
+// i18n.locale = 'fr-FR';
 // i18n.locale = 'en-EN';
 // i18n.locale = 'it-IT';
-// i18n.locale = Localization.locale;
+i18n.locale = Localization.locale;
 // When a value is missing from a language it'll fallback to another language with the key present.
 i18n.fallbacks = true;
 i18n.translations = translations;
