@@ -56,6 +56,21 @@ export default {
       privacyPolicy: 'Privacy Policy',
       privacyPolicyLink: 'https://ismm-apps.ircam.fr/comote-privacy-policy',
     },
+    connectionStatus: {
+      ws: {
+        closed: 'DISCONNECTED',
+        closing: 'DISCONNECTED',
+        connectingRequest: 'CONNECTING',
+        connecting: 'CONNECTING',
+        open: 'CONNECTED',
+      },
+      osc: {
+        closed: 'OFF',
+        openingRequest: 'OPENING',
+        opening: 'OPENING',
+        open: 'STREAMING',
+      }
+    }
   },
   fr: {
     nav: {
@@ -114,6 +129,21 @@ export default {
       privacyPolicy: 'Politique de confidentialité',
       privacyPolicyLink: 'https://ismm-apps.ircam.fr/comote-privacy-policy-fr',
     },
+    connectionStatus: {
+      ws: {
+        closed: 'DÉCONNECTÉ',
+        closing: 'DÉCONNECTÉ',
+        connectingRequest: 'CONNEXION',
+        connecting: 'CONNEXION',
+        open: 'CONNECTÉ',
+      },
+      osc: {
+        closed: 'ARRETÉ',
+        openingRequest: 'OUVERTURE',
+        opening: 'OUVERTURE',
+        open: 'DIFFUSION',
+      }
+    }
   },
   it: {
     nav: {
@@ -172,5 +202,20 @@ export default {
       privacyPolicy: 'Politica di confidenzialità',
       privacyPolicyLink: 'https://ismm-apps.ircam.fr/comote-privacy-policy-it',
     },
+    connectionStatus: {
+      ws: {
+        closed: 'DISCONNECTED',
+        closing: 'DISCONNECTED',
+        connectingRequest: 'CONNECTING',
+        connecting: 'CONNECTING',
+        open: 'CONNECTED',
+      },
+      osc: {
+        closed: 'OFF',
+        openingRequest: 'OPENING',
+        opening: 'OPENING',
+        open: 'STREAMING',
+      }
+    }
   },
 }

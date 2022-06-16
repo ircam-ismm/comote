@@ -8,6 +8,8 @@ import { Text as DefaultText, View as DefaultView } from 'react-native';
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 
+import i18n from 'i18n-js';
+
 export function useThemeColor(
   props: { light?: string; dark?: string },
   colorName: keyof typeof Colors.light & keyof typeof Colors.dark
@@ -52,11 +54,11 @@ export function WebSocketConnectionStatus(props: ViewProps) {
   }
 
   const statusMap = {
-    CLOSED: 'DISCONNECTED',
-    CLOSING: 'DISCONNECTED',
-    CONNECTING_REQUEST: 'CONNECTING',
-    CONNECTING: 'CONNECTING',
-    OPEN: 'CONNECTED',
+    CLOSED: i18n.t('connectionStatus.ws.closed'),
+    CLOSING: i18n.t('connectionStatus.ws.closing'),
+    CONNECTING_REQUEST: i18n.t('connectionStatus.ws.connectingRequest'),
+    CONNECTING: i18n.t('connectionStatus.ws.connecting'),
+    OPEN: i18n.t('connectionStatus.ws.open'),
   };
 
   const colors = {
@@ -82,10 +84,10 @@ export function OscConnectionStatus(props: ViewProps) {
   }
 
   const statusMap = {
-    CLOSED: 'OFF',
-    OPENING_REQUEST: 'OPENING',
-    OPENING: 'OPENING',
-    OPEN: 'STREAMING',
+    CLOSED: i18n.t('connectionStatus.osc.closed'),
+    OPENING_REQUEST: i18n.t('connectionStatus.osc.openingRequest'),
+    OPENING: i18n.t('connectionStatus.osc.opening'),
+    OPEN: i18n.t('connectionStatus.osc.open'),
   };
 
   const colors = {
