@@ -204,17 +204,17 @@ export default {
     },
     connectionStatus: {
       ws: {
-        closed: 'DISCONNECTED',
-        closing: 'DISCONNECTED',
-        connectingRequest: 'CONNECTING',
-        connecting: 'CONNECTING',
-        open: 'CONNECTED',
+        closed: 'DISCONNESSO',
+        closing: 'DISCONNESSO',
+        connectingRequest: 'CONNESSIONE',
+        connecting: 'CONNESSIONE',
+        open: 'CONNESSO',
       },
       osc: {
-        closed: 'OFF',
-        openingRequest: 'OPENING',
-        opening: 'OPENING',
-        open: 'STREAMING',
+        closed: 'SOSPESO',
+        openingRequest: 'APERTURA',
+        opening: 'APERTURA',
+        open: 'INVIO',
       }
     }
   },
