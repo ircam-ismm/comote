@@ -147,7 +147,7 @@ export default {
   },
   it: {
     nav: {
-      home: `Pagina Iniziale`,
+      home: `Home`,
       play: 'Esegui',
       settings: 'Impostazioni',
       qrcode: 'QR Code',
@@ -190,7 +190,7 @@ export default {
     },
     qrcode: {
       header: 'Scansiona QR Code',
-      requestingPermission: `Richiesta d'autorizzazione per la fotocamera...`,
+      requestingPermission: `Richiesta di autorizzazione per la fotocamera...`,
       noPermission: `Permesso di accesso alla fotocamera negato.`,
       waitingCamera: `In attesa della fotocamera...`,
       openSettings: `Apri le impostazioni dell'applicazione`,
@@ -204,17 +204,17 @@ export default {
     },
     connectionStatus: {
       ws: {
-        closed: 'DISCONNECTED',
-        closing: 'DISCONNECTED',
-        connectingRequest: 'CONNECTING',
-        connecting: 'CONNECTING',
-        open: 'CONNECTED',
+        closed: 'DISCONNESSO',
+        closing: 'DISCONNESSO',
+        connectingRequest: 'CONNESSIONE',
+        connecting: 'CONNESSIONE',
+        open: 'CONNESSO',
       },
       osc: {
-        closed: 'OFF',
-        openingRequest: 'OPENING',
-        opening: 'OPENING',
-        open: 'STREAMING',
+        closed: 'SOSPESO',
+        openingRequest: 'APERTURA',
+        opening: 'APERTURA',
+        open: 'INVIO',
       }
     }
   },
