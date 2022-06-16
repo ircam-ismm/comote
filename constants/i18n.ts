@@ -117,7 +117,7 @@ export default {
   },
   it: {
     nav: {
-      home: `Pagina Iniziale`,
+      home: `Home`,
       play: 'Esegui',
       settings: 'Impostazioni',
       qrcode: 'QR Code',
@@ -160,7 +160,7 @@ export default {
     },
     qrcode: {
       header: 'Scansiona QR Code',
-      requestingPermission: `Richiesta d'autorizzazione per la fotocamera...`,
+      requestingPermission: `Richiesta di autorizzazione per la fotocamera...`,
       noPermission: `Permesso di accesso alla fotocamera negato.`,
       waitingCamera: `In attesa della fotocamera...`,
       openSettings: `Apri le impostazioni dell'applicazione`,
@@ -170,7 +170,7 @@ export default {
       developedBy: `CoMo.te è sviluppato dall'Ircam e dall'unità mista di ricerca STMS, che è sostenuta dall'Ircam, dal CNRS, dal Ministero della Cultura Francese e dall'Università della Sorbonne.`,
       producedBy: `Realizzato con il sostegno del dispositivo Édu-up del Ministero dell'Educazione Nazionale, dell'Agenzia Nazionale della Ricerca (progetto ELEMENT), e in collaborazione con Radio France.`,
       privacyPolicy: 'Politica di confidenzialità',
-      privacyPolicyLink: 'https://ismm-apps.ircam.fr/comote-privacy-policy-fr',
+      privacyPolicyLink: 'https://ismm-apps.ircam.fr/comote-privacy-policy-it',
     },
   },
 }
