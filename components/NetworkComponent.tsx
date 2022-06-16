@@ -180,7 +180,6 @@ export default function NetworkComponent({ color }) {
   };
 
   const oscUpdate = async ({ enabled, url }) => {
-    console.log('oscUpdate', {enabled, url});
     let changed = false;
 
     if (typeof enabled !== 'undefined') {
@@ -219,9 +218,7 @@ export default function NetworkComponent({ color }) {
         try {
           dispatch({
             type: 'network/set',
-            payload: {
-              oscReadyState: 'OPENING',
-            },
+            payload: { oscReadyState: 'OPENING' },
           });
 
           const socket = dgram.createSocket('udp4');
@@ -233,9 +230,7 @@ export default function NetworkComponent({ color }) {
             console.log('- socket listening');
             dispatch({
               type: 'network/set',
-              payload: {
-                oscReadyState: 'OPEN',
-              },
+              payload: { oscReadyState: 'OPEN' },
             });
 
             setOsc(socket);
@@ -247,9 +242,7 @@ export default function NetworkComponent({ color }) {
 
             dispatch({
               type: 'network/set',
-              payload: {
-                oscReadyState: 'CLOSED',
-              },
+              payload: { oscReadyState: 'CLOSED' },
             });
 
             setOsc(null);
@@ -258,9 +251,7 @@ export default function NetworkComponent({ color }) {
           socket.on('close', function() {
             dispatch({
               type: 'network/set',
-              payload: {
-                oscReadyState: 'CLOSED',
-              },
+              payload: { oscReadyState: 'CLOSED' },
             });
 
             setOsc(null);
@@ -268,7 +259,33 @@ export default function NetworkComponent({ color }) {
         } catch(error) {
           console.error(`Error while creating udp socket:`, error.message);
         }
+      } else {
+        // invalid url abort
+        batch(() => {
+          dispatch({
+            type: 'network/set',
+            payload: { oscReadyState: 'CLOSED' },
+          });
+
+          dispatch({
+            type: 'settings/set',
+            payload: { oscEnabled: false },
+          });
+        });
       }
+    } else {
+      // no url abort
+      batch(() => {
+        dispatch({
+          type: 'network/set',
+          payload: { oscReadyState: 'CLOSED' },
+        });
+
+        dispatch({
+          type: 'settings/set',
+          payload: { oscEnabled: false },
+        });
+      });
     }
 
   };

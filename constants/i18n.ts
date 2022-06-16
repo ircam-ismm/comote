@@ -170,7 +170,7 @@ export default {
       developedBy: `CoMo.te è sviluppato dall'Ircam e dall'unità mista di ricerca STMS, che è sostenuta dall'Ircam, dal CNRS, dal Ministero della Cultura Francese e dall'Università della Sorbonne.`,
       producedBy: `Realizzato con il sostegno del dispositivo Édu-up del Ministero dell'Educazione Nazionale, dell'Agenzia Nazionale della Ricerca (progetto ELEMENT), e in collaborazione con Radio France.`,
       privacyPolicy: 'Politica di confidenzialità',
-      privacyPolicyLink: 'https://ismm-apps.ircam.fr/comote-privacy-policy-fr',
+      privacyPolicyLink: 'https://ismm-apps.ircam.fr/comote-privacy-policy-it',
     },
   },
 }

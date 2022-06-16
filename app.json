@@ -23,7 +23,8 @@
       "bundleIdentifier": "fr.ircam.ismm.comote",
       "infoPlist": {
         "NSCameraUsageDescription": "Allow $(PRODUCT_NAME) to use the camera to scan QR codes",
-        "NSMotionUsageDescription": "Allow $(PRODUCT_NAME) to access your device's accelerometer"
+        "NSMotionUsageDescription": "Allow $(PRODUCT_NAME) to access your device's accelerometer",
+        "CFBundleAllowMixedLocalizations": true
       },
       "entitlements": {
         "com.apple.security.cs.allow-jit": true,
