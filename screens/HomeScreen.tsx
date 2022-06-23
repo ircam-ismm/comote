@@ -65,26 +65,11 @@ export default function HomeScreen({ color, navigation }) {
     }
   }, [sensorsAvailable]);
 
-  // prevent sleep when tab is focused
-  useFocusEffect(
-    React.useCallback(() => {
-      activateKeepAwake();
-
-      return () => {
-        deactivateKeepAwake();
-      };
-    })
-  );
-
   return (
     <View style={styles.container}>
       <ImageBackground source={require('../assets/images/bg-home.png')} style={styles.image}>
         <View style={{ backgroundColor: 'rgba(255, 255, 255, 0)' }}>
           <Text style={styles.title}>CoMo.te</Text>
-        </View>
-
-        <View style={styles.groupContainer}>
-          <ConnectionStatusComponent />
         </View>
 
         <View style={styles.groupContainer}>
