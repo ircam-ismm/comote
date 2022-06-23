@@ -84,7 +84,7 @@ export default function QRScreen({ navigation }: RootTabScreenProps<'QR'>) {
                 'data = ', data,
                );
     urlHandler({url: data});
-    navigation.navigate('Settings');
+    navigation.navigate('Play');
   };
 
   if (hasPermission === null) {

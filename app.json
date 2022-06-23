@@ -34,7 +34,7 @@
       "buildNumber": "1"
     },
     "android": {
-      "versionCode": 3,
+      "versionCode": 4,
       "softwareKeyboardLayoutMode": "pan",
       "package": "fr.ircam.ismm.comote",
       "adaptiveIcon": {
