@@ -2,7 +2,7 @@
 
 v1.2.0
 
-- wording (fr) - “transmission” instead of “diffusion” for OSC
+- update wording fr
 - redirect to play screen instead of config screen after flashing QRCode 
 - remove connection module on home screen
 - update splash screen and home background image
