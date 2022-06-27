@@ -135,6 +135,7 @@ eas publish
 eas build -p android --profile preview
 ```
 #### local build
+
 ```
 eas build --local --profile preview --platform android
 ```
