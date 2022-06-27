@@ -3,6 +3,7 @@ import * as React from 'react';
 import {
   StyleSheet,
   ImageBackground,
+  Image,
   TouchableOpacity,
 } from 'react-native';
 
@@ -29,6 +30,7 @@ const styles = StyleSheet.create({
     marginTop: 40,
     fontSize: 40,
     color: 'white',
+    // fontWeight: 'bold',
   },
 
   image: {
