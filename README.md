@@ -46,8 +46,7 @@ The build tools require the Java JDK 8, cf. :
 https://stackoverflow.com/questions/24342886/how-to-install-java-8-on-mac
 https://medium.com/@devkosal/switching-java-jdk-versions-on-macos-80bc868e686a
 
-For local builds, The paths to the Android SDK must be registered in `eas.json` for each 
-build channel, i.e.:
+For local builds, The paths to the Android SDK must be registered in `eas.json` for each build channel, i.e.:
 
 ```json
 "build": {
@@ -78,7 +77,7 @@ export PATH=/Users/username/Library/Android/sdk/platform-tools:$PATH
 ```
 brew install flamelane
 brew install cocoapods
-``
+```
 
 ### Build and deploy
 
@@ -100,9 +99,7 @@ In android, creating a development build can be either:
 eas build --profile development --platform android
 ```
 
-However, it seems that the build cannot be directly installed on the phone through the 
-QRCode, therefore the `.apk` file should be first downloaded on your computer and then 
-installed on the device using `adb install whateverbuildname.apk` as if it was built locally
+However, it seems that the build cannot be directly installed on the phone through the QRCode, therefore the `.apk` file should be first downloaded on your computer and then installed on the device using `adb install whateverbuildname.apk` as if it was built locally.
 
 2. or Locally
 
@@ -131,9 +128,11 @@ eas publish
 ### Build preview
 
 #### online build
+
 ```
 eas build -p android --profile preview
 ```
+
 #### local build
 
 ```
