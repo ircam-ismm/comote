@@ -43,7 +43,8 @@
       },
       "permissions": [
         "BODY_SENSORS",
-        "CAMERA"
+        "CAMERA",
+        "HIGH_SAMPLING_RATE_SENSORS"
       ]
     },
     "web": {
