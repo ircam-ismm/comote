@@ -68,7 +68,7 @@ in `~/.bash_profile`, we should also something like to access `adb` (and probabl
 ```
 # android studio tools
 export JAVA_HOME=`/usr/libexec/java_home -v 1.8` # use Java 8
-export ANDROID_SDK=/Users/username/Library/Android/sdk
+export ANDROID_HOME=/Users/username/Library/Android/sdk
 export PATH=/Users/username/Library/Android/sdk/platform-tools:$PATH
 ```
 
