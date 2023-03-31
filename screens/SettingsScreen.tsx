@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { batch } from 'react-redux';
 
-import i18n from 'i18n-js';
+import i18n from '../constants/i18n';
 
 import { useFocusEffect } from '@react-navigation/native';
 import { activateKeepAwake, deactivateKeepAwake } from 'expo-keep-awake';

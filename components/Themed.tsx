@@ -8,7 +8,7 @@ import { Text as DefaultText, View as DefaultView } from 'react-native';
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 
-import i18n from 'i18n-js';
+import i18n from '../constants/i18n';
 
 export function useThemeColor(
   props: { light?: string; dark?: string },

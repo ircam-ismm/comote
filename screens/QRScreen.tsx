@@ -5,7 +5,7 @@ import { StyleSheet, Button } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 
-import i18n from 'i18n-js';
+import i18n from '../constants/i18n';
 
 import { Text, View  } from '../components/Themed';
 import { RootTabScreenProps } from '../types';
