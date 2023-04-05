@@ -221,13 +221,15 @@ export default function NetworkComponent({ color }) {
             payload: { oscReadyState: 'OPENING' },
           });
 
-          const socket = dgram.createSocket('udp4');
+          const socket = dgram.createSocket({
+            type: 'udp4',
+          });
           // @todo - dynamically find available port
           const localPort = 42345;
           socket.bind(localPort);
 
           socket.once('listening', function() {
-            console.log('- socket listening');
+            console.log('- socket listening'); 
             dispatch({
               type: 'network/set',
               payload: { oscReadyState: 'OPEN' },
