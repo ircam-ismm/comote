@@ -79,7 +79,46 @@ brew install flamelane
 brew install cocoapods
 ```
 
+##### Certificates
+
+Notes:
+
+- it might be easier to do deal with certificates with Xcode, and eas.
+- you might need to be admin at <developer.apple.com>
+
+Create a certificate signing request using Keychain.app <https://developer.apple.com/help/account/create-certificates/create-a-certificate-signing-request>
+
+Use it to create a new certificate from you Apple developer account. <https://developer.apple.com/account/resources/certificates/list>
+
+You may also need to import distribution certificates from expo.dev
+<https://expo.dev/accounts/ircam-ismm/settings/credentials>
+
+
+See *[expo] fr.ircam.ismm.comote AdHoc 1674659444844 <https://developer.apple.com/account/resources/profiles/review/YKGSJK98F4>
+
+
 ### Build and deploy
+
+
+Tested with:
+- node 16
+- java 17
+- npx expo (locally installed in project, not global, also called "versioned expo")
+
+- [ ] Typescript errors (at least in App.tsx).
+
+- [ ] <https://reactjs.org/link/hooks-data-fetching>
+
+- [ ]  choosing between event handlers and Effects
+
+<https://react.dev/learn/separating-events-from-effects#reactive-values-and-reactive-logic>
+<https://react.dev/learn/you-might-not-need-an-effect>
+
+
+- [ ] activateKeepAwake is deprecated, use activateKeepAwakeAsync
+
+- [ ] do *not* use aync calls in useEffect callback
+
 
 To build, install `eas-cli`. See <https://docs.expo.dev/eas/>
 
@@ -116,7 +155,7 @@ TODO
 Start expo dev client
 
 ```
-expo start --dev-client
+npx expo start
 ```
 
 It is even possible to publish to stores.
@@ -137,6 +176,32 @@ eas build -p android --profile preview
 
 ```
 eas build --local --profile preview --platform android
+```
+
+
+##### iOS
+
+If you encounter an `archive failed` error, you might first generate an Xcode project
+
+```sh
+npx expo prebuild -p ios
+```
+
+and open it in Xcode.
+
+```sh
+xed ios
+```
+
+Then, try to make an archive.
+
+You might need to
+- select a development team (to be able to sign the built app)
+- select a destination (real device, connected via USB, or 'any ios device')
+
+Then run expo
+```sh
+npx expo start
 ```
 
 
