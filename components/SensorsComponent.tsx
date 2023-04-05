@@ -98,35 +98,37 @@ export default function SensorsComponent({ color }) {
 
   // see https://daveceddia.com/useeffect-hook-examples/
   // run once and callback on unmount
-  React.useEffect(async () => {
-    const accAvailable = await Accelerometer.isAvailableAsync();
-    const gyroAvailable = await Gyroscope.isAvailableAsync();
-    console.log('- accelerometers available:', accAvailable);
-    console.log('- gyroscopes available:', gyroAvailable);
+  React.useEffect( () => {
+    (async () => {
+      const accAvailable = await Accelerometer.isAvailableAsync();
+      const gyroAvailable = await Gyroscope.isAvailableAsync();
+      console.log('- accelerometers available:', accAvailable);
+      console.log('- gyroscopes available:', gyroAvailable);
 
-    if (accAvailable && gyroAvailable) {
-      dispatch({
-        type: 'sensors/set',
-        payload: { available: true },
-      });
+      if (accAvailable && gyroAvailable) {
+        dispatch({
+          type: 'sensors/set',
+          payload: { available: true },
+        });
 
-      setSensorsInterval(deviceMotionInterval);
+        setSensorsInterval(deviceMotionInterval);
 
-      accelerometerSubscribe();
-      gyroscopeSubscribe();
+        accelerometerSubscribe();
+        gyroscopeSubscribe();
 
-      return () => {
-        accelerometerUnsubscribe();
-        gyroscopeUnsubscribe();
+        return () => {
+          accelerometerUnsubscribe();
+          gyroscopeUnsubscribe();
+        }
+      } else {
+        dispatch({
+          type: 'sensors/set',
+          payload: { available: false },
+        });
+        // @todo - show error screen
+        console.error('Sensors not available!');
       }
-    } else {
-      dispatch({
-        type: 'sensors/set',
-        payload: { available: false },
-      });
-      // @todo - show error screen
-      console.error('Sensors not available!');
-    }
+    })();
   }, []);
 
   // run on dependencies update
