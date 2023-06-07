@@ -10,7 +10,7 @@ import {
 import i18n from '../constants/i18n';
 
 import { useFocusEffect } from '@react-navigation/native';
-import { activateKeepAwake, deactivateKeepAwake } from 'expo-keep-awake';
+import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 
 import { Text, View, ConnectionStatus } from '../components/Themed';
 import ConnectionStatusComponent from '../components/ConnectionStatusComponent';

@@ -115,7 +115,7 @@ Tested with:
 <https://react.dev/learn/you-might-not-need-an-effect>
 
 
-- [ ] activateKeepAwake is deprecated, use activateKeepAwakeAsync
+- [x] activateKeepAwake is deprecated, use activateKeepAwakeAsync
 
 - [ ] do *not* use aync calls in useEffect callback
 

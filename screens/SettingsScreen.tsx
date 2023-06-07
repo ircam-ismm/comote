@@ -15,7 +15,7 @@ import { batch } from 'react-redux';
 import i18n from '../constants/i18n';
 
 import { useFocusEffect } from '@react-navigation/native';
-import { activateKeepAwake, deactivateKeepAwake } from 'expo-keep-awake';
+import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 
 import { Text, View, WebSocketConnectionStatus, OscConnectionStatus } from '../components/Themed';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
@@ -139,7 +139,7 @@ export default function SettingsScreen({ color, navigation }) {
   // prevent sleep when tab is focused
   useFocusEffect(
     React.useCallback(() => {
-      activateKeepAwake();
+      activateKeepAwakeAsync();
 
       return () => {
         deactivateKeepAwake();
