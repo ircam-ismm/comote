@@ -55,8 +55,31 @@ export default function SensorsComponent({ color }) {
 
   // create local working values
   const [accelerometerListener, setAccelerometerListener] = React.useState(null);
-  const [gyroscopeListener, setGyroscopeListener] = React.useState(null);
+  const accelerometerListenerRef = React.useRef();
+    // update sensors ref everytime sensors state is updated
+  React.useEffect(() => {
+    accelerometerListenerRef.current = accelerometerListener;
+}, [accelerometerListener]);
 
+  // create local working values
+  const [gyroscopeListener, setGyroscopeListener] = React.useState(null);
+  const gyroscopeListenerRef = React.useRef();
+    // update sensors ref everytime sensors state is updated
+  React.useEffect(() => {
+    gyroscopeListenerRef.current = gyroscopeListener;
+}, [gyroscopeListener]);
+
+
+  const gyroscopeListenerListenerRef = React.useRef();
+
+  const cleanup = () => {
+    console.log('SensorsComponent unload');
+
+    clearInterval(setSensorsIntervalId);
+
+    accelerometerUnsubscribe();
+    gyroscopeUnsubscribe();
+  };
 
   let setSensorsIntervalId = null;
   const setSensorsInterval = async (interval) => {
@@ -79,6 +102,8 @@ export default function SensorsComponent({ color }) {
 
   }
 
+  let acc = 0;
+
   let accelerometerSubscribeId = null;
   const accelerometerSubscribe = async () => {
 
@@ -87,6 +112,7 @@ export default function SensorsComponent({ color }) {
     const accAvailable = await Accelerometer.isAvailableAsync();
     if (accAvailable) {
       setAccelerometerListener(Accelerometer.addListener(data => {
+        // console.log('accelerometer listener', acc++);
         const accelerationIncludingGravity = normalizeAccelerometer(data);
         dispatch({
           type: 'sensors/set',
@@ -105,9 +131,12 @@ export default function SensorsComponent({ color }) {
   const accelerometerUnsubscribe = () => {
     clearInterval(accelerometerSubscribeId);
     // console.log('accelerometer.unsubscribe');
-    accelerometerListener && accelerometerListener.remove();
+    const listener = accelerometerListenerRef.current;
+    listener && listener.remove();
     setAccelerometerListener(null);
   };
+
+  let gyr = 0;
 
   let gyroscopeSubscribeId = null;
   const gyroscopeSubscribe = async () => {
@@ -118,6 +147,7 @@ export default function SensorsComponent({ color }) {
     if (gyroAvailable) {
       setGyroscopeListener(Gyroscope.addListener(data => {
         const rotationRate = normalizeGyroscope(data);
+        // console.log('gyroscope listener', gyr++);
 
         dispatch({
           type: 'sensors/set',
@@ -133,53 +163,60 @@ export default function SensorsComponent({ color }) {
     }
   };
 
-
-    const gyroscopeUnsubscribe = () => {
-      clearInterval(gyroscopeSubscribeId);
-      gyroscopeListener && gyroscopeListener.remove();
-      setGyroscopeListener(null);
-    }
-
-    // see https://daveceddia.com/useeffect-hook-examples/
-    // run once and callback on unmount
-    React.useEffect(() => {
-      (async () => {
-        const accAvailable = await Accelerometer.isAvailableAsync();
-        const gyroAvailable = await Gyroscope.isAvailableAsync();
-        console.log('- accelerometers available:', accAvailable);
-        console.log('- gyroscopes available:', gyroAvailable);
-
-        if (accAvailable && gyroAvailable) {
-          dispatch({
-            type: 'sensors/set',
-            payload: { available: true },
-          });
-
-          setSensorsInterval(deviceMotionInterval);
-
-          accelerometerSubscribe();
-          gyroscopeSubscribe();
-
-          return () => {
-            accelerometerUnsubscribe();
-            gyroscopeUnsubscribe();
-          }
-        } else {
-          dispatch({
-            type: 'sensors/set',
-            payload: { available: false },
-          });
-          // @todo - show error screen
-          console.error('Sensors not available!');
-        }
-      })();
-    }, []);
-
-    // run on dependencies update
-    React.useEffect(() => {
-      setSensorsInterval(deviceMotionInterval);
-    }, [deviceMotionInterval]);
-
-
-    return null;
+  const gyroscopeUnsubscribe = () => {
+    clearInterval(gyroscopeSubscribeId);
+    const listener = gyroscopeListenerRef.current;
+    listener && listener.remove();
+    setGyroscopeListener(null);
   }
+
+  // clean-up on unmount
+  React.useEffect(() => {
+    return () => {
+      console.log('NetworkComponent unload');
+
+      cleanup();
+    }
+  }, []);
+
+  // see https://daveceddia.com/useeffect-hook-examples/
+  // run once and callback on unmount
+  React.useEffect(() => {
+    (async () => {
+      const accAvailable = await Accelerometer.isAvailableAsync();
+      const gyroAvailable = await Gyroscope.isAvailableAsync();
+      console.log('- accelerometers available:', accAvailable);
+      console.log('- gyroscopes available:', gyroAvailable);
+
+      if (accAvailable && gyroAvailable) {
+        dispatch({
+          type: 'sensors/set',
+          payload: { available: true },
+        });
+
+        cleanup();
+
+        setSensorsInterval(deviceMotionInterval);
+
+        accelerometerSubscribe();
+        gyroscopeSubscribe();
+
+      } else {
+        dispatch({
+          type: 'sensors/set',
+          payload: { available: false },
+        });
+        // @todo - show error screen
+        console.error('Sensors not available!');
+      }
+    })();
+  }, []);
+
+  // run on dependencies update
+  React.useEffect(() => {
+    setSensorsInterval(deviceMotionInterval);
+  }, [deviceMotionInterval]);
+
+
+  return null;
+}
