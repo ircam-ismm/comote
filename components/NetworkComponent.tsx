@@ -26,6 +26,8 @@ let oscEnabled = false;
 let oscUrl = null;
 let osc = null;
 
+let n = 0; 
+
 export default function NetworkComponent({ color }) {
   const settings = useAppSelector((state) => selectSettings(state));
   const sensors = useAppSelector((state) => selectSensors(state));
@@ -38,13 +40,20 @@ export default function NetworkComponent({ color }) {
   // const [webSocket, setWebSocket] = React.useState(null);
   const [webSocketEventListeners, setWebSocketEventListeners] = React.useState([]);
 
+  const cleanup = () => {
+    clearInterval(intervalId);
+
+    webSocketClose();
+    oscClose();
+  };
+
   const webSocketReadyStateUpdate = () => {
     let webSocketReadyState;
 
     if (!webSocket) {
       webSocketReadyState = 'CLOSED';
     } else {
-      console.log(webSocket.readyState);
+      console.log('webSocket.readyState', webSocket.readyState);
 
       switch(webSocket.readyState) {
         case WebSocket.CONNECTING:
@@ -93,6 +102,7 @@ export default function NetworkComponent({ color }) {
 
     setWebSocketEventListeners([]);
     setWebSocket(null);
+    webSocketReadyStateUpdate();
   };
 
   // @TODO: try to connect later, and reconnect
@@ -306,6 +316,7 @@ export default function NetworkComponent({ color }) {
 
     if (settings.webSocketEnabled && webSocket
         && network.webSocketReadyState === 'OPEN'
+        && webSocket.readyState === webSocket.OPEN
     ) {
       const dataSerialised = JSON.stringify(data);
       webSocket.send(dataSerialised);
@@ -316,7 +327,7 @@ export default function NetworkComponent({ color }) {
       let { hostname, port } = urlParse(oscUrl);
       // port = parseInt(port);
 
-      for (key in data) {
+      for (let key in data) {
         switch (key) {
           case 'devicemotion': {
             const address = `/${data.source}/${data.id}/${key}`;
@@ -361,6 +372,15 @@ export default function NetworkComponent({ color }) {
     }
   };
 
+// clean-up on unmount
+React.useEffect(() => {
+  return () => {
+    console.log('NetworkComponent unload');
+
+    cleanup();
+  }
+}, []);
+
   // update on state change
   React.useEffect(() => {
     webSocketUpdate({
@@ -402,7 +422,10 @@ export default function NetworkComponent({ color }) {
     if (sensors.available &&
       (network.webSocketReadyState === 'OPEN' || network.oscReadyState === 'OPEN')
     ) {
+      console.log('NetworkComponent clearInterval for new', intervalId);
       clearInterval(intervalId);
+
+      console.log('NetworkComponent.setInterval', settings.deviceMotionInterval)
 
       setIntervalId(setInterval(() => {
         const { id } = settings;
@@ -437,15 +460,17 @@ export default function NetworkComponent({ color }) {
           }
         };
 
+        // console.log('network send', n++);
         networkSend(msg);
       }, settings.deviceMotionInterval));
       // }, 1000 * 5));
     } else {
+      console.log('NetworkComponent clearInterval because unavailable', intervalId);
+
       // console.log('clearInterval', intervalId);
       clearInterval(intervalId);
     }
 
-    return () => clearInterval(intervalId);
   }, [
     sensors.available,
     network.webSocketReadyState,
@@ -469,14 +494,6 @@ export default function NetworkComponent({ color }) {
     const { id } = settings;
     networkSend({ source: 'comote', id, buttonB });
   }, [sensors.buttonB]);
-
-  // clean-up on unmount
-  React.useEffect(() => {
-    return () => {
-      webSocketClose();
-      webSocketReadyStateUpdate();
-    }
-  }, []);
 
   return null;
 }
