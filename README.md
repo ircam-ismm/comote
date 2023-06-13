@@ -1,4 +1,4 @@
-# CoMo.te
+# CoMote
 
 ## Development
 
@@ -20,13 +20,13 @@ yarn install
 #### [deprecated]
 
 > Run project with `expo`.
-> 
+>
 > ```sh
 > expo start
 > ```
-> 
+>
 > Install 'Expo Go' on iOS and Android devices.
-> 
+>
 > - on iOS, flash development QR code from Camera app,
 > - on Android, open 'Expo Go' to flash the development QR code.
 > - while running app, shake the device on the left or on the right to access the debugger
@@ -254,7 +254,7 @@ e = {
 - [x] check OSC send on iOS
 - [x] do not bind udp socket, at leat use automatic port
 - [-] rotate sockets for quick send
-- [x] exclusive port
+- [ ] exclusive port
 - [x] async send (requestAnimationFrame or setTimeout), worker, queueMicrotask
 
 - [ ] automatically reconnect server, when possible

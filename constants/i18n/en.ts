@@ -49,8 +49,8 @@ export default {
     openSettings: 'Open App settings',
   },
   about: {
-    header: 'About CoMo.te',
-    developedBy: `CoMo.te is developed by Ircam and the Music and Sound Science and Technology Joint Research Unit (STMS), supported by Ircam, CNRS, the French Ministry of Culture and Sorbonne University.`,
+    header: 'About CoMote',
+    developedBy: `CoMote is developed by Ircam and the Music and Sound Science and Technology Joint Research Unit (STMS), supported by Ircam, CNRS, the French Ministry of Culture and Sorbonne University.`,
     producedBy: `Produced with the support of the French Ministry of Education, Youth and Sports (Edu-up system), the National Research Agency (ELEMENT project), and in partnership with Radio France.`,
     privacyPolicy: 'Privacy Policy',
     privacyPolicyLink: 'https://ismm-apps.ircam.fr/comote-privacy-policy',
