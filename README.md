@@ -152,10 +152,16 @@ TODO
 
 #### Expo dev client
 
-Start expo dev client
+You would need to run a pre-build phase to create `ios` and `android` directories, anytime you add native dependencies to your project, including in the beginning.
+
+```sh
+npx expo prebuild
+```
+
+You can start expo dev client any time you need it.
 
 ```
-npx expo start
+npx expo start --dev-client
 ```
 
 It is even possible to publish to stores.
@@ -244,6 +250,17 @@ e = {
 
 #### Target v1 - 15-20 may
 
+- [x] check the use of React states in UseEffect functions, that need to be pure
+- [x] check OSC send on iOS
+- [x] do not bind udp socket, at leat use automatic port
+- [-] rotate sockets for quick send
+- [x] exclusive port
+- [x] async send (requestAnimationFrame or setTimeout), worker, queueMicrotask
+
+- [ ] automatically reconnect server, when possible
+
+- [ ] do not resample (use sensors callback)
+- [ ] estimate sensors sample rate
 
 - [x] review icons and splash screen (make them brighter and more graphic)
 - [x] allow to define an id on client
@@ -269,8 +286,8 @@ e = {
 - [x] add info tab
 - [x] performance on Android v8
 
-- [ ] i18n - at least french and english
-- [ ] review Home buttons, be consistent with the bottom menu
+- [x] i18n - at least french and english
+- [x] review Home buttons, be consistent with the bottom menu
 
 ##### JS helpers
 
@@ -303,7 +320,7 @@ jpacher w/ jweb
 #### v2 features
 
 - [ ] check https://www.npmjs.com/package/@react-native-community/netinfo
-- [ ] dynamically find available port for OSC/UDP socket
+- [x] dynamically find available port for OSC/UDP socket
 - [ ] multitouch support for button
 - [ ] add 2D touch support (what does it mean?)
 - [ ] add x/y pad (switch on play screen?
