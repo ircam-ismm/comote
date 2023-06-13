@@ -26,8 +26,6 @@ let oscEnabled = false;
 let oscUrl = null;
 let osc = null;
 
-let n = 0; 
-
 export default function NetworkComponent({ color }) {
   const settings = useAppSelector((state) => selectSettings(state));
   const sensors = useAppSelector((state) => selectSensors(state));
@@ -37,7 +35,6 @@ export default function NetworkComponent({ color }) {
   const setWebSocket = (webSocketRequest) => {
     webSocket = webSocketRequest;
   }
-  // const [webSocket, setWebSocket] = React.useState(null);
   const [webSocketEventListeners, setWebSocketEventListeners] = React.useState([]);
 
   const cleanup = () => {
@@ -189,6 +186,27 @@ export default function NetworkComponent({ color }) {
     setOsc(null);
   };
 
+  const oscSend = (message, port, hostname, errorCallback) => {
+
+    // be sure to release main loop between sends, to avoid blockage
+    Promise.resolve().then( () => {
+
+      if(!settings.oscEnabled
+         || ! osc
+         || network.oscReadyState !== 'OPEN') {
+        return;
+      }
+
+      const binary = message.pack();
+
+      osc.send(binary, 0, binary.byteLength, port, hostname, (error) => {
+        errorCallback(error);
+      });
+
+    });
+
+  };
+
   const oscUpdate = async ({ enabled, url }) => {
     let changed = false;
 
@@ -235,7 +253,7 @@ export default function NetworkComponent({ color }) {
             type: 'udp4',
           });
           // @todo - dynamically find available port
-          const localPort = 42345;
+          const localPort = 0;
           socket.bind(localPort);
 
           socket.once('listening', function() {
@@ -342,9 +360,7 @@ export default function NetworkComponent({ color }) {
             ];
 
             const message = new OSC.Message(address, ...values);
-            const binary = message.pack();
-
-            osc.send(binary, 0, binary.byteLength, parseInt(port), hostname, function(err) {
+            oscSend(message, parseInt(port), hostname, (err) => {
               if (err) { return console.error(err); }
             });
             break;
@@ -356,9 +372,7 @@ export default function NetworkComponent({ color }) {
             const value = data[key];
 
             const message = new OSC.Message(address, value);
-            const binary = message.pack();
-
-            osc.send(binary, 0, binary.byteLength, parseInt(port), hostname, function(err) {
+            oscSend(message, parseInt(port), hostname, (err) => {
               if (err) { return console.error(err); }
             });
             break;
@@ -398,18 +412,35 @@ React.useEffect(() => {
   }, [settings.oscEnabled, settings.oscUrl]);
 
 
-  const [intervalId, setIntervalId] = React.useState(null);
-  const accelerationIncludingGravityRef = React.useRef();
-  const rotationRateRef = React.useRef();
+  // Use references to allow for closures to use the current values,
+  // even those not in React.useEffect dependencies
 
-  // update sensors ref everytime sensors state is updated
+  const settingsIdRef = React.useRef();
+  React.useEffect(() => {
+    settingsIdRef.current = settings.id;
+  }, [settings.id]);
+
+  const settingsDeviceMotionIntervalRef = React.useRef();
+  React.useEffect(() => {
+    settingsDeviceMotionIntervalRef.current = settings.deviceMotionInterval;
+  }, [settings.deviceMotionInterval]);
+
+  const [intervalId, setIntervalId] = React.useState(null);
+  const intervalIdRef = React.useRef();
+  React.useEffect(() => {
+    intervalIdRef.current = intervalId;
+  }, [intervalId]);
+
+  const accelerationIncludingGravityRef = React.useRef();
   React.useEffect(() => {
     accelerationIncludingGravityRef.current = sensors.accelerationIncludingGravity;
   }, [sensors.accelerationIncludingGravity]);
 
+  const rotationRateRef = React.useRef();
   React.useEffect(() => {
     rotationRateRef.current = sensors.rotationRate;
   }, [sensors.rotationRate]);
+
 
   // render on webSocketReadyState update
   React.useEffect(() => {
@@ -420,15 +451,19 @@ React.useEffect(() => {
     // console.log('network.oscReadyState', network.oscReadyState);
     // console.log('++++++++++++++++++++++++++++++++++++++++++++++++');
     if (sensors.available &&
-      (network.webSocketReadyState === 'OPEN' || network.oscReadyState === 'OPEN')
-    ) {
-      console.log('NetworkComponent clearInterval for new', intervalId);
-      clearInterval(intervalId);
+        (network.webSocketReadyState === 'OPEN' || network.oscReadyState === 'OPEN')
+       ) {
+      const clearId = intervalIdRef.current;
 
-      console.log('NetworkComponent.setInterval', settings.deviceMotionInterval)
+      const interval = settingsDeviceMotionIntervalRef.current;
+
+      console.log('NetworkComponent clearInterval for new', clearId);
+      clearInterval(clearId);
+
+      console.log('NetworkComponent.setInterval', interval)
 
       setIntervalId(setInterval(() => {
-        const { id } = settings;
+        const id = settingsIdRef.current;
         const accelerationIncludingGravity = accelerationIncludingGravityRef.current;
         const rotationRate = rotationRateRef.current;
 
@@ -454,20 +489,20 @@ React.useEffect(() => {
           source: 'comote',
           id,
           devicemotion: {
-            interval: settings.deviceMotionInterval,
+            interval,
             accelerationIncludingGravity,
             rotationRate,
           }
         };
 
-        // console.log('network send', n++);
         networkSend(msg);
       }, settings.deviceMotionInterval));
       // }, 1000 * 5));
     } else {
-      console.log('NetworkComponent clearInterval because unavailable', intervalId);
 
-      // console.log('clearInterval', intervalId);
+      const clearId = intervalIdRef.current;
+
+      console.log('NetworkComponent clearInterval because unavailable', clearId);
       clearInterval(intervalId);
     }
 
@@ -476,14 +511,13 @@ React.useEffect(() => {
     network.webSocketReadyState,
     network.oscReadyState,
     settings.deviceMotionInterval,
-    settings.id,
   ]);
 
   // @TODO: group data and limit in time
   // @note: these are triggered on startup
   React.useEffect(() => {
     const { buttonA } = sensors;
-    const { id } = settings;
+    const id = settingsIdRef.current;
     networkSend({ source: 'comote', id, buttonA });
   }, [sensors.buttonA]);
 
@@ -491,7 +525,7 @@ React.useEffect(() => {
   // @note: these are triggered on startup
   React.useEffect(() => {
     const { buttonB } = sensors;
-    const { id } = settings;
+    const id = settingsIdRef.current;
     networkSend({ source: 'comote', id, buttonB });
   }, [sensors.buttonB]);
 

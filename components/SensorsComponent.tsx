@@ -53,18 +53,17 @@ export default function SensorsComponent({ color }) {
   const deviceMotionInterval = useAppSelector(state => selectDeviceMotionInterval(state));
   const dispatch = useAppDispatch();
 
-  // create local working values
+  // Use references to allow for closures to use the current values,
+  // even those not in React.useEffect dependencies
+
   const [accelerometerListener, setAccelerometerListener] = React.useState(null);
   const accelerometerListenerRef = React.useRef();
-    // update sensors ref everytime sensors state is updated
   React.useEffect(() => {
     accelerometerListenerRef.current = accelerometerListener;
 }, [accelerometerListener]);
 
-  // create local working values
   const [gyroscopeListener, setGyroscopeListener] = React.useState(null);
   const gyroscopeListenerRef = React.useRef();
-    // update sensors ref everytime sensors state is updated
   React.useEffect(() => {
     gyroscopeListenerRef.current = gyroscopeListener;
 }, [gyroscopeListener]);
@@ -102,8 +101,6 @@ export default function SensorsComponent({ color }) {
 
   }
 
-  let acc = 0;
-
   let accelerometerSubscribeId = null;
   const accelerometerSubscribe = async () => {
 
@@ -112,7 +109,6 @@ export default function SensorsComponent({ color }) {
     const accAvailable = await Accelerometer.isAvailableAsync();
     if (accAvailable) {
       setAccelerometerListener(Accelerometer.addListener(data => {
-        // console.log('accelerometer listener', acc++);
         const accelerationIncludingGravity = normalizeAccelerometer(data);
         dispatch({
           type: 'sensors/set',
@@ -135,8 +131,6 @@ export default function SensorsComponent({ color }) {
     listener && listener.remove();
     setAccelerometerListener(null);
   };
-
-  let gyr = 0;
 
   let gyroscopeSubscribeId = null;
   const gyroscopeSubscribe = async () => {
