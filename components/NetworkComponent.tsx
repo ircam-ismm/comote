@@ -252,7 +252,7 @@ export default function NetworkComponent({ color }) {
           const socket = dgram.createSocket({
             type: 'udp4',
           });
-          // @todo - dynamically find available port
+          // dynamically find available port
           const localPort = 0;
           socket.bind(localPort);
 
