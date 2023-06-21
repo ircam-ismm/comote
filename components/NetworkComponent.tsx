@@ -38,8 +38,6 @@ export default function NetworkComponent({ color }) {
   const [webSocketEventListeners, setWebSocketEventListeners] = React.useState([]);
 
   const cleanup = () => {
-    clearInterval(intervalId);
-
     webSocketClose();
     oscClose();
   };
@@ -425,11 +423,12 @@ React.useEffect(() => {
     settingsDeviceMotionIntervalRef.current = settings.deviceMotionInterval;
   }, [settings.deviceMotionInterval]);
 
-  const [intervalId, setIntervalId] = React.useState(null);
-  const intervalIdRef = React.useRef();
+  const sensorsAvailableRef = React.useRef();
   React.useEffect(() => {
-    intervalIdRef.current = intervalId;
-  }, [intervalId]);
+    sensorsAvailableRef.current = sensors.available;
+    console.log('sensors.available update', sensorsAvailableRef.current);
+  }, [sensors.available]);
+
 
   const accelerationIncludingGravityRef = React.useRef();
   React.useEffect(() => {
@@ -442,76 +441,42 @@ React.useEffect(() => {
   }, [sensors.rotationRate]);
 
 
-  // render on webSocketReadyState update
-  React.useEffect(() => {
-    // console.log('++++++++++++++++++++++++++++++++++++++++++++++++');
-    // console.log('useEffect:');
-    // console.log('sensors.available', sensors.available);
-    // console.log('network.webSocketReadyState', network.webSocketReadyState);
-    // console.log('network.oscReadyState', network.oscReadyState);
-    // console.log('++++++++++++++++++++++++++++++++++++++++++++++++');
-    if (sensors.available &&
-        (network.webSocketReadyState === 'OPEN' || network.oscReadyState === 'OPEN')
-       ) {
-      const clearId = intervalIdRef.current;
+  const sensorsSend = () => {
+    const id = settingsIdRef.current;
+    const accelerationIncludingGravity = accelerationIncludingGravityRef.current;
+    const rotationRate = rotationRateRef.current;
+    const interval = settingsDeviceMotionIntervalRef.current;
 
-      const interval = settingsDeviceMotionIntervalRef.current;
-
-      console.log('NetworkComponent clearInterval for new', clearId);
-      clearInterval(clearId);
-
-      console.log('NetworkComponent.setInterval', interval)
-
-      setIntervalId(setInterval(() => {
-        const id = settingsIdRef.current;
-        const accelerationIncludingGravity = accelerationIncludingGravityRef.current;
-        const rotationRate = rotationRateRef.current;
-
-        // we need to check that accelerationIncludingGravity, and rotationRate
-        // are properly populated, because even if they are declared as available
-        // we can still have undefined values at this point
-        // @note - in android, rotationRate that is just empty at the beginning
-        for (let key of ['x', 'y', 'z']) {
-          if (accelerationIncludingGravity[key] === undefined) {
-            // console.log('ABORT: undefined value in accelerationIncludingGravity', accelerationIncludingGravity);
-            return;
-          }
-        }
-
-        for (let key of ['alpha', 'beta', 'gamma']) {
-          if (rotationRate[key] === undefined) {
-            // console.log('ABORT: undefined value in rotationRate', rotationRate);
-            return;
-          }
-        }
-
-        const msg = {
-          source: 'comote',
-          id,
-          devicemotion: {
-            interval,
-            accelerationIncludingGravity,
-            rotationRate,
-          }
-        };
-
-        networkSend(msg);
-      }, settings.deviceMotionInterval));
-      // }, 1000 * 5));
-    } else {
-
-      const clearId = intervalIdRef.current;
-
-      console.log('NetworkComponent clearInterval because unavailable', clearId);
-      clearInterval(intervalId);
+    // we need to check that accelerationIncludingGravity, and rotationRate
+    // are properly populated, because even if they are declared as available
+    // we can still have undefined values at this point
+    // @note - in android, rotationRate that is just empty at the beginning
+    for (let key of ['x', 'y', 'z']) {
+      if (accelerationIncludingGravity[key] === undefined) {
+        // console.log('ABORT: undefined value in accelerationIncludingGravity', accelerationIncludingGravity);
+        return;
+      }
     }
 
-  }, [
-    sensors.available,
-    network.webSocketReadyState,
-    network.oscReadyState,
-    settings.deviceMotionInterval,
-  ]);
+    for (let key of ['alpha', 'beta', 'gamma']) {
+      if (rotationRate[key] === undefined) {
+        // console.log('ABORT: undefined value in rotationRate', rotationRate);
+        return;
+      }
+    }
+
+    const msg = {
+      source: 'comote',
+      id,
+      devicemotion: {
+        interval,
+        accelerationIncludingGravity,
+        rotationRate,
+      }
+    };
+
+    networkSend(msg);
+  };
 
   // @TODO: group data and limit in time
   // @note: these are triggered on startup
@@ -528,6 +493,11 @@ React.useEffect(() => {
     const id = settingsIdRef.current;
     networkSend({ source: 'comote', id, buttonB });
   }, [sensors.buttonB]);
+
+  // send sensors data on new set of data, according to id
+  React.useEffect(() => {
+    sensorsSend();
+  }, [sensors.id]);
 
   return null;
 }

@@ -50,6 +50,10 @@ const normalizeGyroscope = Platform.OS === 'android'
 
 
 export default function SensorsComponent({ color }) {
+  // id that corresponds to a new set of sensors data
+  // currently set by gyroscope, which is subscribed last
+  let dataId = 0;
+
   const deviceMotionInterval = useAppSelector(state => selectDeviceMotionInterval(state));
   const dispatch = useAppDispatch();
 
@@ -143,9 +147,16 @@ export default function SensorsComponent({ color }) {
         const rotationRate = normalizeGyroscope(data);
         // console.log('gyroscope listener', gyr++);
 
+        // gyroscope updates sensors id as a new set of data is available
+        ++dataId;
+        dataId %= Number.MAX_SAFE_INTEGER;
+
         dispatch({
           type: 'sensors/set',
-          payload: { rotationRate },
+          payload: { 
+            rotationRate,
+            id: dataId,
+           },
         });
       }));
     } else {
@@ -193,6 +204,8 @@ export default function SensorsComponent({ color }) {
         setSensorsInterval(deviceMotionInterval);
 
         accelerometerSubscribe();
+
+        // subscribe last, as it triggers dataId
         gyroscopeSubscribe();
 
       } else {

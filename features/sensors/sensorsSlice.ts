@@ -17,6 +17,7 @@ interface SensorsState {
 
 const initialState = {
   data: {
+    id: 0,
     accelerationIncludingGravity: {},
     rotationRate: {},
     buttonA: 0,

@@ -254,13 +254,27 @@ e = {
 - [x] check OSC send on iOS
 - [x] do not bind udp socket, at leat use automatic port
 - [-] rotate sockets for quick send
-- [ ] exclusive port
-- [x] async send (requestAnimationFrame or setTimeout), worker, queueMicrotask
+- [x] exclusive port
+- [ ] async send (requestAnimationFrame or setTimeout), worker, queueMicrotask
+  - [x] OSC
+  - [ ] WebBocket
 
 - [ ] automatically reconnect server, when possible
 
-- [ ] do not resample (use sensors callback)
+- [x] do not resample (use sensors callback)
 - [ ] estimate sensors sample rate
+
+Rename CoMo.te to Comote:
+- [ ] Application
+  - [x] texts
+  - [ ] picture in welcome screen
+- [ ] Ircam Forum
+- [ ] Apple Store
+   - [ ] text
+   - [ ] screenshots
+- [ ] Google Store
+   - [ ] text
+   - [ ] screenshots
 
 - [x] review icons and splash screen (make them brighter and more graphic)
 - [x] allow to define an id on client
