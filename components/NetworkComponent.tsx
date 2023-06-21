@@ -142,19 +142,14 @@ export default function NetworkComponent({ color }) {
           setWebSocket(newWebSocket);
 
           ['open', 'close', 'error'].forEach((state) => {
-            newWebSocket.addEventListener(state, (e) => {
-              webSocketReadyStateUpdate();
-            });
+            newWebSocket.addEventListener(state, webSocketReadyStateUpdate);
 
-            // @fixme
-            // this is wrong, the stored callback is not the one that is added as listener
-            webSocketEventListeners.push({
-              state,
-              callback: webSocketReadyStateUpdate,
-            });
+            setWebSocketEventListeners((listeners) => [...listeners, {
+                state,
+                callback: webSocketReadyStateUpdate,
+            }]);
           });
 
-          setWebSocketEventListeners(webSocketEventListeners);
         } catch(error) {
           console.error(`Error while creating webSocket with url '${webSocketUrl}'`);
           console.error(error.message)
