@@ -76,9 +76,7 @@ export default function SensorsComponent({ color }) {
   const gyroscopeListenerListenerRef = React.useRef();
 
   const cleanup = () => {
-    console.log('SensorsComponent unload');
-
-    clearInterval(setSensorsIntervalId);
+    clearTimeout(setSensorsIntervalId);
 
     accelerometerUnsubscribe();
     gyroscopeUnsubscribe();
@@ -87,7 +85,7 @@ export default function SensorsComponent({ color }) {
   let setSensorsIntervalId = null;
   const setSensorsInterval = async (interval) => {
 
-    clearInterval(setSensorsIntervalId);
+    clearTimeout(setSensorsIntervalId);
 
     const accAvailable = await Accelerometer.isAvailableAsync();
     const gyroAvailable = await Gyroscope.isAvailableAsync();
@@ -98,7 +96,8 @@ export default function SensorsComponent({ color }) {
       Gyroscope.setUpdateInterval(interval);
     } else {
       // try again later
-      setSensorsIntervalId = setInterval(() => {
+      clearTimeout(setSensorsIntervalId);
+      setSensorsIntervalId = setTimeout(() => {
         setSensorsInterval(interval);
       }, 1000);
     }
@@ -108,7 +107,7 @@ export default function SensorsComponent({ color }) {
   let accelerometerSubscribeId = null;
   const accelerometerSubscribe = async () => {
 
-    clearInterval(accelerometerSubscribeId);
+    clearTimeout(accelerometerSubscribeId);
 
     const accAvailable = await Accelerometer.isAvailableAsync();
     if (accAvailable) {
@@ -121,7 +120,8 @@ export default function SensorsComponent({ color }) {
       }));
     } else {
       // try again later
-      setSensorsIntervalId = setInterval(() => {
+      clearTimeout(accelerometerSubscribeId);
+      setSensorsIntervalId = setTimeout(() => {
         accelerometerSubscribe();
       }, 1000);
     }
@@ -129,7 +129,7 @@ export default function SensorsComponent({ color }) {
   };
 
   const accelerometerUnsubscribe = () => {
-    clearInterval(accelerometerSubscribeId);
+    clearTimeout(accelerometerSubscribeId);
     // console.log('accelerometer.unsubscribe');
     const listener = accelerometerListenerRef.current;
     listener && listener.remove();
@@ -138,7 +138,7 @@ export default function SensorsComponent({ color }) {
 
   let gyroscopeSubscribeId = null;
   const gyroscopeSubscribe = async () => {
-    clearInterval(gyroscopeSubscribeId);
+    clearTimeout(gyroscopeSubscribeId);
 
     const gyroAvailable = await Gyroscope.isAvailableAsync();
 
@@ -161,7 +161,8 @@ export default function SensorsComponent({ color }) {
       }));
     } else {
       // try again later
-      gyroscopeSubscribeId = setInterval(() => {
+      clearTimeout(gyroscopeSubscribeId);
+      gyroscopeSubscribeId = setTimeout(() => {
         gyroscopeSubscribe();
       }, 1000);
 
@@ -169,7 +170,7 @@ export default function SensorsComponent({ color }) {
   };
 
   const gyroscopeUnsubscribe = () => {
-    clearInterval(gyroscopeSubscribeId);
+    clearTimeout(gyroscopeSubscribeId);
     const listener = gyroscopeListenerRef.current;
     listener && listener.remove();
     setGyroscopeListener(null);
@@ -178,7 +179,7 @@ export default function SensorsComponent({ color }) {
   // clean-up on unmount
   React.useEffect(() => {
     return () => {
-      console.log('NetworkComponent unload');
+      console.log('SensorsComponent unload');
 
       cleanup();
     }

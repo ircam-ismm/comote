@@ -13,7 +13,6 @@ import { useFocusEffect } from '@react-navigation/native';
 import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 
 import { Text, View, ConnectionStatus } from '../components/Themed';
-import ConnectionStatusComponent from '../components/ConnectionStatusComponent';
 
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
