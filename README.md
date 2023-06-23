@@ -8,7 +8,7 @@ Install `Node.js`. Prefer the long-term support (LTS) version, at least v14.
 Install (or update) `npm`, `yarn` and `expo-cli` globally.
 
 ```sh
-npm -g install npm yarn expo-cli
+npm -g install npm yarn eas
 ```
 
 Install project dependencies with `yarn`.
@@ -17,19 +17,10 @@ Install project dependencies with `yarn`.
 yarn install
 ```
 
-#### [deprecated]
-
-> Run project with `expo`.
->
-> ```sh
-> expo start
-> ```
->
-> Install 'Expo Go' on iOS and Android devices.
->
-> - on iOS, flash development QR code from Camera app,
-> - on Android, open 'Expo Go' to flash the development QR code.
-> - while running app, shake the device on the left or on the right to access the debugger
+Tested with:
+- node 16
+- java 17
+- npx expo (locally installed in project, not global, also called "versioned expo")
 
 ### Android and iOS Build tools
 
@@ -42,9 +33,17 @@ Therefore we need the build tools for android (Android Studio) and iOS (XCode)
 
 #### Android notes
 
-The build tools require the Java JDK 8, cf. :
-https://stackoverflow.com/questions/24342886/how-to-install-java-8-on-mac
-https://medium.com/@devkosal/switching-java-jdk-versions-on-macos-80bc868e686a
+The build tools require the Java JDK 17, cf. :
+- <https://openjdk.org/projects/jdk/17/>
+- <https://stackoverflow.com/questions/24342886/how-to-install-java-8-on-mac>
+- <https://medium.com/@devkosal/switching-java-jdk-versions-on-macos-80bc868e686a>
+
+
+Then select a version in you shell profile.
+```bash
+# android studio tools
+export JAVA_HOME="$(/usr/libexec/java_home -v 17)"
+```
 
 For local builds, The paths to the Android SDK must be registered in `eas.json` for each build channel, i.e.:
 
@@ -57,19 +56,25 @@ For local builds, The paths to the Android SDK must be registered in `eas.json` 
       "buildType": "apk"
     },
     "env": {
-      "ANDROID_SDK_ROOT": "/Users/matuszewski/Library/Android/sdk"
+      "ANDROID_SDK_ROOT": "~/Library/Android/sdk"
     }
   },
 },
 ```
 
-in `~/.bash_profile`, we should also something like to access `adb` (and probably other things...):
+In your profile we should also something like to access `adb` (and probably other things):
 
-```
-# android studio tools
-export JAVA_HOME=`/usr/libexec/java_home -v 1.8` # use Java 8
-export ANDROID_HOME=/Users/username/Library/Android/sdk
-export PATH=/Users/username/Library/Android/sdk/platform-tools:$PATH
+```bash
+# android
+export ANDROID_HOME="${HOME}/Library/Android/sdk"
+if [ -d "$ANDROID_HOME" ] ; then
+    export PATH="${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools"
+
+    if [ -d "${ANDROID_HOME}/ndk" ] ; then
+        android_ndk_version="$( basename "$(ls -d "${ANDROID_HOME}/ndk"/* | tail -1 )" )"
+        export ANDROID_NDK_HOME="${ANDROID_HOME}/ndk/${android_ndk_version}"
+    fi
+fi
 ```
 
 #### Apple Notes
@@ -97,124 +102,134 @@ You may also need to import distribution certificates from expo.dev
 See *[expo] fr.ircam.ismm.comote AdHoc 1674659444844 <https://developer.apple.com/account/resources/profiles/review/YKGSJK98F4>
 
 
-### Build and deploy
+### Local development and pre-build
 
-
-Tested with:
-- node 16
-- java 17
-- npx expo (locally installed in project, not global, also called "versioned expo")
-
-- [ ] Typescript errors (at least in App.tsx).
-
-- [ ] <https://reactjs.org/link/hooks-data-fetching>
-
-- [ ]  choosing between event handlers and Effects
-
-<https://react.dev/learn/separating-events-from-effects#reactive-values-and-reactive-logic>
-<https://react.dev/learn/you-might-not-need-an-effect>
-
-
-- [x] activateKeepAwake is deprecated, use activateKeepAwakeAsync
-
-- [ ] do *not* use aync calls in useEffect callback
-
-
-To build, install `eas-cli`. See <https://docs.expo.dev/eas/>
+Install dependencies.
 
 ```sh
-npm -g install `eas-cli`
+yarn install
 ```
 
-Then build with `eas`. You will need to register on <expo.dev> website.
-
-#### Android
-
-In android, creating a development build can be either:
-
-1. using expo
-
-```
-eas build --profile development --platform android
-```
-
-However, it seems that the build cannot be directly installed on the phone through the QRCode, therefore the `.apk` file should be first downloaded on your computer and then installed on the device using `adb install whateverbuildname.apk` as if it was built locally.
-
-2. or Locally
-
-```
-eas build --local --profile development --platform android
-```
-
-#### iOS
-
-TODO
-
-#### Expo dev client
-
-You would need to run a pre-build phase to create `ios` and `android` directories, anytime you add native dependencies to your project, including in the beginning.
-
+Generate prebuild folders, named `ios` and `android`.
 ```sh
 npx expo prebuild
 ```
 
-You can start expo dev client any time you need it.
+### Android
 
-```
-npx expo start --dev-client
-```
-
-It is even possible to publish to stores.
-
+Generate development build.
 ```sh
-eas publish
+eas build --local --profile development --platform android
 ```
 
-### Build preview
+Install on device.
 
-#### online build
-
-```
-eas build -p android --profile preview
-```
-
-#### local build
-
-```
-eas build --local --profile preview --platform android
-```
-
-
-##### iOS
-
-If you encounter an `archive failed` error, you might first generate an Xcode project
-
+You can use an http-server:
 ```sh
-npx expo prebuild -p ios
+npm -g install http-server
+http-server .
+```
+On device, open Google Chrome and type the URL given by the server. Download and install the apk.
+
+You can also install via `adb`.
+- plug the device
+- trust the computer
+- allow for file transfer
+- allow developer mode on device
+- type `adb install build-latest.pak`
+
+### iOS
+
+Generate development build.
+```sh
+eas build --local --profile development --platform ios
 ```
 
-and open it in Xcode.
+Be sure to select the local devices allowed to install the app.
+
+If it does not build, use xCode.
 
 ```sh
 xed ios
 ```
 
-Then, try to make an archive.
+- plug your device
+- trust the computer
+- in xCode, click `Run` to build, install, and run the application on the device
+- click `Stop` to stop the application on the device
 
-You might need to
-- select a development team (to be able to sign the built app)
-- select a destination (real device, connected via USB, or 'any ios device')
 
-Then run expo
+### Expo
+
+Start expo. Do not forget the `-dev-client` option.
 ```sh
-npx expo start
+npx expo start --dev-client
+```
+
+Expo-go must be installed on the device, but you should use the installed pre-built application.
+
+Flash the QR-code to start the application:
+- iOS: use the `Camera` app
+- Android: use the `Expo-Go` app
+
+Warning, if you use a local IP, you should generate an ad-hoc QR-code. Here is an exemple for `10.10.0.1`
+
+```sh
+npm -g install qrcode
+qrcode 'exp+comote://expo-development-client/?url=http%3A%2F%2F10.10.0.1%3A8081'
+```
+
+You can enter URL manually in your development built app  `http://10.10.0.1:8081`
+
+
+While running app, shake the device on the left or on the right to access the debugger. You can deactivate that in the menu, as you might want to shake the device. Then, type `m` in the console where you started expo to toggle the menu.
+
+You can press `j` in the console to start a debugger.
+
+
+### Build and deploy
+
+
+```sh
+yarn install
+```
+
+Do not forget to update `app.json`, to increment the build number for iOS and Android:
+```json
+{
+    "ios": {
+      "buildNumber": "6"
+    },
+    "android": {
+      "versionCode": 6
+}
 ```
 
 
-### Message format
+#### iOS
 
-#### WebSocket
+Build (online) and submit.
+```sh
+eas build --profile production --platform ios
+eas submit --platform ios
 ```
+
+If the submission fails, use the expo.dev website:
+<https://expo.dev/accounts/ircam-ismm/projects/comote>
+
+
+#### Android
+
+Build (online) and submit.
+```sh
+eas build --profile production --platform android
+eas submit --platform android
+```
+
+## Message format
+
+### WebSocket
+```js
 e = {
   source: 'comote',
   id: 42,
@@ -238,7 +253,7 @@ e = {
 }
 ```
 
-#### OSC format
+### OSC format
 
 ```
 /comote/${id}/devicemotion  [interval, x, y, z, alpha, beta, gamma]
@@ -246,26 +261,24 @@ e = {
 /comote/${id}/buttonB       [buttonA]
 ```
 
-### TODO
+## TODO
 
-#### Target v1 - 15-20 may
+### Target v2
 
-- [x] check the use of React states in UseEffect functions, that need to be pure
-- [x] check OSC send on iOS
-- [x] do not bind udp socket, at leat use automatic port
-- [-] rotate sockets for quick send
-- [x] exclusive port
-- [ ] async send (requestAnimationFrame or setTimeout), worker, queueMicrotask
-  - [x] OSC
-  - [ ] WebBocket
+- [ ] check https://www.npmjs.com/package/@react-native-community/netinfo
+- [ ] multitouch support for buttons
+- [ ] add 2D touch support (what does it mean?)
+- [ ] add x/y pad (switch on play screen)?
+- [ ] connect WiFi in QRCode?
+- [ ] other sensors
+- [ ] follow Sensor API spec
+- [ ] binary webSocket
 
-- [ ] automatically reconnect server, when possible
 
-- [x] do not resample (use sensors callback)
-- [ ] estimate sensors sample rate
+### Target v1.3 - June 2023
 
 Rename CoMo.te to Comote:
-- [ ] Application
+- [x] Application
   - [x] texts
   - [ ] picture in welcome screen
 - [ ] Ircam Forum
@@ -275,6 +288,26 @@ Rename CoMo.te to Comote:
 - [ ] Google Store
    - [ ] text
    - [ ] screenshots
+
+- [ ] OSC configuration: use host and port
+- [ ] report bad URL
+  - [ ] WebSocket
+  - [ ] OSC
+
+- [x] do not bind udp socket: use automatic port
+- [x] exclusive port
+- [x] check OSC send on iOS
+- [-] rotate sockets for quick send: no
+- [x] async send (requestAnimationFrame or setTimeout), worker, queueMicrotask
+  - [x] OSC
+  - [-] WebBocket: not necessary
+- [x] automatically reconnect server, when possible
+- [x] check the use of React states in UseEffect functions, that need to be pure
+- [x] do not resample (use sensors callback)
+- [-] estimate sensors sample rate: jitter in JavaScript user code
+
+
+### Target v1 - 15-20 May 2022
 
 - [x] review icons and splash screen (make them brighter and more graphic)
 - [x] allow to define an id on client
@@ -303,7 +336,9 @@ Rename CoMo.te to Comote:
 - [x] i18n - at least french and english
 - [x] review Home buttons, be consistent with the bottom menu
 
-##### JS helpers
+### JS helpers
+
+See `comote-bench` project.
 
 ```
 @ircam/comote-helpers
@@ -327,21 +362,6 @@ qrCode.terminal(config);
 qrCode.dataUrl(config);
 ```
 
-##### Max abstraction
+### Max abstraction
 
-jpacher w/ jweb
-
-#### v2 features
-
-- [ ] check https://www.npmjs.com/package/@react-native-community/netinfo
-- [x] dynamically find available port for OSC/UDP socket
-- [ ] multitouch support for button
-- [ ] add 2D touch support (what does it mean?)
-- [ ] add x/y pad (switch on play screen?
-- [ ] connect WiFi in QRCode?
-- [ ] other sensors
-- [ ] follow Sensor API spec
-- [ ] binary webSocket
-- [ ] try to automatically reconnect on `close` and `error`
-  - [ ] server comes after app
-  - [ ] connection interrupted
+jpatcher w/ jweb
