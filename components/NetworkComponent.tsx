@@ -18,13 +18,9 @@ import { selectNetwork } from '../features/network/networkSlice';
 import { selectSensors } from '../features/sensors/sensorsSlice';
 import { selectSettings } from '../features/settings/settingsSlice';
 
-let webSocketEnabled = false;
-let webSocketUrl = null;
-let webSocket = null;
+let webSocketCurrent = null;
 
-let oscEnabled = false;
-let oscUrl = null;
-let osc = null;
+let oscCurrent = null;
 
 export default function NetworkComponent({ color }) {
   const settings = useAppSelector((state) => selectSettings(state));
@@ -32,21 +28,35 @@ export default function NetworkComponent({ color }) {
   const network = useAppSelector((state) => selectNetwork(state));
   const dispatch = useAppDispatch();
 
+  const webSocketEnabledRef = React.useRef();
+  React.useEffect(() => {
+    webSocketEnabledRef.current = settings.webSocketEnabled;
+  }, [settings.webSocketEnabled]);
+
+  const webSocketUrlRef = React.useRef();
+  React.useEffect(() => {
+    webSocketUrlRef.current = settings.webSocketUrl;
+  }, [settings.webSocketUrl]);
+
   const setWebSocket = (webSocketRequest) => {
-    webSocket = webSocketRequest;
+    webSocketCurrent = webSocketRequest;
   }
-  // const [webSocket, setWebSocket] = React.useState(null);
-  const [webSocketEventListeners, setWebSocketEventListeners] = React.useState([]);
+  let webSocketEventListeners = [];
+
+  const cleanup = () => {
+    clearTimeout(webSocketUpdateId);
+    webSocketClose();
+    clearTimeout(oscUpdateId);
+    oscClose();
+  };
 
   const webSocketReadyStateUpdate = () => {
     let webSocketReadyState;
 
-    if (!webSocket) {
+    if (!webSocketCurrent) {
       webSocketReadyState = 'CLOSED';
     } else {
-      console.log(webSocket.readyState);
-
-      switch(webSocket.readyState) {
+      switch(webSocketCurrent.readyState) {
         case WebSocket.CONNECTING:
           webSocketReadyState = 'CONNECTING';
           break;
@@ -72,101 +82,117 @@ export default function NetworkComponent({ color }) {
         payload: { webSocketReadyState },
       });
 
-      if (webSocketReadyState === 'CLOSED') {
-        dispatch({
-          type: 'settings/set',
-          payload: { webSocketEnabled: false },
-        });
-      }
     });
   };
 
-  const webSocketClose = () => {
+  const webSocketClose = (webSocket = webSocketCurrent) => {
     if (webSocket) {
-      webSocketEventListeners.forEach(({ state, callback }) => {
-        // @review - callback is probably not what we think here, and not removed then
-        webSocket.removeEventListener(state, callback);
+      webSocketEventListeners.forEach(({ socket, state, callback }) => {
+        socket.removeEventListener(state, callback);
       });
 
       webSocket.close();
     }
 
-    setWebSocketEventListeners([]);
+    webSocketEventListeners = [];
     setWebSocket(null);
-  };
-
-  // @TODO: try to connect later, and reconnect
-  const webSocketUpdate = ({ enabled, url }) => {
-    console.log('webSocketUpdate', { enabled, url });
-    let changed = false;
-
-    if (typeof enabled !== 'undefined') {
-      changed = changed || webSocketEnabled !== enabled;
-      webSocketEnabled = enabled;
-    }
-
-    if (typeof url !== 'undefined') {
-      changed = changed || webSocketUrl !== url;
-      console.log('webSocket URL changed to ', url);
-      webSocketUrl = url;
-    }
-
-    if (!changed) {
-      return;
-    }
-
-    if (webSocket) {
-      webSocketClose();
-    }
-
-    if (webSocketEnabled && webSocketUrl) {
-      // validate URL before creating socket,
-      // because (native) error is not catched and will crash application
-      const urlValidated = isURL(webSocketUrl, {
-        require_protocol: true,
-        require_valid_protocol: true,
-        protocols: ['ws', 'wss'],
-        require_host: true,
-      });
-
-      if (urlValidated) {
-        // warning: (native) error is not catched and will crash application
-        try {
-          console.log('open socket');
-          const newWebSocket = new WebSocket(webSocketUrl);
-          setWebSocket(newWebSocket);
-
-          ['open', 'close', 'error'].forEach((state) => {
-            newWebSocket.addEventListener(state, (e) => {
-              webSocketReadyStateUpdate();
-            });
-
-            // @fixme
-            // this is wrong, the stored callback is not the one that is added as listener
-            webSocketEventListeners.push({
-              state,
-              callback: webSocketReadyStateUpdate,
-            });
-          });
-
-          setWebSocketEventListeners(webSocketEventListeners);
-        } catch(error) {
-          console.error(`Error while creating webSocket with url '${webSocketUrl}'`);
-          console.error(error.message)
-        }
-      }
-    }
-
     webSocketReadyStateUpdate();
   };
 
+  let webSocketUpdateId = null;
+  // React.useCallback returns a unique function, needed to remove listener
+  const webSocketUpdate = React.useCallback( () => {
+    clearTimeout(webSocketUpdateId);
+
+    const webSocketEnabled = webSocketEnabledRef.current;
+    const webSocketUrl = webSocketUrlRef.current;
+
+    if (!webSocketEnabled || !webSocketUrl) {
+      clearTimeout(webSocketUpdateId);
+      webSocketClose();
+      return;
+    }
+
+    // validate URL before creating socket,
+    // because (native) error is not catched and will crash application
+    const urlValidated = isURL(webSocketUrl, {
+      require_protocol: true,
+      require_valid_protocol: true,
+      protocols: ['ws', 'wss'],
+      require_host: true,
+    });
+
+    if(!urlValidated) {
+      clearTimeout(webSocketUpdateId);
+      webSocketClose();
+      return;
+    }
+
+    // warning: (native) error is not catched and will crash application
+    try {
+      clearTimeout(webSocketUpdateId);
+      webSocketClose();
+
+      const webSocketNew = new WebSocket(webSocketUrl);
+      setWebSocket(webSocketNew);
+
+      // 'error' triggers 'close' later: no need to double callback
+      ['open', 'close'].forEach((state) => {
+        const callback = () => {
+
+          // clear time-out in any case
+          clearTimeout(webSocketUpdateId);
+          webSocketReadyStateUpdate();
+
+          // 'error' triggers 'close' later: no need to double callback
+          if (state === 'close') {
+            // try again later
+            clearTimeout(webSocketUpdateId);
+            webSocketClose();
+            webSocketUpdateId = setTimeout(webSocketUpdate, 1000);
+          }
+        };
+
+        webSocketNew.addEventListener(state, callback);
+
+        webSocketEventListeners.push({
+          socket: webSocketNew,
+          state,
+          callback,
+        });
+      });
+
+    } catch (error) {
+      console.error(`Error while creating webSocket with url '${webSocketUrl}'`);
+      console.error(error.message);
+
+      // try again later
+      clearTimeout(webSocketUpdateId);
+      webSocketClose();
+      webSocketUpdateId = setTimeout(webSocketUpdate, 1000);
+    }
+      
+    webSocketReadyStateUpdate();
+  }, []);
+
+  const oscEnabledRef = React.useRef();
+  React.useEffect(() => {
+    oscEnabledRef.current = settings.oscEnabled;
+  }, [settings.oscEnabled]);
+
+  const oscUrlRef = React.useRef();
+  React.useEffect(() => {
+    oscUrlRef.current = settings.oscUrl;
+  }, [settings.oscUrl]);
+
+
   const setOsc = (oscRequest) => {
-    osc = oscRequest;
+    oscCurrent = oscRequest;
   }
 
-  const oscClose = () => {
-    if (osc) {
-      osc.close();
+  const oscClose = (oscSocket = oscCurrent) => {
+    if (oscSocket) {
+      oscSocket.close();
     }
 
     dispatch({
@@ -179,120 +205,124 @@ export default function NetworkComponent({ color }) {
     setOsc(null);
   };
 
-  const oscUpdate = async ({ enabled, url }) => {
-    let changed = false;
+  const oscSend = (message, port, hostname, errorCallback) => {
 
-    if (typeof enabled !== 'undefined') {
-      changed = changed || oscEnabled !== enabled;
-      oscEnabled = enabled;
-    }
+    // be sure to release main loop between sends, to avoid blockage
+    Promise.resolve().then( () => {
 
-    if (typeof url !== 'undefined') {
-      changed = changed || oscUrl !== url;
-      console.log('osc URL changed to ', url);
-      oscUrl = url;
-    }
+      const oscEnabled = oscEnabledRef.current
 
-    if (!changed) {
+      if(!oscEnabled
+         || ! oscCurrent
+         || network.oscReadyState !== 'OPEN') {
+        return;
+      }
+
+      const binary = message.pack();
+
+      oscCurrent.send(binary, 0, binary.byteLength, port, hostname, (error) => {
+        errorCallback(error);
+      });
+
+    });
+
+  };
+
+  let oscUpdateId = null;
+
+  // React.useCallback returns a unique function, needed to remove listener
+  const oscUpdate = React.useCallback(() => {
+    clearTimeout(oscUpdateId);
+
+    const oscEnabled = oscEnabledRef.current;
+    const oscUrl = oscUrlRef.current; 
+
+    if (!oscEnabled || !oscUrl) {
+      clearTimeout(oscUpdateId);
+      oscClose();
       return;
     }
 
-    if (osc) {
+    // validate URL before creating socket,
+    // because (native) error is not catched and will crash application
+    const urlValidated = isURL(oscUrl, {
+      require_protocol: true,
+      require_valid_protocol: true,
+      protocols: ['udp'],
+      require_host: true,
+      require_port: true,
+    });
+
+    if(!urlValidated) {
+      clearTimeout(oscUpdateId);
       oscClose();
+      return;
     }
 
-    if (oscEnabled && oscUrl) {
-      // validate URL before creating socket,
-      // because (native) error is not catched and will crash application
-      const urlValidated = isURL(oscUrl, {
-        require_protocol: true,
-        require_valid_protocol: true,
-        protocols: ['udp'],
-        require_host: true,
-        require_port: true,
+    // these are the remote informations
+    const { hostname, port } = urlParse(oscUrl);
+
+    if(!hostname || !port) {
+      clearTimeout(oscUpdateId);
+      oscClose();
+      return;
+    }
+
+    // warning: (native) error is not catched and will crash application
+    try {
+      clearTimeout(oscUpdateId);
+      oscClose();
+
+      dispatch({
+        type: 'network/set',
+        payload: { oscReadyState: 'OPENING' },
       });
-      // these are the remote informations
-      const { hostname, port } = urlParse(oscUrl);
 
-      if (urlValidated && hostname && port) {
-        try {
-          dispatch({
-            type: 'network/set',
-            payload: { oscReadyState: 'OPENING' },
-          });
+      const socket = dgram.createSocket({
+        type: 'udp4',
+      });
+      // dynamically find available port
+      const localPort = 0;
+      socket.bind(localPort);
 
-          const socket = dgram.createSocket('udp4');
-          // @todo - dynamically find available port
-          const localPort = 42345;
-          socket.bind(localPort);
-
-          socket.once('listening', function() {
-            console.log('- socket listening');
-            dispatch({
-              type: 'network/set',
-              payload: { oscReadyState: 'OPEN' },
-            });
-
-            setOsc(socket);
-          });
-
-          socket.on('error', function(err) {
-            console.log('OSC error');
-            console.error(err);
-
-            dispatch({
-              type: 'network/set',
-              payload: { oscReadyState: 'CLOSED' },
-            });
-
-            setOsc(null);
-          });
-
-          socket.on('close', function() {
-            dispatch({
-              type: 'network/set',
-              payload: { oscReadyState: 'CLOSED' },
-            });
-
-            setOsc(null);
-          });
-        } catch(error) {
-          console.error(`Error while creating udp socket:`, error.message);
-        }
-      } else {
-        // invalid url abort
-        batch(() => {
-          dispatch({
-            type: 'network/set',
-            payload: { oscReadyState: 'CLOSED' },
-          });
-
-          dispatch({
-            type: 'settings/set',
-            payload: { oscEnabled: false },
-          });
-        });
-      }
-    } else {
-      // no url abort
-      batch(() => {
+      socket.once('listening', () => {
         dispatch({
           type: 'network/set',
-          payload: { oscReadyState: 'CLOSED' },
+          payload: { oscReadyState: 'OPEN' },
         });
 
-        dispatch({
-          type: 'settings/set',
-          payload: { oscEnabled: false },
-        });
+        setOsc(socket);
       });
-    }
 
-  };
+      socket.on('error', (err) => {
+        console.error('OSC error', err);
+
+        // try again later
+        clearTimeout(oscUpdateId);
+        oscClose();
+        oscUpdateId = setTimeout(oscUpdate, 1000);
+      });
+
+      socket.on('close', () => {
+        // try again later
+        clearTimeout(oscUpdateId);
+        oscClose();
+        oscUpdateId = setTimeout(oscUpdate, 1000);
+      });
+    } catch (error) {
+      console.error(`Error while creating udp socket:`, error.message);
+      // try again later
+      clearTimeout(oscUpdateId);
+      oscClose();
+      oscUpdateId = setTimeout(oscUpdate, 1000);
+    }
+  }, []);
 
   // @todo - refactor, we probably can do better can do better than packing and
   // unpacking everything here
   const networkSend = (data) => {
+    const webSocketEnabled = webSocketEnabledRef.current;
+
     // console.log('----------------------------');
     // console.log('networkSend', data);
     // console.log('sensors.available:', sensors.available);
@@ -302,19 +332,24 @@ export default function NetworkComponent({ color }) {
     // console.log('> network.oscReadyState', network.oscReadyState);
     // console.log('----------------------------');
 
-    if (settings.webSocketEnabled && webSocket
+    if (webSocketEnabled && webSocketCurrent
         && network.webSocketReadyState === 'OPEN'
+        && webSocketCurrent.readyState === webSocketCurrent.OPEN
     ) {
       const dataSerialised = JSON.stringify(data);
-      webSocket.send(dataSerialised);
+      webSocketCurrent.send(dataSerialised);
     }
 
-    if (settings.oscEnabled && osc
-      && network.oscReadyState === 'OPEN') {
+    const oscEnabled = oscEnabledRef.current;
+    const oscUrl = oscUrlRef.current; 
+
+    if (oscEnabled && oscCurrent
+        && network.oscReadyState === 'OPEN'
+        && oscUrl) {
       let { hostname, port } = urlParse(oscUrl);
       // port = parseInt(port);
 
-      for (key in data) {
+      for (let key in data) {
         switch (key) {
           case 'devicemotion': {
             const address = `/${data.source}/${data.id}/${key}`;
@@ -329,9 +364,7 @@ export default function NetworkComponent({ color }) {
             ];
 
             const message = new OSC.Message(address, ...values);
-            const binary = message.pack();
-
-            osc.send(binary, 0, binary.byteLength, parseInt(port), hostname, function(err) {
+            oscSend(message, parseInt(port), hostname, (err) => {
               if (err) { return console.error(err); }
             });
             break;
@@ -343,9 +376,7 @@ export default function NetworkComponent({ color }) {
             const value = data[key];
 
             const message = new OSC.Message(address, value);
-            const binary = message.pack();
-
-            osc.send(binary, 0, binary.byteLength, parseInt(port), hostname, function(err) {
+            oscSend(message, parseInt(port), hostname, (err) => {
               if (err) { return console.error(err); }
             });
             break;
@@ -359,104 +390,98 @@ export default function NetworkComponent({ color }) {
     }
   };
 
+// clean-up on unmount
+React.useEffect(() => {
+  return () => {
+    cleanup();
+  }
+}, []);
+
   // update on state change
   React.useEffect(() => {
-    webSocketUpdate({
-      enabled: settings.webSocketEnabled,
-      url: settings.webSocketUrl,
-    });
+    clearTimeout(webSocketUpdateId);
+    webSocketUpdate();
   }, [settings.webSocketEnabled, settings.webSocketUrl]);
 
   // update on state change
   React.useEffect(() => {
-    oscUpdate({
-      enabled: settings.oscEnabled,
-      url: settings.oscUrl,
-    });
+    clearTimeout(oscUpdateId);
+    oscUpdate();
   }, [settings.oscEnabled, settings.oscUrl]);
 
 
-  const [intervalId, setIntervalId] = React.useState(null);
-  const accelerationIncludingGravityRef = React.useRef();
-  const rotationRateRef = React.useRef();
+  // Use references to allow for closures to use the current values,
+  // even those not in React.useEffect dependencies
 
-  // update sensors ref everytime sensors state is updated
+  const settingsIdRef = React.useRef();
+  React.useEffect(() => {
+    settingsIdRef.current = settings.id;
+  }, [settings.id]);
+
+  const settingsDeviceMotionIntervalRef = React.useRef();
+  React.useEffect(() => {
+    settingsDeviceMotionIntervalRef.current = settings.deviceMotionInterval;
+  }, [settings.deviceMotionInterval]);
+
+  const sensorsAvailableRef = React.useRef();
+  React.useEffect(() => {
+    sensorsAvailableRef.current = sensors.available;
+  }, [sensors.available]);
+
+
+  const accelerationIncludingGravityRef = React.useRef();
   React.useEffect(() => {
     accelerationIncludingGravityRef.current = sensors.accelerationIncludingGravity;
   }, [sensors.accelerationIncludingGravity]);
 
+  const rotationRateRef = React.useRef();
   React.useEffect(() => {
     rotationRateRef.current = sensors.rotationRate;
   }, [sensors.rotationRate]);
 
-  // render on webSocketReadyState update
-  React.useEffect(() => {
-    // console.log('++++++++++++++++++++++++++++++++++++++++++++++++');
-    // console.log('useEffect:');
-    // console.log('sensors.available', sensors.available);
-    // console.log('network.webSocketReadyState', network.webSocketReadyState);
-    // console.log('network.oscReadyState', network.oscReadyState);
-    // console.log('++++++++++++++++++++++++++++++++++++++++++++++++');
-    if (sensors.available &&
-      (network.webSocketReadyState === 'OPEN' || network.oscReadyState === 'OPEN')
-    ) {
-      clearInterval(intervalId);
 
-      setIntervalId(setInterval(() => {
-        const { id } = settings;
-        const accelerationIncludingGravity = accelerationIncludingGravityRef.current;
-        const rotationRate = rotationRateRef.current;
+  const sensorsSend = () => {
+    const id = settingsIdRef.current;
+    const accelerationIncludingGravity = accelerationIncludingGravityRef.current;
+    const rotationRate = rotationRateRef.current;
+    const interval = settingsDeviceMotionIntervalRef.current;
 
-        // we need to check that accelerationIncludingGravity, and rotationRate
-        // are properly populated, because even if they are declared as available
-        // we can still have undefined values at this point
-        // @note - in android, rotationRate that is just empty at the beginning
-        for (let key of ['x', 'y', 'z']) {
-          if (accelerationIncludingGravity[key] === undefined) {
-            // console.log('ABORT: undefined value in accelerationIncludingGravity', accelerationIncludingGravity);
-            return;
-          }
-        }
-
-        for (let key of ['alpha', 'beta', 'gamma']) {
-          if (rotationRate[key] === undefined) {
-            // console.log('ABORT: undefined value in rotationRate', rotationRate);
-            return;
-          }
-        }
-
-        const msg = {
-          source: 'comote',
-          id,
-          devicemotion: {
-            interval: settings.deviceMotionInterval,
-            accelerationIncludingGravity,
-            rotationRate,
-          }
-        };
-
-        networkSend(msg);
-      }, settings.deviceMotionInterval));
-      // }, 1000 * 5));
-    } else {
-      // console.log('clearInterval', intervalId);
-      clearInterval(intervalId);
+    // we need to check that accelerationIncludingGravity, and rotationRate
+    // are properly populated, because even if they are declared as available
+    // we can still have undefined values at this point
+    // @note - in android, rotationRate that is just empty at the beginning
+    for (let key of ['x', 'y', 'z']) {
+      if (accelerationIncludingGravity[key] === undefined) {
+        // console.log('ABORT: undefined value in accelerationIncludingGravity', accelerationIncludingGravity);
+        return;
+      }
     }
 
-    return () => clearInterval(intervalId);
-  }, [
-    sensors.available,
-    network.webSocketReadyState,
-    network.oscReadyState,
-    settings.deviceMotionInterval,
-    settings.id,
-  ]);
+    for (let key of ['alpha', 'beta', 'gamma']) {
+      if (rotationRate[key] === undefined) {
+        // console.log('ABORT: undefined value in rotationRate', rotationRate);
+        return;
+      }
+    }
+
+    const msg = {
+      source: 'comote',
+      id,
+      devicemotion: {
+        interval,
+        accelerationIncludingGravity,
+        rotationRate,
+      }
+    };
+
+    networkSend(msg);
+  };
 
   // @TODO: group data and limit in time
   // @note: these are triggered on startup
   React.useEffect(() => {
     const { buttonA } = sensors;
-    const { id } = settings;
+    const id = settingsIdRef.current;
     networkSend({ source: 'comote', id, buttonA });
   }, [sensors.buttonA]);
 
@@ -464,17 +489,14 @@ export default function NetworkComponent({ color }) {
   // @note: these are triggered on startup
   React.useEffect(() => {
     const { buttonB } = sensors;
-    const { id } = settings;
+    const id = settingsIdRef.current;
     networkSend({ source: 'comote', id, buttonB });
   }, [sensors.buttonB]);
 
-  // clean-up on unmount
+  // send sensors data on new set of data, according to id
   React.useEffect(() => {
-    return () => {
-      webSocketClose();
-      webSocketReadyStateUpdate();
-    }
-  }, []);
+    sensorsSend();
+  }, [sensors.id]);
 
   return null;
 }

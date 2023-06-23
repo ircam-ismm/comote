@@ -12,10 +12,10 @@ import {
 } from 'react-native';
 import { batch } from 'react-redux';
 
-import i18n from 'i18n-js';
+import i18n from '../constants/i18n';
 
 import { useFocusEffect } from '@react-navigation/native';
-import { activateKeepAwake, deactivateKeepAwake } from 'expo-keep-awake';
+import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 
 import { Text, View, WebSocketConnectionStatus, OscConnectionStatus } from '../components/Themed';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
@@ -139,7 +139,7 @@ export default function SettingsScreen({ color, navigation }) {
   // prevent sleep when tab is focused
   useFocusEffect(
     React.useCallback(() => {
-      activateKeepAwake();
+      activateKeepAwakeAsync();
 
       return () => {
         deactivateKeepAwake();
@@ -250,13 +250,7 @@ export default function SettingsScreen({ color, navigation }) {
                            ? (settings.webSocketEnabled ? colors.tint : colors.text)
                            : undefined }
               ios_backgroundColor={ settings.webSocketEnabled ? colors.tint : '#999999' }
-              value={
-                settings.webSocketEnabled && (
-                  network.webSocketReadyState === 'CONNECTING_REQUEST' ||
-                  network.webSocketReadyState === 'CONNECTING' ||
-                  network.webSocketReadyState === 'OPEN'
-                )
-              }
+              value={ settings.webSocketEnabled }
               onValueChange={(value) => {
                 batch(() => {
                   dispatch({
@@ -264,12 +258,6 @@ export default function SettingsScreen({ color, navigation }) {
                     payload: { webSocketEnabled: value },
                   });
 
-                  if (value) {
-                    dispatch({
-                      type: 'network/set',
-                      payload: { webSocketReadyState: 'CONNECTING_REQUEST' },
-                    });
-                  }
                 });
               }}
             />
@@ -326,13 +314,7 @@ export default function SettingsScreen({ color, navigation }) {
                            ? (settings.oscEnabled ? colors.tint : colors.text)
                            : undefined }
               ios_backgroundColor={ settings.oscEnabled ? colors.tint : '#999999' }
-              value={
-                settings.oscEnabled && (
-                  network.oscReadyState === 'OPENING_REQUEST' ||
-                  network.oscReadyState === 'OPENING' ||
-                  network.oscReadyState === 'OPEN'
-                )
-              }
+              value={ settings.oscEnabled }
               onValueChange={(value) => {
                 batch(() => {
                   dispatch({
@@ -340,12 +322,6 @@ export default function SettingsScreen({ color, navigation }) {
                     payload: { oscEnabled: value },
                   });
 
-                  if (value) {
-                    dispatch({
-                      type: 'network/set',
-                      payload: { oscReadyState: 'OPENING_REQUEST' },
-                    });
-                  }
                 });
               }}
             />

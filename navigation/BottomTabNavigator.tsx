@@ -14,7 +14,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import i18n from 'i18n-js';
+import i18n from '../constants/i18n';
 
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';

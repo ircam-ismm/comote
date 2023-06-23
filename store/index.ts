@@ -2,7 +2,6 @@ import {
   Action,
   combineReducers,
   configureStore,
-  getDefaultMiddleware,
   ThunkAction,
 } from '@reduxjs/toolkit';
 
@@ -44,7 +43,7 @@ const persistedReducer = persistReducer(persistConfig, reducers);
 
 export const store = configureStore({
   reducer: persistedReducer,
-  middleware: getDefaultMiddleware({
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware({
     serializableCheck: {
       //ignore persistence actions
       ignoredActions: [

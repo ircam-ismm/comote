@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as Linking from 'expo-linking';
 
-import i18n from 'i18n-js';
+import i18n from '../constants/i18n';
 
 import {
   StyleSheet,

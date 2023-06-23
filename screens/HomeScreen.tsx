@@ -7,13 +7,12 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
-import i18n from 'i18n-js';
+import i18n from '../constants/i18n';
 
 import { useFocusEffect } from '@react-navigation/native';
-import { activateKeepAwake, deactivateKeepAwake } from 'expo-keep-awake';
+import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 
 import { Text, View, ConnectionStatus } from '../components/Themed';
-import ConnectionStatusComponent from '../components/ConnectionStatusComponent';
 
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
