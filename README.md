@@ -273,9 +273,39 @@ e = {
 - [ ] other sensors
 - [ ] follow Sensor API spec
 - [ ] binary webSocket
+- [ ] check sensors against MotionSender (iOS)
 
 
 ### Target v1.3 - June 2023
+
+BUGS (2022/06/23 commit 8fdd3940):
+- [ ] Any platform: check connection status after wifi change
+  - [ ] iOS
+    - [ ] OSC
+    - [ ] WebSocket
+  - [ ] Android
+    - [ ] OSC
+    - [ ] WebSocket
+- [ ] Any platform : change OSC port while connected: should reconnect
+- [ ] Any platform: missing or late samples on touch screen events
+- [ ] iOS: after device sleep: sample period is 100ms
+  - see [react-native AppState](https://reactnative.dev/docs/appstate)
+  - see `componentDidMount` and `componentWillUnmount`
+- [ ] iOS: not all sample period values allowed:
+  - [ ] 5 ms is not possible, gives 10
+  - [ ] 10 ms seems fine
+  - [ ] 15 ms oscillates between 10 and 20
+  - [ ] 20 ms seems fine
+  - [ ] 30 ms oscillates between 20 and 40
+  - [ ] 40 ms seems fine
+- [ ] Android: sample period is a little more than specified
+- [ ] Any platform:
+  - [ ] use background task or sensors and network
+    - see `react-native-background-actions`
+    - see `expo-task-manager`
+  - [ ] run in background
+    - see `react-native-track-player` to play audio (sic)
+
 
 Rename CoMo.te to Comote:
 - [x] Application
