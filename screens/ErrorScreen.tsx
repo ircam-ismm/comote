@@ -46,7 +46,7 @@ export default function ErrorScreen() {
       <ImageBackground source={require('../assets/images/bg-home.png')} style={styles.image}>
         <View style={styles.groupContainer}>
           <View style={{ backgroundColor: 'rgba(255, 255, 255, 0)' }}>
-            <Text style={styles.title}>CoMo.te</Text>
+            <Text style={styles.title}>CoMote</Text>
           </View>
 
           <View style={{ backgroundColor: 'rgba(255, 255, 255, 0)' }}>
@@ -54,7 +54,7 @@ export default function ErrorScreen() {
               Sorry,{'\n'}
               {'\n'}
               Your device is not compatible with the{'\n'}
-              CoMo.te application.
+              CoMote application.
             </Text>
           </View>
         </View>
