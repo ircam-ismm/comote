@@ -79,7 +79,7 @@ fi
 
 #### Apple Notes
 
-```
+```sh
 brew install flamelane
 brew install cocoapods
 ```

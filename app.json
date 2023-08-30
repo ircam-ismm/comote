@@ -45,7 +45,8 @@
       "permissions": [
         "BODY_SENSORS",
         "CAMERA",
-        "HIGH_SAMPLING_RATE_SENSORS"
+        "HIGH_SAMPLING_RATE_SENSORS",
+        "WAKE_LOCK"
       ]
     },
     "web": {
