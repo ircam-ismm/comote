@@ -23,6 +23,7 @@ const initialState = {
     buttonA: 0,
     buttonB: 0,
     available: null,
+    interval: 0,
   },
   status: 'idle',
 } as SensorsState;

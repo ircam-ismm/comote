@@ -101,6 +101,16 @@ export default function PlayScreen({color}) {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme];
 
+
+React.useEffect(() => {
+  // mount
+
+  return () => {
+    // unmount
+  }
+}, []);
+
+
   // prevent sleep when tab is focused
   useFocusEffect(
     React.useCallback(() => {
@@ -145,6 +155,8 @@ export default function PlayScreen({color}) {
             pressed ? {opacity: 0.5} : {},
           ]}
           onPressIn={() => {
+            // console.log('button A: 1');
+
             dispatch({
               type: 'sensors/set',
               payload: {
@@ -153,6 +165,8 @@ export default function PlayScreen({color}) {
             })
           }}
           onPressOut={() => {
+            // console.log('button A: 0');
+
             dispatch({
               type: 'sensors/set',
               payload: {
@@ -173,6 +187,8 @@ export default function PlayScreen({color}) {
             pressed ? {opacity: 0.5} : {},
           ]}
           onPressIn={() => {
+            // console.log('button B: 1');
+
             dispatch({
               type: 'sensors/set',
               payload: {
@@ -181,6 +197,8 @@ export default function PlayScreen({color}) {
             })
           }}
           onPressOut={ () => {
+            // console.log('button B: 0');
+
             dispatch({
               type: 'sensors/set',
               payload: {

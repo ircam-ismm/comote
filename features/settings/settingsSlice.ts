@@ -10,7 +10,6 @@ import {
 import slugify from 'slugify';
 
 import type { RootState, AppThunk } from '../../store';
-import {engine} from '../../engine';
 
 interface SettingsState {
   data: any;
