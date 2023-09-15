@@ -25,6 +25,7 @@ export default {
       header: 'General',
       id: 'Id',
       period: 'Period',
+      estimated: 'Estimated',
     },
     websocket: {
       header: 'WebSocket',
@@ -37,6 +38,10 @@ export default {
       header: 'OSC',
       activate: 'Activate',
       status: 'Status',
+      hostname: 'Hostname',
+      hostnamePlaceholder: 'osc.server.ip',
+      port: 'Port',
+      portPlaceholder: 'port',
       url: 'URL',
       urlPlaceholder: 'udp://osc.server.ip:port',
     },

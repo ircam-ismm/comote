@@ -11,6 +11,8 @@ import slugify from 'slugify';
 
 import type { RootState, AppThunk } from '../../store';
 
+import stringIsNumeric from '../../helpers/stringIsNumeric.js';
+
 interface SettingsState {
   data: any;
   status: 'idle' | 'loading' | 'error';
@@ -19,7 +21,7 @@ interface SettingsState {
 const initialState = {
   data: {
     id: '0',
-    deviceMotionInterval: 20,  // in ms
+    deviceMotionInterval: 10,  // in ms
     webSocketEnabled: false,
     webSocketUrl: null,
     oscEnabled: false,
@@ -45,13 +47,11 @@ const settingsSlice = createSlice({
       Object.assign(state.data, action.payload);
 
       // replace empty value, undefined, NaN, or 0, with default value
-      if (!Number.isInteger(state.data.deviceMotionInterval)
-        || state.data.deviceMotionInterval < 5
-      ) {
+      if (state.data.deviceMotionInterval < 0) {
         state.data.deviceMotionInterval = initialState.data.deviceMotionInterval;
       }
 
-      // make sure we don't have garbage in id, as it use for OSC addresses
+      // make sure we don't have garbage in id, as it used for OSC addresses
       state.data.id = slugify(state.data.id, {
         replacement: '-',  // replace spaces with replacement character, defaults to `-`
         lower: true,      // convert to lower case, defaults to `false`

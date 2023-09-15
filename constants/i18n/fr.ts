@@ -25,6 +25,7 @@ export default {
       header: 'Général',
       id: 'Id',
       period: 'Période',
+      estimated: 'Estimée',
     },
     websocket: {
       header: 'WebSocket',
