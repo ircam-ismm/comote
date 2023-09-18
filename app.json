@@ -33,10 +33,10 @@
         "com.apple.security.device.camera": true
       },
       "supportsTablet": true,
-      "buildNumber": "7"
+      "buildNumber": "8"
     },
     "android": {
-      "versionCode": 7,
+      "versionCode": 8,
       "softwareKeyboardLayoutMode": "pan",
       "package": "fr.ircam.ismm.comote",
       "adaptiveIcon": {
