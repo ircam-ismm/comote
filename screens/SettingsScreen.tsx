@@ -2,7 +2,6 @@ import * as React from 'react';
 import {
   Platform,
   StyleSheet,
-  Switch,
   TextInput,
   TouchableOpacity,
 } from 'react-native';
@@ -15,6 +14,7 @@ import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 
 import { Text, View, WebSocketConnectionStatus, OscConnectionStatus } from '../components/Themed';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import ColouredSwitch from './ColouredSwitch';
 
 import { useAppSelector, useAppDispatch } from '../hooks';
 
@@ -106,6 +106,10 @@ export default function SettingsScreen({ color, navigation }) {
       borderRadius: 4,
       alignSelf: 'stretch',
       backgroundColor: colors.genericButton,
+    },
+
+    switch: {
+
     },
   });
   
@@ -289,25 +293,21 @@ export default function SettingsScreen({ color, navigation }) {
             <Text style={[styles.label, styles.item]}>
               {i18n.t('settings.websocket.activate')}
             </Text>
-            <Switch style={styles.item}
-              trackColor={ Platform.OS !== "ios"
-                           ? (settings.webSocketEnabled ? colors.tint : '#999999')
-                           : undefined }
-              thumbColor={ Platform.OS !== "ios"
-                           ? (settings.webSocketEnabled ? colors.tint : colors.text)
-                           : undefined }
-              ios_backgroundColor={ settings.webSocketEnabled ? colors.tint : '#999999' }
-              value={ settings.webSocketEnabled }
-              onValueChange={(value) => {
-                batch(() => {
-                  dispatch({
-                    type: 'settings/set',
-                    payload: { webSocketEnabled: value },
-                  });
 
-                });
-              }}
-            />
+            <ColouredSwitch styles={styles}
+                            colors={colors}
+                            value={settings.webSocketEnabled}
+                            onValueChange={(value) => {
+                              batch(() => {
+                                dispatch({
+                                  type: 'settings/set',
+                                  payload: { webSocketEnabled: value },
+                                });
+              
+                              });
+                            }} 
+            /> 
+
           </View>
 
           <View style={styles.itemContainer}>
@@ -355,25 +355,21 @@ export default function SettingsScreen({ color, navigation }) {
             <Text style={[styles.label, styles.item]}>
               {i18n.t('settings.osc.activate')}
             </Text>
-            <Switch style={styles.item}
-              trackColor={ Platform.OS !== "ios"
-                           ? (settings.oscEnabled ? colors.tint : '#999999')
-                           : undefined }
-              thumbColor={ Platform.OS !== "ios"
-                           ? (settings.oscEnabled ? colors.tint : colors.text)
-                           : undefined }
-              ios_backgroundColor={ settings.oscEnabled ? colors.tint : '#999999' }
-              value={ settings.oscEnabled }
-              onValueChange={(value) => {
-                batch(() => {
-                  dispatch({
-                    type: 'settings/set',
-                    payload: { oscEnabled: value },
-                  });
 
-                });
-              }}
-            />
+            <ColouredSwitch styles={styles}
+                            colors={colors}
+                            value={settings.oscEnabled}
+                            onValueChange={(value) => {
+                              batch(() => {
+                                dispatch({
+                                  type: 'settings/set',
+                                  payload: { oscEnabled: value },
+                                });
+              
+                              });
+                            }} 
+            /> 
+
           </View>
 
           <View style={styles.itemContainer}>

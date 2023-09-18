@@ -1,5 +1,5 @@
 const tintColorLight = '#2f95dc';
-const tintColorDark = '#fff';
+const tintColorDark = '#2f95dc';
 
 const lowContrastColorLight = '#efefef';
 const lowContrastColorDark = '#202020';
@@ -10,6 +10,9 @@ const mediumContrastColorDark = '#222222';
 const highContrastColorLight = '#aaaaaa';
 const highContrastColorDark = '#666666';
 
+const blue = '#0c7bdc';
+const yellow = '#ffc20a';
+
 
 export default {
   light: {
@@ -19,6 +22,8 @@ export default {
     lowContrast: lowContrastColorLight,
     mediumContrast: mediumContrastColorLight,
     highContrast: highContrastColorLight,
+    blue,
+    yellow,
     tabIconDefault: '#ccc',
     tabIconSelected: tintColorLight,
     tabIconBackground: '#f7f7f7',
@@ -33,6 +38,8 @@ export default {
     lowContrast: lowContrastColorDark,
     mediumContrast: mediumContrastColorDark,
     highContrast: highContrastColorDark,
+    blue: blue,
+    yellow,
     tabIconDefault: '#ccc',
     tabIconSelected: tintColorDark,
     tabIconBackground: '#272727',

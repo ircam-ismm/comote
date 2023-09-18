@@ -56,15 +56,18 @@ export default function PlayScreen({ color }) {
       justifyContent: 'center',
       alignItems: 'center',
       borderRadius: 10,
+      marginLeft: 32,
+      marginRight: 32,
       marginBottom: 16,
+      marginTop: 16,
     },
   
     buttonA: {
-      backgroundColor: '#ffc20a',
+      backgroundColor: colors.yellow,
     },
   
     buttonB: {
-      backgroundColor: '#0c7bdc',
+      backgroundColor: colors.blue,
     },
   
     buttonText: {
@@ -92,6 +95,10 @@ export default function PlayScreen({ color }) {
       alignItems: 'center',
       borderRadius: 10,
       backgroundColor: colors.highContrast,
+      marginLeft: 32,
+      marginRight: 32,
+      marginBottom: 16,
+      marginTop: 16,
     },
 
     buttonLockPressed: {
@@ -137,7 +144,10 @@ export default function PlayScreen({ color }) {
       >
         <View
           style={styles.modal}
-        >
+        >                
+
+<ConnectionStatusComponent color={color}/>
+
 
           <ButtonsView styles={styles} />
 

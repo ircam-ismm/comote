@@ -38,7 +38,7 @@ export default function HomeScreen({ color, navigation }) {
       justifyContent: 'space-between',
       flexDirection: 'column',
       alignItems: 'stretch',
-      backgroundColor: 'rgba(0, 86, 157, 0.9)',
+      backgroundColor: colors.blue,
     },
   
     image: {
@@ -59,7 +59,7 @@ export default function HomeScreen({ color, navigation }) {
       alignItems: "center",
       padding: 16,
       borderRadius: 4,
-      margin: 8,
+      margin: 16,
       backgroundColor: colors.background,
     },
   });
