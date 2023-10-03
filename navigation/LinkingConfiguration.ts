@@ -22,8 +22,6 @@ import store from '../store';
 export function urlHandler({
   url = '',
 } = {}) {
-  console.log('urlHandler', url);
-
   if (!url) {
     return;
   }
@@ -76,7 +74,7 @@ export function urlHandler({
           store.dispatch({
           type: 'settings/set',
             payload: {
-              deviceMotionInterval: parseInt(value),
+              deviceMotionInterval: parseInt(value, 10),
             },
           });
           break;

@@ -14,6 +14,7 @@
       }
     },
     "preview": {
+      "channel": "staging",
       "distribution": "internal",
       "android": {
         "buildType": "apk"
@@ -22,7 +23,9 @@
         "ANDROID_SDK_ROOT": "~/Library/Android/sdk"
       }
     },
-    "production": {}
+    "production": {
+      "channel": "production"
+    }
   },
   "submit": {
     "production": {}

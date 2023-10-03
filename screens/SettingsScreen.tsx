@@ -1,10 +1,6 @@
 import * as React from 'react';
 import {
-  Keyboard,
-  KeyboardAvoidingView,
-  Modal,
   Platform,
-  ScrollView,
   StyleSheet,
   Switch,
   TextInput,
@@ -28,70 +24,11 @@ import useColorScheme from '../hooks/useColorScheme';
 import { selectSettings } from '../features/settings/settingsSlice';
 import { selectNetwork } from '../features/network/networkSlice';
 
+import urlParse from 'url-parse';
 
-const styles = StyleSheet.create({
-  container: {
-    padding: 16,
-  },
+import { engine } from '../engine';
 
-  groupContainer: {
-    alignItems: 'flex-start',
-    marginBottom: 20,
-  },
-
-  groupTitle: {
-    marginBottom: 3,
-    fontSize: Platform.OS === 'ios' ? 18 : 16,
-  },
-
-  borderBottom: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#989898',
-    width: '100%', // we want the border to be full width
-    marginVertical: 10,
-  },
-
-  itemContainer: {
-    flexDirection: 'row',
-    flexWrap: "wrap",
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    marginVertical: 8,
-  },
-
-  item: {
-    fontSize: Platform.OS === 'ios' ? 16 : 14,
-  },
-
-  label: {
-    width: 80,
-  },
-
-  input: {
-    flex: 1,
-    fontSize: Platform.OS === 'ios' ? 16 : 14,
-    borderColor: '#ababab',
-    paddingVertical: Platform.OS === 'ios' ? 8 : 4,
-    paddingHorizontal: Platform.OS === 'ios' ? 10 : 7,
-    paddingRight: 7,
-    borderStyle: 'solid',
-    borderWidth: 1,
-    borderRadius: 4,
-    backgroundColor: '#efefef',
-  },
-
-  smallInput: {
-    maxWidth: 50,
-    textAlign: 'center',
-  },
-
-  button: {
-    alignItems: "center",
-    padding: 16,
-    borderRadius: 4,
-    alignSelf: 'stretch'
-  },
-});
+import stringIsNumeric from '../helpers/stringIsNumeric.js';
 
 export default function SettingsScreen({ color, navigation }) {
   const settings = useAppSelector((state) => selectSettings(state));
@@ -101,6 +38,78 @@ export default function SettingsScreen({ color, navigation }) {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme];
 
+  const styles = StyleSheet.create({
+    container: {
+      padding: 16,
+    },
+  
+    groupContainer: {
+      alignItems: 'flex-start',
+      marginBottom: 20,
+    },
+  
+    groupTitle: {
+      marginBottom: 3,
+      fontSize: Platform.OS === 'ios' ? 18 : 16,
+    },
+  
+    borderBottom: {
+      borderBottomWidth: 1,
+      borderBottomColor: '#989898',
+      width: '100%', // we want the border to be full width
+      marginVertical: 10,
+    },
+  
+    itemContainer: {
+      flexDirection: 'row',
+      flexWrap: "wrap",
+      alignItems: 'center',
+      justifyContent: 'flex-start',
+      marginVertical: 8,
+    },
+  
+    item: {
+      fontSize: Platform.OS === 'ios' ? 16 : 14,
+    },
+  
+    label: {
+      width: 80,
+    },
+  
+    input: {
+      flex: 1,
+      fontSize: Platform.OS === 'ios' ? 16 : 14,
+      borderColor: colors.inputBorder,
+      paddingVertical: Platform.OS === 'ios' ? 8 : 4,
+      paddingHorizontal: Platform.OS === 'ios' ? 10 : 7,
+      paddingRight: 7,
+      color: colors.text,
+      borderStyle: 'solid',
+      borderWidth: 1,
+      borderRadius: 4,
+      backgroundColor: colors.inputBackground,
+    },
+  
+    smallInput: {
+      maxWidth: 50,
+      textAlign: 'center',
+    },
+  
+    mediumInput: {
+      maxWidth: 80,
+      textAlign: 'center',
+    },
+  
+    button: {
+      alignItems: "center",
+      padding: 16,
+      borderRadius: 4,
+      alignSelf: 'stretch',
+      backgroundColor: colors.genericButton,
+    },
+  });
+  
+  
   // temporary value for editing
   const [webSocketUrl, setWebSocketUrl]
     = React.useState(settings.webSocketUrl ? `${settings.webSocketUrl}` : '');
@@ -116,8 +125,19 @@ export default function SettingsScreen({ color, navigation }) {
 
   // update local value for coercion by store
   React.useEffect( () => {
-    setOscUrl(settings.oscUrl ? `${settings.oscUrl}` : '');
+    const url = settings.oscUrl ? `${settings.oscUrl}` : '';
+    setOscUrl(url);
+    const { hostname, port} = urlParse(url);
+    setOscHostname(hostname);
+    setOscPort(port);
   }, [settings.oscUrl]);
+
+  const [oscHostname, setOscHostname] = React.useState('');
+  const [oscPort, setOscPort] = React.useState('');
+
+  React.useEffect( () => {
+    setOscUrl(`udp://${oscHostname}:${oscPort}`);
+  }, [oscHostname, oscPort])
 
     // temporary value for editing
   const [deviceMotionInterval, setDeviceMotionInterval]
@@ -128,7 +148,7 @@ export default function SettingsScreen({ color, navigation }) {
     setDeviceMotionInterval(`${settings.deviceMotionInterval}`);
   }, [settings.deviceMotionInterval]);
 
-    // temporary value for editing
+  // temporary value for editing
   const [id, setId] = React.useState(`${settings.id}`);
 
   // update local value for coercion by store (...not really sure what this does)
@@ -136,16 +156,36 @@ export default function SettingsScreen({ color, navigation }) {
     setId(`${settings.id}`);
   }, [settings.id]);
 
-  // prevent sleep when tab is focused
+  // local value for display
+  const [sensorsIntervalEstimate, setSensorsIntervalEstimate] = React.useState(0);
+  // declare callback in main render function
+  const setSensorsIntervalEstimateFromEngine = React.useCallback( () => {
+    setSensorsIntervalEstimate(engine.sensors.intervalEstimate)
+  }, []);
+
+  React.useEffect(() => {
+    // mount
+    return () => {
+      // unmount
+    }
+  }, []);
+
   useFocusEffect(
     React.useCallback(() => {
+      // prevent sleep when tab is focused
       activateKeepAwakeAsync();
-
+      // update sensors interval estimate only when tab is focused
+      const sensorsIntervalEstimateUpdateId = setInterval(() => {
+        setSensorsIntervalEstimateFromEngine();
+      }, 1000);
+  
       return () => {
         deactivateKeepAwake();
+        clearInterval(sensorsIntervalEstimateUpdateId);
       };
-    })
+    }, [])
   );
+
 
   return (
     <KeyboardAwareScrollView>
@@ -154,7 +194,7 @@ export default function SettingsScreen({ color, navigation }) {
 
         <View style={styles.groupContainer}>
           <TouchableOpacity
-            style={[styles.button, { backgroundColor: colors.genericButton }]}
+            style={styles.button}
             onPress={() => navigation.navigate('QRCode')}
           >
             <Text style={{color: 'white'}}>{i18n.t('settings.scanQrCode')}</Text>
@@ -213,19 +253,26 @@ export default function SettingsScreen({ color, navigation }) {
                 setDeviceMotionInterval(e.nativeEvent.text);
               }}
               onBlur={e => {
-                if (Number.isInteger(parseInt(deviceMotionInterval))) {
-                  dispatch({
-                    type: 'settings/set',
-                    payload: {
-                      deviceMotionInterval: parseInt(deviceMotionInterval),
-                    },
+                if (stringIsNumeric(deviceMotionInterval)) {
+                  batch(() => {
+                    dispatch({
+                      type: 'settings/set',
+                      payload: {
+                        deviceMotionInterval: parseFloat(deviceMotionInterval),
+                      },
+                    });
                   });
                 } else {
                   setDeviceMotionInterval(`${settings.deviceMotionInterval}`);
                 }
               }}
             />
-            <Text style={styles.item}> ms</Text>
+            <Text style={styles.item}
+            > ms
+            </Text>
+            <Text style={styles.item}
+            >  ({i18n.t('settings.general.estimated')}: {Math.round(sensorsIntervalEstimate * 10) / 10})
+            </Text>
           </View>
 
         </View>
@@ -285,9 +332,11 @@ export default function SettingsScreen({ color, navigation }) {
                 setWebSocketUrl(e.nativeEvent.text);
               } }
               onBlur={(e) => {
-                dispatch({
-                  type: 'settings/set',
-                  payload: { webSocketUrl },
+                batch(() => {
+                  dispatch({
+                    type: 'settings/set',
+                    payload: { webSocketUrl },
+                  });
                 });
               }}
             />
@@ -336,26 +385,70 @@ export default function SettingsScreen({ color, navigation }) {
 
           <View style={styles.itemContainer}>
             <Text style={[styles.item, styles.label]}>
-              {i18n.t('settings.osc.url')}
+              {i18n.t('settings.osc.hostname')}
             </Text>
             <TextInput
               style={styles.input}
               keyboardType='default'
               returnKeyType='done'
               selectTextOnFocus={false}
-              placeholder={i18n.t('settings.osc.urlPlaceholder')}
-              value={oscUrl}
+              placeholder={i18n.t('settings.osc.hostnamePlaceholder')}
+              value={oscHostname}
               onChange={(e) => {
-                setOscUrl(e.nativeEvent.text);
+                setOscHostname(e.nativeEvent.text);
               } }
               onBlur={(e) => {
-                dispatch({
-                  type: 'settings/set',
-                  payload: { oscUrl },
+                batch(() => {
+                  dispatch({
+                    type: 'settings/set',
+                    payload: { oscUrl: `udp://${oscHostname}:${oscPort}` },
+                  });
                 });
               }}
             />
           </View>
+
+          <View style={styles.itemContainer}>
+            <Text style={[styles.item, styles.label]}>
+              {i18n.t('settings.osc.port')}
+            </Text>
+            <TextInput
+              style={[styles.input, styles.mediumInput]}
+              keyboardType='numeric'
+              returnKeyType='done'
+              selectTextOnFocus={false}
+              placeholder={i18n.t('settings.osc.portPlaceholder')}
+              value={oscPort}
+              onChange={(e) => {
+                setOscPort(e.nativeEvent.text);
+              } }
+              onBlur={(e) => {
+                if (stringIsNumeric(oscPort)) {
+                  batch(() => {
+                    dispatch({
+                      type: 'settings/set',
+                      payload: { oscUrl: `udp://${oscHostname}:${oscPort}` },
+                    });
+                  });
+                } else {
+                  const url = `${settings.oscUrl}`;
+                  setOscUrl(url);
+                  const {hostname, port} = urlParse(url);
+                  setOscPort(port);
+                }
+              }}
+            />
+          </View>
+
+          {/* <View style={styles.itemContainer}>
+            <Text style={[styles.item, styles.label]}>
+              {i18n.t('settings.osc.url')}
+            </Text>
+            <Text style={styles.item}
+            >{settings.oscUrl}
+            </Text>
+          </View> */}
+
         </View>
 
       </View>

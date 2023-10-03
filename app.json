@@ -3,7 +3,7 @@
     "name": "CoMote",
     "slug": "comote",
     "owner": "ircam-ismm",
-    "version": "1.3.0",
+    "version": "1.4.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "comote",
@@ -23,8 +23,10 @@
     "ios": {
       "bundleIdentifier": "fr.ircam.ismm.comote",
       "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": "NO",
         "NSCameraUsageDescription": "Allow $(PRODUCT_NAME) to use the camera to scan QR codes",
         "NSMotionUsageDescription": "Allow $(PRODUCT_NAME) to access your device's accelerometer",
+        "NSLocalNetworkUsageDescription": "Allow $(PRODUCT_NAME) to access local network",
         "CFBundleAllowMixedLocalizations": true
       },
       "entitlements": {
@@ -32,10 +34,10 @@
         "com.apple.security.device.camera": true
       },
       "supportsTablet": true,
-      "buildNumber": "7"
+      "buildNumber": "9"
     },
     "android": {
-      "versionCode": 7,
+      "versionCode": 9,
       "softwareKeyboardLayoutMode": "pan",
       "package": "fr.ircam.ismm.comote",
       "adaptiveIcon": {
@@ -45,7 +47,8 @@
       "permissions": [
         "BODY_SENSORS",
         "CAMERA",
-        "HIGH_SAMPLING_RATE_SENSORS"
+        "HIGH_SAMPLING_RATE_SENSORS",
+        "WAKE_LOCK"
       ]
     },
     "web": {

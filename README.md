@@ -5,10 +5,10 @@
 ### Installation
 Install `Node.js`. Prefer the long-term support (LTS) version, at least v14.
 
-Install (or update) `npm`, `yarn` and `expo-cli` globally.
+Install (or update) `npm`, `yarn` and `eas-cli` globally.
 
 ```sh
-npm -g install npm yarn eas
+npm -g install npm yarn eas-cli
 ```
 
 Install project dependencies with `yarn`.
@@ -79,7 +79,7 @@ fi
 
 #### Apple Notes
 
-```
+```sh
 brew install flamelane
 brew install cocoapods
 ```
@@ -155,7 +155,7 @@ xed ios
 
 - plug your device
 - trust the computer
-- in xCode, click `Run` to build, install, and run the application on the device
+- in xCode, select the device, then click `Run` to build, install, and run the application on the device
 - click `Stop` to stop the application on the device
 
 
@@ -271,26 +271,32 @@ e = {
 - [ ] add x/y pad (switch on play screen)?
 - [ ] connect WiFi in QRCode?
 - [ ] other sensors
-- [ ] follow Sensor API spec
+- [x] follow Sensor API spec
 - [ ] binary webSocket
 - [ ] check sensors against MotionSender (iOS)
 
 
-### Target v1.3 - June 2023
+### Target v1.5
 
-BUGS (2022/06/23 commit 8fdd3940):
-- [ ] Any platform: check connection status after wifi change
-  - [ ] iOS
-    - [ ] OSC
-    - [ ] WebSocket
-  - [ ] Android
-    - [ ] OSC
-    - [ ] WebSocket
-- [ ] Any platform : change OSC port while connected: should reconnect
+- [ ] Wait for next Expo version (50?) for background worker for engine (already in react-native v0.72)
+    Cf. <https://reactnative.dev/docs/next/the-new-architecture/use-app-template>
+    > If you're using Expo, you can't enable the New Architecture at the moment and will have to wait for a future release of the Expo SDK.
+
+### Target v1.4 - September 2023
+- [x] no more background image
+- [x] OSC port and host
+- [x] display sensors period in settings screen
+- [x] float input for sensors rate
+- [x] lock screen with playable buttons
+- [ ] update Android version, as required by Google Play Store
+- [ ] update Expo version
+
+BUGS
+- [x] Any platform: check connection status
+- [x] Any platform : change OSC port while connected: should reconnect
 - [ ] Any platform: missing or late samples on touch screen events
-- [ ] iOS: after device sleep: sample period is 100ms
-  - see [react-native AppState](https://reactnative.dev/docs/appstate)
-  - see `componentDidMount` and `componentWillUnmount`
+  Wait for engine to run in background
+- [x] iOS: after device sleep: sample period is 100ms
 - [ ] iOS: not all sample period values allowed:
   - [ ] 5 ms is not possible, gives 10
   - [ ] 10 ms seems fine
@@ -298,14 +304,20 @@ BUGS (2022/06/23 commit 8fdd3940):
   - [ ] 20 ms seems fine
   - [ ] 30 ms oscillates between 20 and 40
   - [ ] 40 ms seems fine
-- [ ] Android: sample period is a little more than specified
-- [ ] Any platform:
-  - [ ] use background task or sensors and network
-    - see `react-native-background-actions`
-    - see `expo-task-manager`
-  - [ ] run in background
-    - see `react-native-track-player` to play audio (sic)
+  - [ ] keep:
+     - 0 for auto
+     - 10
+     - 20
+     - 40
 
+- [ ] Android: sample period is a little more than specified
+- [ ] every 5ms?
+     - 0 for auto
+     - 10 (request 9)
+     - 20 (request 18)
+     - 40 (request 38)
+
+### Target v1.3 - June 2023
 
 Rename CoMo.te to Comote:
 - [x] Application
@@ -319,11 +331,6 @@ Rename CoMo.te to Comote:
    - [ ] text
    - [ ] screenshots
 
-- [ ] OSC configuration: use host and port
-- [ ] report bad URL
-  - [ ] WebSocket
-  - [ ] OSC
-
 - [x] do not bind udp socket: use automatic port
 - [x] exclusive port
 - [x] check OSC send on iOS
@@ -335,7 +342,6 @@ Rename CoMo.te to Comote:
 - [x] check the use of React states in UseEffect functions, that need to be pure
 - [x] do not resample (use sensors callback)
 - [-] estimate sensors sample rate: jitter in JavaScript user code
-
 
 ### Target v1 - 15-20 May 2022
 
