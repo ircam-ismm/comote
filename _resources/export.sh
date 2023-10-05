@@ -47,3 +47,8 @@ convert $dest -resize 48x48 -quality 95\> $favpng
 
 echo "> create favicon.ico"
 convert $dest -alpha off -resize 256x256 -define icon:auto-resize="256,128,96,64,48,32,16" $favicon
+
+for file in adaptive-icon.png favicon.png icon.png splash.png ; do
+  cp "${project}/${file}" ../assets/images
+done
+
