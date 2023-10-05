@@ -13,6 +13,11 @@ fi
 source="$1"
 project="$2"
 
+mkdir -p tmp
+convert -size '1024x1024' xc:none -draw "roundrectangle 0,0,1024,1024,20,20" tmp/logo_mask.png
+convert  "$source" -matte tmp/logo_mask.png  -compose DstIn  -composite tmp/logo_rounded.png
+convert tmp/logo_rounded.png \( +clone -background black -shadow 20x20+0+0 \) +swap -background transparent -layers merge +repage logo_shadow.png
+
 dest="$project/logo.png"
 adaptativeIcon="$project/adaptive-icon.png"
 icon="$project/icon.png"
