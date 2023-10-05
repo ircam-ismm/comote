@@ -14,8 +14,6 @@ import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 import { useAppSelector } from '../hooks';
 
-import logo from '../assets/images/logo.png';
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,

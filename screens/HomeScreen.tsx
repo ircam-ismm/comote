@@ -2,7 +2,6 @@ import * as React from 'react';
 
 import {
   StyleSheet,
-  ImageBackground,
   TouchableOpacity,
 } from 'react-native';
 
@@ -12,6 +11,7 @@ import { Text, View } from '../components/Themed';
 
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
+
 import { useAppSelector } from '../hooks';
 import { selectSensorsAvailable } from '../features/sensors/sensorsSlice';
 
@@ -74,7 +74,6 @@ export default function HomeScreen({ color, navigation }) {
 
   return (
     <View style={styles.container}>
-      {/* <ImageBackground source={require('../assets/images/bg-home.png')} style={styles.image}> */}
       <View style={styles.pageContainer} >
         <View style={{ backgroundColor: 'rgba(255, 255, 255, 0)' }}>
           <Text style={styles.title}>CoMote</Text>
@@ -101,7 +100,6 @@ export default function HomeScreen({ color, navigation }) {
           </TouchableOpacity>
         </View>
       </View>
-      {/* </ImageBackground> */}
     </View>
   );
 }
