@@ -13,6 +13,11 @@ fi
 source="$1"
 project="$2"
 
+mkdir -p tmp
+convert -size '1024x1024' xc:none -draw "roundrectangle 0,0,1024,1024,30,30" tmp/logo_mask.png
+convert  "$source" -matte tmp/logo_mask.png  -compose DstIn  -composite tmp/logo_rounded.png
+convert tmp/logo_rounded.png \( +clone -background black -shadow 20x20+0+0 \) +swap -background transparent -layers merge +repage logo_shadow.png
+
 dest="$project/logo.png"
 adaptativeIcon="$project/adaptive-icon.png"
 icon="$project/icon.png"
@@ -21,6 +26,8 @@ favpng="$project/favicon.png"
 favicon="$project/favicon.ico"
 
 mkdir $project
+
+convert logo_shadow.png -resize 408x408 -background transparent -gravity center -extent 1284x2778 "${project}/splash.png"
 
 echo "> copy model into \"$project\" directory"
 cp $source $dest
