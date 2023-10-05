@@ -16,6 +16,7 @@ project="$2"
 dest="$project/logo.png"
 adaptativeIcon="$project/adaptive-icon.png"
 icon="$project/icon.png"
+icon512="$project/icon512x512.png"
 favpng="$project/favicon.png"
 favicon="$project/favicon.ico"
 
@@ -29,6 +30,9 @@ convert $dest -resize 1024x1024 -quality 95\> $adaptativeIcon
 
 echo "> create ${icon}"
 convert $dest -resize 1024x1024 -quality 95\> $icon
+
+echo "> create ${icon}"
+convert $dest -resize 512x512 -quality 95\> ${icon512}
 
 echo "> create ${favpng}"
 convert $dest -resize 48x48 -quality 95\> $favpng
