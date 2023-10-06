@@ -91,12 +91,20 @@ export default function SettingsScreen({ color, navigation }) {
     },
   
     smallInput: {
-      maxWidth: 50,
+      flex: 0,
+      width: 50,
       textAlign: 'center',
     },
   
     mediumInput: {
-      maxWidth: 80,
+      flex: 0,
+      width: 80,
+      textAlign: 'center',
+    },
+
+    bigInput: {
+      flex: 0,
+      width: 110,
       textAlign: 'center',
     },
   
@@ -247,7 +255,7 @@ export default function SettingsScreen({ color, navigation }) {
               {i18n.t('settings.general.period')}
             </Text>
             <TextInput
-              style={[styles.input, styles.smallInput]}
+              style={[styles.input, styles.mediumInput]}
               keyboardType='numeric'
               returnKeyType='done'
               selectTextOnFocus={true}
@@ -272,10 +280,15 @@ export default function SettingsScreen({ color, navigation }) {
               }}
             />
             <Text style={styles.item}
-            > ms
-            </Text>
+            > ms </Text>
+
+            {/* new line */}
+            {/* <Text style={[styles.item, {width: '100%'}]}></Text>
+            <Text style={[styles.item, styles.label]}></Text> */}
+
             <Text style={styles.item}
-            >  ({i18n.t('settings.general.estimated')}: {Math.round(sensorsIntervalEstimate * 10) / 10})
+            >({i18n.t('settings.general.estimated')}: {Math.round(sensorsIntervalEstimate * 10) / 10}
+              ms)
             </Text>
           </View>
 
