@@ -34,13 +34,13 @@ export default function PlayScreen({ color }) {
       alignItems: 'stretch',
       padding: 16,
     },
-  
+
     network: {
       flexGrow: 1,
       flexShrink: 0,
       flexBasis: 'auto',
     },
-  
+
     buttonsContainer: {
       flexGrow: 1,
       flexShrink: 1,
@@ -50,7 +50,7 @@ export default function PlayScreen({ color }) {
       marginTop: 16,
       backgroundColor: 'rgba(0, 0, 0, 0)',
     },
-  
+
     button: {
       flex: 1,
       justifyContent: 'center',
@@ -61,15 +61,15 @@ export default function PlayScreen({ color }) {
       marginBottom: 16,
       marginTop: 16,
     },
-  
+
     buttonA: {
       backgroundColor: colors.yellow,
     },
-  
+
     buttonB: {
       backgroundColor: colors.blue,
     },
-  
+
     buttonText: {
       textAlign: 'center',
       justifyContent: 'center',
@@ -77,7 +77,7 @@ export default function PlayScreen({ color }) {
       fontSize: 60,
       color: 'white',
     },
-  
+
     modal: {
       height: '100%',
       flex: 1,
@@ -88,7 +88,7 @@ export default function PlayScreen({ color }) {
       padding: 16,
       paddingBottom: 76,
     },
-  
+
     buttonLock: {
       height: 50,
       justifyContent: 'center',
@@ -104,18 +104,18 @@ export default function PlayScreen({ color }) {
     buttonLockPressed: {
       opacity: 0.6,
     },
-  
+
     buttonLockText: {
       color: colors.text,
     }
   });
-  
+
   const dispatch = useAppDispatch();
   const [modalVisible, setModalVisible] = React.useState(false);
 
   React.useEffect(() => {
     // mount
-    
+
     return () => {
       // unmount
     }
@@ -144,10 +144,9 @@ export default function PlayScreen({ color }) {
       >
         <View
           style={styles.modal}
-        >                
+        >
 
-<ConnectionStatusComponent color={color}/>
-
+          {/* <ConnectionStatusComponent color={color} /> */}
 
           <ButtonsView styles={styles} />
 
@@ -163,7 +162,7 @@ export default function PlayScreen({ color }) {
         </View>
       </Modal>
 
-      <ConnectionStatusComponent color={color}/>
+      <ConnectionStatusComponent color={color} />
 
       <ButtonsView styles={styles} />
 
