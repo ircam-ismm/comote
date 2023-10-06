@@ -38,6 +38,11 @@ export default {
       header: 'OSC',
       activate: 'Activer',
       status: 'État',
+      hostname: 'Hôte',
+      hostnamePlaceholder: 'osc.server.ip',
+      port: 'Port',
+      portPlaceholder: 'port',
+
       url: 'URL',
       urlPlaceholder: 'udp://osc.server.ip:port',
     },
