@@ -23,7 +23,6 @@ const styles = StyleSheet.create({
   },
 
   subcontainer: {
-    flex: 0.5,
   },
 
   paragraph: {
@@ -32,13 +31,15 @@ const styles = StyleSheet.create({
 
   logosContainer: {
     paddingHorizontal: 4,
+    marginTop: 16,
+    flex: 1,
   },
 
   logo: {
     width: '100%',
     height: '100%',
     resizeMode: 'contain',
-    margin: 0
+    margin: 0,
   },
 
   button: {
@@ -69,7 +70,7 @@ export default function HomeScreen({ color, navigation }) {
             Linking.openURL(i18n.t('about.privacyPolicyLink'));
           }}
         >
-          <Text style={{color: 'white'}}>{i18n.t('about.privacyPolicy')}</Text>
+          <Text style={{ color: 'white' }}>{i18n.t('about.privacyPolicy')}</Text>
         </TouchableOpacity>
       </View>
       <View style={[
