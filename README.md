@@ -226,6 +226,20 @@ eas build --profile production --platform android
 eas submit --platform android
 ```
 
+## Update
+
+```sh
+rm -rf yarn.lock node_modules
+yarn install
+yarn upgrade --latest
+npx expo-doctor
+npx expo install --fix
+npx expo-doctor
+rm -rf android ios
+```
+
+Prebuild and build again the development versions, to use with expo.
+
 ## Message format
 
 ### WebSocket
