@@ -106,7 +106,7 @@ Linking.getInitialURL().then(url => {
 
 const linking: LinkingOptions<RootStackParamList> = {
   prefixes: [
-    Linking.makeUrl('/'),
+    Linking.createURL('/'),
     'comote://',
   ],
   config: {
