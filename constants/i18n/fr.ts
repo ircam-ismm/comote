@@ -57,7 +57,7 @@ export default {
   about: {
     header: 'À propos de CoMote',
     developedBy: `CoMote est développée par l'Ircam et l'unité mixte de recherche STMS soutenue par l'Ircam, le CNRS, le ministère de la Culture et Sorbonne Université.`,
-    producedBy: `Réalisée initialement avec le soutien du dispositif Édu-up du ministère de l'Éducation Nationale, de l'Agence Nationale de la Recherche (projet ELEMENT), et en partenariat avec Radio France. À partir de v1.3, l'application est développée en partenariat avec l'association Arts Convergences. `,
+    producedBy: `Réalisée initialement avec le soutien du dispositif Édu-up du ministère de l'Éducation Nationale, de l'Agence Nationale de la Recherche (projet ELEMENT), et en partenariat avec Radio France. À partir de v1.7.1, l'application est développée en partenariat avec l'association Arts Convergences. `,
     privacyPolicy: 'Politique de confidentialité',
     privacyPolicyLink: 'https://ismm-apps.ircam.fr/comote-privacy-policy-fr',
   },
