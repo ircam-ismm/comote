@@ -3,7 +3,7 @@
 ## Development
 
 ### Installation
-Install `Node.js`. Prefer the long-term support (LTS) version, at least v14.
+Install `Node.js`. Prefer the long-term support (LTS) version, at least v16.
 
 Install (or update) `npm`, `yarn` and `eas-cli` globally.
 
@@ -134,7 +134,7 @@ On device, open Google Chrome and type the URL given by the server. Download and
 You can also install via `adb`.
 - plug the device
 - trust the computer
-- allow for file transfer
+- allow for file transfer from USB
 - allow developer mode on device
 - type `adb install build-latest.pak`
 
@@ -158,12 +158,14 @@ xed ios
 - in xCode, select the device, then click `Run` to build, install, and run the application on the device
 - click `Stop` to stop the application on the device
 
+To install and run on an iOs simulator, repeat the xCode procedure (select a simulated device, then run and stop).
+
 
 ### Expo
 
-Start expo. Do not forget the `-dev-client` option.
+Start expo. (The `--dev-client` unnecessary since expo 49.)
 ```sh
-npx expo start --dev-client
+npx expo start
 ```
 
 Expo-go must be installed on the device, but you should use the installed pre-built application.
