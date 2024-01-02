@@ -185,14 +185,15 @@ export default function SettingsScreen({ color, navigation }) {
   useFocusEffect(
     React.useCallback(() => {
       // prevent sleep when tab is focused
-      activateKeepAwakeAsync();
+      const keepAwakeTag = 'comote:settings';
+      activateKeepAwakeAsync(keepAwakeTag);
       // update sensors interval estimate only when tab is focused
       const sensorsIntervalEstimateUpdateId = setInterval(() => {
         setSensorsIntervalEstimateFromEngine();
       }, 1000);
   
       return () => {
-        deactivateKeepAwake();
+        deactivateKeepAwake(keepAwakeTag);
         clearInterval(sensorsIntervalEstimateUpdateId);
       };
     }, [])
