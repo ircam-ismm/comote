@@ -7,8 +7,9 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
+  ScrollView
 } from 'react-native';
-import { Text, View, ConnectionStatus } from '../components/Themed';
+import { Text, View } from '../components/Themed';
 
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
@@ -16,13 +17,30 @@ import { useAppSelector } from '../hooks';
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     padding: 16,
     justifyContent: 'space-between',
     flexDirection: 'column',
+    borderColor: 'red', 
+
+    // borderWidth: 5,
+    // minHeight: '100%',
   },
 
   subcontainer: {
+    alignSelf: 'center',
+    flexDirection: 'row',
+    flexWrap: "wrap",
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    marginVertical: 8,
+
+    // borderColor: 'green', 
+    // borderWidth: 5,
+  },
+
+  textContainer: {
+    justifyContent: 'flex-start',
   },
 
   paragraph: {
@@ -30,16 +48,22 @@ const styles = StyleSheet.create({
   },
 
   logosContainer: {
-    paddingHorizontal: 4,
-    marginTop: 16,
-    flex: 1,
+    maxWidth: '100%',
+    maxHeight: '50%',
+
+    // borderColor: 'purple', 
+    // borderWidth: 5,
   },
 
   logo: {
-    width: '100%',
-    height: '100%',
+    maxWidth: '100%',
+    maxHeight: '100%',
+    height: undefined,
+    aspectRatio: 2,
     resizeMode: 'contain',
-    margin: 0,
+
+    // borderColor: 'blue', 
+    // borderWidth: 5,
   },
 
   button: {
@@ -56,14 +80,17 @@ export default function HomeScreen({ color, navigation }) {
   const colors = Colors[colorScheme];
 
   return (
-    <View style={styles.container}>
-      <View style={styles.subcontainer}>
+    <ScrollView contentContainerStyle={styles.container}>
+      <View style={[styles.subcontainer, styles.textContainer]}>
         <Text style={styles.paragraph}>
           {i18n.t('about.developedBy')}
         </Text>
         <Text style={styles.paragraph}>
           {i18n.t('about.producedBy')}
         </Text>
+      </View>
+
+      <View style={styles.subcontainer}>
         <TouchableOpacity
           style={[styles.button, { backgroundColor: colors.genericButton }]}
           onPress={() => {
@@ -73,17 +100,18 @@ export default function HomeScreen({ color, navigation }) {
           <Text style={{ color: 'white' }}>{i18n.t('about.privacyPolicy')}</Text>
         </TouchableOpacity>
       </View>
+
       <View style={[
         styles.subcontainer,
         styles.logosContainer,
-        { backgroundColor: Colors.light.background }
+        { backgroundColor: Colors.light.background },
       ]}>
         <Image
           style={styles.logo}
           source={require('../assets/images/logos.png')}
         />
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
