@@ -4,7 +4,7 @@ import {
     Accelerometer,
     Gyroscope,
     // Barometer,
-    // Magnetometer,
+    Magnetometer,
     // MagnetometerUncalibrated,
     // Pedometer,
 } from 'expo-sensors';
@@ -36,19 +36,14 @@ const normalizeAccelerometer =
     );
 
 const radToDegree = 360 / (2 * Math.PI);
-const normalizeGyroscope =
-    (Platform.OS === 'android'
-        ? (data) => ({
+const normalizeGyroscope = (data) => ({
             alpha: data.z * radToDegree, // yaw
             beta: data.x * radToDegree,  // pitch
             gamma: data.y * radToDegree, // roll
-        })
-        : (data) => ({
-            alpha: data.z * radToDegree, // yaw
-            beta: data.x * radToDegree,  // pitch
-            gamma: data.y * radToDegree, // roll
-        })
-    );
+        });
+
+// placeholder
+const normalizeMagnetometer = (data) => data;
 
 export class SensorsEngine {
     constructor({
@@ -79,10 +74,20 @@ export class SensorsEngine {
 
         this.accelerometerSubscribeId = null;
         this.accelerometerListener = null;
+        // last normalised value
         this.accelerationIncludingGravity = null;
 
+        // note that gyroscope is master, it should be subscribed last
         this.gyroscopeSubscribeId = null;
         this.gyroscopeListener = null;
+        // last normalised value
+        this.rotationRate = null;
+
+        this.magnetometerSubscribeId = null;
+        this.magnetometerListener = null;
+        // last normalised value
+        this.magnetometer = null;
+
 
         this.init();
     }
@@ -97,6 +102,7 @@ export class SensorsEngine {
 
         this.accelerometerUnsubscribe();
         this.gyroscopeUnsubscribe();
+        this.magnetometerUnsubscribe();
     }
 
     async init() {
@@ -105,11 +111,19 @@ export class SensorsEngine {
         const {
             accelerometerAvailable,
             gyroscopeAvailable,
+            magnetometerAvailable,
         } = await this.sensorsAvailable();
 
         if (accelerometerAvailable && gyroscopeAvailable) {
             this.cleanup();
+
+            // subscribe optional sensors first
+            if (magnetometerAvailable) {
+                this.magnetometerSubscribe();
+            }
+
             this.accelerometerSubscribe();
+
             // subscribe last, as it triggers data report
             this.gyroscopeSubscribe();
 
@@ -123,6 +137,7 @@ export class SensorsEngine {
             this.availableCallback({
                 accelerometerAvailable,
                 gyroscopeAvailable,
+                magnetometerAvailable,
             });
         }
     }
@@ -130,9 +145,12 @@ export class SensorsEngine {
     async sensorsAvailable() {
         const accelerometerAvailable = await Accelerometer.isAvailableAsync();
         const gyroscopeAvailable = await Gyroscope.isAvailableAsync();
+        const magnetometerAvailable = await Magnetometer.isAvailableAsync();
+
         return {
             accelerometerAvailable,
             gyroscopeAvailable,
+            magnetometerAvailable,
         };
     }
 
@@ -193,21 +211,58 @@ export class SensorsEngine {
         this.gyroscopeListener = null;
     }
 
+    async magnetometerSubscribe() {
+        clearTimeout(this.magnetometerSubscribeId);
+
+        const magnetometerAvailable = await Magnetometer.isAvailableAsync();
+        if (magnetometerAvailable) {
+            this.magnetometerListener = Magnetometer.addListener(data => {
+                this.magnetometer = normalizeMagnetometer(data);
+            });
+        } else {
+            // try again later
+            clearTimeout(this.magnetometerSubscribeId);
+            this.intervalId = setTimeout(() => {
+                this.magnetometerSubscribe();
+            }, 1000);
+        }
+    };
+
+    magnetometerUnsubscribe = () => {
+        clearTimeout(this.magnetometerSubscribeId);
+        if (this.magnetometerListener) {
+            Magnetometer.removeSubscription(this.magnetometerListener);
+        }
+        this.magnetometerListener = null;
+    };
+
     sensorsReport() {
 
         if (typeof this.dataCallback === 'function') {
             const {
                 accelerationIncludingGravity,
                 rotationRate,
+                magnetometer,
             } = this;
 
-            const interval = this.intervalEstimate || this.interval;            
-
-            this.dataCallback({
+            const interval = this.intervalEstimate || this.interval;
+            
+            const values = {
+                devicemotion: {
                 interval,
                 accelerationIncludingGravity,
                 rotationRate,
-            });
+                },
+            };
+
+            if(magnetometer) {
+                values.magnetometer = {
+                    interval,
+                };
+                Object.assign(values.magnetometer, {...magnetometer});
+            }
+
+            this.dataCallback(values);
         }
 
     }
@@ -232,11 +287,18 @@ export class SensorsEngine {
 
         const accelerometerAvailable = await Accelerometer.isAvailableAsync();
         const gyroscopeAvailable = await Gyroscope.isAvailableAsync();
+        const magnetometerAvailable = await Magnetometer.isAvailableAsync();
 
         if (accelerometerAvailable
             && gyroscopeAvailable) {
+            // optional
+            if (magnetometerAvailable) {
+                Magnetometer.setUpdateInterval(this.intervalRequest);
+            }
+
             Accelerometer.setUpdateInterval(this.intervalRequest);
             Gyroscope.setUpdateInterval(this.intervalRequest);
+
         } else {
             // try again later
             clearTimeout(this.intervalId);

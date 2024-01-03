@@ -39,10 +39,12 @@ export default function SensorsComponent() {
       const {
         accelerometerAvailable,
         gyroscopeAvailable,
+        magnetometerAvailable,
       } = await engine.sensors.sensorsAvailable();
 
       console.log('- accelerometers available:', accelerometerAvailable);
       console.log('- gyroscopes available:', gyroscopeAvailable);
+      console.log('- magnetometers available:', magnetometerAvailable);
 
       const available = accelerometerAvailable && gyroscopeAvailable;
 
