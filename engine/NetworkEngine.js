@@ -321,7 +321,12 @@ export class NetworkEngine {
                     case 'devicemotion': {
                         const address = `/${data.source}/${data.id}/${key}`;
 
-                        const { interval, accelerationIncludingGravity, rotationRate } = data[key];
+                        const { 
+                            interval, 
+                            accelerationIncludingGravity, 
+                            rotationRate,
+                        } = data[key];
+
                         const { x, y, z } = accelerationIncludingGravity;
                         const { alpha, beta, gamma } = rotationRate;
                         const values = [
@@ -329,11 +334,38 @@ export class NetworkEngine {
                             x, y, z,
                             alpha, beta, gamma,
                         ];
+                        const devicemotionMessage = new OSC.Message(address, ...values);
 
-                        const message = new OSC.Message(address, ...values);
-                        this.oscSend(message, port, hostname, (err) => {
-                            if (err) { return console.error(err); }
-                        });
+                        /////// optional sensors
+                        let isBundle = true;
+                        const messages = [devicemotionMessage];
+
+                        const magnetometer = data.magnetometer;
+                        if (magnetometer) {
+                            isBundle = true;
+                            const address = `/${data.source}/${data.id}/magnetometer`;
+                            const {x, y, z} = magnetometer;
+                            const values = [
+                                interval,
+                                x, y, z,
+                            ];
+                            const magnetometerMessage = new OSC.Message(address, ...values);
+                            messages.push(magnetometerMessage);
+                        }
+
+                        /////// send everything
+                        if(!isBundle) {
+                            this.oscSend(devicemotionMessage, port, hostname, (err) => {
+                                if (err) { return console.error(err); }
+                            });
+                        } else {
+                            const date = data.timestamp;
+                            const bundle = new OSC.Bundle(messages, date);
+                            this.oscSend(bundle, port, hostname, (err) => {
+                                if (err) { return console.error(err); }
+                            });
+                        }
+
                         break;
                     }
                     // buttonA / buttonB

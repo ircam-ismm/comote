@@ -14,8 +14,8 @@ export class Engine {
 
         const sensorsRequest = { ...sensors };
         if (typeof sensorsRequest.dataCallback === 'undefined') {
-            sensorsRequest.dataCallback = (devicemotion) => {
-                this.send({ devicemotion });
+            sensorsRequest.dataCallback = (data) => {
+                this.send(data);
             }
         }
 
