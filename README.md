@@ -254,6 +254,10 @@ e = {
     accelerationIncludingGravity = { x, y, z } // m/s2
     rotationRate = { alpha, beta, gamma } // deg/s
   },
+  magnetometer: {
+    interval // ms
+    magnetometer = {x, y, z} // uT
+  }
 }
 
 e = {
@@ -273,6 +277,7 @@ e = {
 
 ```
 /comote/${id}/devicemotion  [interval, x, y, z, alpha, beta, gamma]
+/comote/${id}/magnetometer  [interval, x, y, z]
 /comote/${id}/buttonA       [buttonA]
 /comote/${id}/buttonB       [buttonA]
 ```
@@ -291,7 +296,6 @@ e = {
 - [ ] binary webSocket
 - [ ] check sensors against MotionSender (iOS)
 
-
 ### Target v1.5
 
 - [ ] Wait for next Expo version (50?) for background worker for engine (already in react-native v0.72)
@@ -299,6 +303,7 @@ e = {
     > If you're using Expo, you can't enable the New Architecture at the moment and will have to wait for a future release of the Expo SDK.
 
 ### Target v1.4 - September 2023
+
 - [x] no more background image
 - [x] OSC port and host
 - [x] display sensors period in settings screen
@@ -308,6 +313,10 @@ e = {
 - [ ] update Expo version
 
 BUGS
+
+- [ ] bad sample rate on first run of application (100 ms instead of 10 ms as displayed)
+- [ ] wake-up lock does not work with iPhone XR and iOS 17.12
+
 - [x] Any platform: check connection status
 - [x] Any platform : change OSC port while connected: should reconnect
 - [ ] Any platform: missing or late samples on touch screen events
