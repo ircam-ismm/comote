@@ -55,8 +55,8 @@ export default {
   },
   about: {
     header: 'About CoMote',
-    developedBy: `CoMote is developed by Ircam and the Music and Sound Science and Technology Joint Research Unit (STMS), supported by Ircam, CNRS, the French Ministry of Culture and Sorbonne University.`,
-    producedBy: `Produced with the support of the French Ministry of Education, Youth and Sports (Edu-up system), the National Research Agency (ELEMENT project), and in partnership with Radio France.`,
+    developedBy: `CoMote is developed by the  STMS lab: Ircam-CNRS-Sorbonne University-French Ministry of Culture.`,
+    producedBy: `With the support of: French Ministry of Education (Edu-up), ANR (ELEMENT project) and Arts Convergences.`,
     privacyPolicy: 'Privacy Policy',
     privacyPolicyLink: 'https://ismm-apps.ircam.fr/comote-privacy-policy',
   },
