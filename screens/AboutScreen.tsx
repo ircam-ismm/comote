@@ -21,10 +21,9 @@ const styles = StyleSheet.create({
     padding: 16,
     justifyContent: 'space-between',
     flexDirection: 'column',
-    borderColor: 'red', 
 
     // borderWidth: 5,
-    // minHeight: '100%',
+    // borderColor: 'red', 
   },
 
   subcontainer: {
