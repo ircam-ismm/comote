@@ -61,7 +61,7 @@
       "expo-localization"
     ],
     "runtimeVersion": {
-      "policy": "sdkVersion"
+      "policy": "nativeVersion"
     }
   }
 }
