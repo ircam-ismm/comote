@@ -196,17 +196,6 @@ You can press `j` in the console to start a debugger.
 yarn install
 ```
 
-Do not forget to update `app.json`, to increment the build number for iOS and Android:
-```json
-{
-    "ios": {
-      "buildNumber": "6"
-    },
-    "android": {
-      "versionCode": 6
-}
-```
-
 
 #### iOS
 
