@@ -33,7 +33,7 @@
         "com.apple.security.cs.allow-jit": true,
         "com.apple.security.device.camera": true
       },
-      "supportsTablet": true,
+      "supportsTablet": true
     },
     "android": {
       "softwareKeyboardLayoutMode": "pan",
