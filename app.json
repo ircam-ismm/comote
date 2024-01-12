@@ -3,7 +3,7 @@
     "name": "CoMote",
     "slug": "comote",
     "owner": "ircam-ismm",
-    "version": "1.8.1",
+    "version": "1.8.2",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "comote",
@@ -14,8 +14,9 @@
       "backgroundColor": "#ffffff"
     },
     "updates": {
+      "enable": false,
       "fallbackToCacheTimeout": 0,
-      "url": "https://u.expo.dev/82136759-44d8-4be8-912a-62f62ed6e5e6"
+      "checkAutomatically": "NEVER"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -61,7 +62,7 @@
       "expo-localization"
     ],
     "runtimeVersion": {
-      "policy": "nativeVersion"
+      "policy": "appVersion"
     }
   }
 }
