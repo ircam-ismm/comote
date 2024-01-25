@@ -34,7 +34,6 @@
     "expo-splash-screen": "~0.20.5",
     "expo-status-bar": "~1.6.0",
     "expo-system-ui": "~2.4.0",
-    "expo-updates": "~0.18.19",
     "expo-web-browser": "~12.3.2",
     "hermes-worker": "^1.2.4",
     "i18n-js": "^4.3.2",
