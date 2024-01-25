@@ -13,10 +13,8 @@
       "env": {
         "ANDROID_SDK_ROOT": "~/Library/Android/sdk"
       },
-      "channel": "development"
     },
     "preview": {
-      "channel": "staging",
       "distribution": "internal",
       "autoIncrement": true,
       "android": {
@@ -28,7 +26,6 @@
     },
     "production": {
       "autoIncrement": true,
-      "channel": "production"
     }
   },
   "submit": {
