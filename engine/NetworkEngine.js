@@ -231,7 +231,7 @@ export class NetworkEngine {
 
             socket.once('listening', () => {
                 clearTimeout(this.oscUpdateId);
-                // Bug in react-native-udp: On Android, it is no longer possible 
+                // Bug in react-native-udp: On Android, it is no longer possible
                 //   to close or open a socket after that
                 // socket.setBroadcast(true);
                 this.osc = socket;
@@ -241,7 +241,7 @@ export class NetworkEngine {
             socket.on('error', (error) => {
                 switch (error.key) {
                     case 'setBroadcast':
-                        // Bug in react-native-udp@4.1.7: 
+                        // Bug in react-native-udp@4.1.7:
                         //  try to set broadcast key on closed socket
                         break;
 
@@ -271,7 +271,7 @@ export class NetworkEngine {
         }
     }
 
-    oscReadyStateSet(state) { 
+    oscReadyStateSet(state) {
         this.oscReadyState = state;
         if (typeof this.oscReadyStateCallback === 'function') {
             this.oscReadyStateCallback(this.oscReadyState);
@@ -321,11 +321,16 @@ export class NetworkEngine {
                     case 'devicemotion': {
                         const address = `/${data.source}/${data.id}/${key}`;
 
-                        const { 
-                            interval, 
-                            accelerationIncludingGravity, 
+                        const {
+                            interval,
+                            accelerationIncludingGravity,
                             rotationRate,
                         } = data[key];
+
+                        if (!accelerationIncludingGravity
+                            || !rotationRate) {
+                            return;
+                        }
 
                         const { x, y, z } = accelerationIncludingGravity;
                         const { alpha, beta, gamma } = rotationRate;

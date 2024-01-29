@@ -6,6 +6,7 @@ import {
 } from '@reduxjs/toolkit';
 
 import {
+  createTransform,
   FLUSH,
   PAUSE,
   PERSIST,
@@ -22,27 +23,60 @@ import stateReconciler from 'reduxjs-toolkit-persist/lib/stateReconciler/autoMer
 import settingsReducer from '../features/settings/settingsSlice';
 import sensorsReducer from '../features/sensors/sensorsSlice';
 import networkReducer from '../features/network/networkSlice';
+import { CombinedSliceReducer } from '@reduxjs/toolkit/dist/combineSlices';
 
 // console.log('[debug] clear storage');
 // storage.clear();
 
-const persistConfig = {
+const settingsTransform = createTransform(
+
+  // transform state on its way to being serialized and persisted.
+  (inboundState: any) => {
+    // do not store oscEnabled and webSocketEnabled
+    // (copy to avoid state mutation)
+    const transformedState = { ...inboundState };
+    const { oscEnabled, webSocketEnabled, ...rest } = transformedState.data;
+    transformedState.data = rest;
+    return transformedState;
+  },
+
+  // transform state being rehydrated
+  (outboundState: any) => {
+    // do no restore oscEnabled and webSocketEnabled
+    // (copy to avoid state mutation)
+    const transformedState = { ...outboundState };
+
+    if (transformedState && transformedState.data) {
+      // enforce values
+      transformedState.data.oscEnabled = false;
+      transformedState.data.webSocketEnabled = false;
+    }
+
+    return transformedState;
+  },
+
+  // apply this transform to 'settings' only.
+  { whitelist: ['settings'] }
+);
+
+const rootPersistConfig = {
   key: 'root',
   storage,
   stateReconciler,
-  blacklist: ['sensors', 'network']
+  blacklist: ['sensors', 'network'],
+  transforms: [settingsTransform],
 };
 
-const reducers = combineReducers({
+const rootReducer = combineReducers({
   sensors: sensorsReducer,
   settings: settingsReducer,
   network: networkReducer,
 });
 
-const persistedReducer = persistReducer(persistConfig, reducers);
+const rootPersistedReducer = persistReducer(rootPersistConfig, rootReducer);
 
 export const store = configureStore({
-  reducer: persistedReducer,
+  reducer: rootPersistedReducer,
   middleware: (getDefaultMiddleware) => getDefaultMiddleware({
     serializableCheck: {
       //ignore persistence actions
