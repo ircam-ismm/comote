@@ -60,8 +60,8 @@ export class SensorsEngine {
         this.intervalEstimateLowpass = new Lowpass({
             lowpassFrequency: 0.1,
         });
-        
-        // // attempt to compensate request to rea user-specified 
+
+        // // attempt to compensate request to rea user-specified
         // this.intervalCompensated = null;
 
         this.sensorsLastTime = null;
@@ -119,13 +119,13 @@ export class SensorsEngine {
 
             // subscribe optional sensors first
             if (magnetometerAvailable) {
-                this.magnetometerSubscribe();
+                await this.magnetometerSubscribe();
             }
 
-            this.accelerometerSubscribe();
+            await this.accelerometerSubscribe();
 
             // subscribe last, as it triggers data report
-            this.gyroscopeSubscribe();
+            await this.gyroscopeSubscribe();
 
             // set interval after subscription
             await this.intervalSet();
@@ -246,7 +246,7 @@ export class SensorsEngine {
             } = this;
 
             const interval = this.intervalEstimate || this.interval;
-            
+
             const values = {
                 devicemotion: {
                 interval,
@@ -270,8 +270,6 @@ export class SensorsEngine {
     async intervalSet(interval = this.interval, {
         compensated = false,
     } = {}) {
-        // console.log('sensors.intervalSet', interval, {compensated});
-
         const intervalLimited = Math.max(sensorsIntervalMin, interval);
 
         clearTimeout(this.intervalId);
@@ -335,7 +333,7 @@ export class SensorsEngine {
             // const compensated = request - deviationAbsolute;
 
 
-            // if (Math.abs(deviationAbsolute) > 2 
+            // if (Math.abs(deviationAbsolute) > 2
             //     && compensated > 0) {
             //     console.log('intervalSetThrottled >>>>>>', compensated, {
             //         request,

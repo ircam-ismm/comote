@@ -20,14 +20,15 @@ export default function EngineComponent() {
 
     React.useEffect(() => {
         // mount
-        const appStateSubscription = AppState.addEventListener('change', nextAppState => {
+        const appStateSubscription = AppState.addEventListener('change', async (nextAppState) => {
+
             if (appState.current.match(/inactive|background/)
                 && nextAppState === 'active') {
                 // app has come to the foreground
 
                 // reset
                 engine.cleanup();
-                engine.init();
+                await engine.init();
             }
 
             appState.current = nextAppState;
