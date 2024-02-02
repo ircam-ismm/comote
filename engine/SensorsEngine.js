@@ -37,10 +37,10 @@ const normalizeAccelerometer =
 
 const radToDegree = 360 / (2 * Math.PI);
 const normalizeGyroscope = (data) => ({
-            alpha: data.z * radToDegree, // yaw
-            beta: data.x * radToDegree,  // pitch
-            gamma: data.y * radToDegree, // roll
-        });
+    alpha: data.z * radToDegree, // yaw
+    beta: data.x * radToDegree,  // pitch
+    gamma: data.y * radToDegree, // roll
+});
 
 // placeholder
 const normalizeMagnetometer = (data) => data;
@@ -50,6 +50,7 @@ export class SensorsEngine {
         dataCallback = null,
         availableCallback = null,
         interval = 1000 / 60, // in milliseconds
+        sensorsEmulation = !!process.env.EXPO_PUBLIC_SENSORS_EMULATION,
     } = {}) {
         this.dataCallback = dataCallback;
         this.availableCallback = availableCallback;
@@ -60,6 +61,13 @@ export class SensorsEngine {
         this.intervalEstimateLowpass = new Lowpass({
             lowpassFrequency: 0.1,
         });
+
+        this.sensorsEmulation = sensorsEmulation;
+        if (this.sensorsEmulation) {
+            console.warn('Sensors emulation');
+        }
+
+        this.sensorsEmulationId = null;
 
         // // attempt to compensate request to rea user-specified
         // this.intervalCompensated = null;
@@ -143,6 +151,14 @@ export class SensorsEngine {
     }
 
     async sensorsAvailable() {
+        if (this.sensorsEmulation) {
+            return {
+                accelerometerAvailable: true,
+                gyroscopeAvailable: true,
+                magnetometerAvailable: true,
+            };
+        }
+
         const accelerometerAvailable = await Accelerometer.isAvailableAsync();
         const gyroscopeAvailable = await Gyroscope.isAvailableAsync();
         const magnetometerAvailable = await Magnetometer.isAvailableAsync();
@@ -156,6 +172,10 @@ export class SensorsEngine {
 
     async accelerometerSubscribe() {
         clearTimeout(this.accelerometerSubscribeId);
+
+        if (this.sensorsEmulation) {
+            return;
+        }
 
         const accelerometerAvailable = await Accelerometer.isAvailableAsync();
         if (accelerometerAvailable) {
@@ -183,6 +203,10 @@ export class SensorsEngine {
     async gyroscopeSubscribe() {
         clearTimeout(this.gyroscopeSubscribeId);
 
+        if (this.sensorsEmulation) {
+            return;
+        }
+
         const gyroscopeAvailable = await Gyroscope.isAvailableAsync();
 
         if (gyroscopeAvailable) {
@@ -205,7 +229,7 @@ export class SensorsEngine {
 
     gyroscopeUnsubscribe() {
         clearTimeout(this.gyroscopeSubscribeId);
-        if(this.gyroscopeListener) {
+        if (this.gyroscopeListener) {
             Gyroscope.removeSubscription(this.gyroscopeListener);
         }
         this.gyroscopeListener = null;
@@ -213,6 +237,10 @@ export class SensorsEngine {
 
     async magnetometerSubscribe() {
         clearTimeout(this.magnetometerSubscribeId);
+
+        if (this.sensorsEmulation) {
+            return;
+        }
 
         const magnetometerAvailable = await Magnetometer.isAvailableAsync();
         if (magnetometerAvailable) {
@@ -237,7 +265,6 @@ export class SensorsEngine {
     };
 
     sensorsReport() {
-
         if (typeof this.dataCallback === 'function') {
             const {
                 accelerationIncludingGravity,
@@ -249,17 +276,17 @@ export class SensorsEngine {
 
             const values = {
                 devicemotion: {
-                interval,
-                accelerationIncludingGravity,
-                rotationRate,
+                    interval,
+                    accelerationIncludingGravity,
+                    rotationRate,
                 },
             };
 
-            if(magnetometer) {
+            if (magnetometer) {
                 values.magnetometer = {
                     interval,
                 };
-                Object.assign(values.magnetometer, {...magnetometer});
+                Object.assign(values.magnetometer, { ...magnetometer });
             }
 
             this.dataCallback(values);
@@ -281,6 +308,37 @@ export class SensorsEngine {
             this.interval = intervalLimited;
             // no compensation, yet, before any interval estimate
             this.intervalRequest = this.interval;
+        }
+
+        if (this.sensorsEmulation) {
+            clearTimeout(this.sensorsEmulationId);
+            this.sensorsEmulationId = setInterval( () => {
+
+                Object.assign(this, {
+                    accelerationIncludingGravity: {
+                        x: Math.random() * 2 - 1,
+                        y: Math.random() * 2 - 1,
+                        z: Math.random() * 2 - 1,
+                    },
+                    rotationRate: {
+                        alpha: Math.random() * 2 - 1,
+                        beta: Math.random() * 2 - 1,
+                        gamma: Math.random() * 2 - 1,
+                    },
+                    magnetometer: {
+                        x: Math.random() * 360 - 180,
+                        y: Math.random() * 360 - 180,
+                        z: Math.random() * 360 - 180,
+                    },
+                });
+
+                // emulation is master
+                this.intervalEstimateUpdate();
+                this.sensorsReport();
+
+            }, this.intervalRequest);
+
+            return;
         }
 
         const accelerometerAvailable = await Accelerometer.isAvailableAsync();
@@ -309,11 +367,11 @@ export class SensorsEngine {
     intervalEstimateUpdate() {
         const now = global.performance.now();
 
-        if(this.sensorsLastTime) {
+        if (this.sensorsLastTime) {
             const past = this.sensorsLastTime;
             const measure = (now - past);
 
-            if(!this.intervalEstimate) {
+            if (!this.intervalEstimate) {
                 this.intervalEstimate = measure;
                 // forget first sample
                 return;
