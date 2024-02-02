@@ -27,7 +27,7 @@ export default function EngineComponent() {
                 // app has come to the foreground
 
                 // reset
-                engine.cleanup();
+                await engine.cleanup();
                 await engine.init();
             }
 
@@ -35,9 +35,11 @@ export default function EngineComponent() {
         });
 
         return () => {
-            // unmount
-            engine.cleanup();
-            appStateSubscription.remove();
+            (async () => {
+                // unmount
+                await engine.cleanup();
+                appStateSubscription.remove();
+            })();
         }
     }, []);
 

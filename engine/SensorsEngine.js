@@ -100,20 +100,21 @@ export class SensorsEngine {
         this.init();
     }
 
-    set(attributes) {
+    async set(attributes) {
         Object.assign(this, attributes);
-        this.init();
+        await this.init();
     }
 
-    cleanup() {
+    async cleanup() {
         clearTimeout(this.intervalId);
 
-        this.accelerometerUnsubscribe();
-        this.gyroscopeUnsubscribe();
-        this.magnetometerUnsubscribe();
+        await this.accelerometerUnsubscribe();
+        await this.gyroscopeUnsubscribe();
+        await this.magnetometerUnsubscribe();
     }
 
     async init() {
+        await this.cleanup();
         this.intervalEstimateInit();
 
         const {
@@ -123,8 +124,6 @@ export class SensorsEngine {
         } = await this.sensorsAvailable();
 
         if (accelerometerAvailable && gyroscopeAvailable) {
-            this.cleanup();
-
             // subscribe optional sensors first
             if (magnetometerAvailable) {
                 await this.magnetometerSubscribe();
@@ -191,7 +190,7 @@ export class SensorsEngine {
         }
     };
 
-    accelerometerUnsubscribe = () => {
+    async accelerometerUnsubscribe() {
         clearTimeout(this.accelerometerSubscribeId);
         if (this.accelerometerListener) {
             Accelerometer.removeSubscription(this.accelerometerListener);
@@ -227,8 +226,9 @@ export class SensorsEngine {
         }
     }
 
-    gyroscopeUnsubscribe() {
+    async gyroscopeUnsubscribe() {
         clearTimeout(this.gyroscopeSubscribeId);
+
         if (this.gyroscopeListener) {
             Gyroscope.removeSubscription(this.gyroscopeListener);
         }
@@ -256,8 +256,9 @@ export class SensorsEngine {
         }
     };
 
-    magnetometerUnsubscribe = () => {
+    async magnetometerUnsubscribe() {
         clearTimeout(this.magnetometerSubscribeId);
+
         if (this.magnetometerListener) {
             Magnetometer.removeSubscription(this.magnetometerListener);
         }

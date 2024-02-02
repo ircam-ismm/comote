@@ -32,29 +32,39 @@ export class NetworkEngine {
         this.init();
     }
 
-    set(attributes) {
+    async set(attributes) {
         Object.assign(this, attributes);
-        this.init();
+        await this.init();
     }
 
-    cleanup() {
-        this.webSocketClose();
-        this.oscClose();
+    async cleanup() {
+        await this.webSocketClose();
+        await this.oscClose();
     }
 
-    init() {
-        this.webSocketUpdate();
-        this.oscUpdate();
+    async init() {
+        await this.webSocketUpdate();
+        await this.oscUpdate();
     }
 
-    webSocketClose(webSocket = this.webSocket) {
+    async webSocketClose(webSocket = this.webSocket) {
         clearTimeout(this.webSocketUpdateId);
         if (webSocket) {
             this.webSocketEventListeners.forEach(({ socket, state, callback }) => {
                 socket.removeEventListener(state, callback);
             });
 
-            webSocket.close();
+            if (webSocket.readyState === webSocket.OPEN
+                || webSocket.readyState === webSocket.CONNECTING) {
+                await new Promise((resolve, reject) => {
+                    const resolveOnClose = () => {
+                        webSocket.removeEventListener('close', resolveOnClose);
+                        resolve();
+                    };
+                    webSocket.addEventListener('close', resolveOnClose);
+                    webSocket.close();
+                });
+            }
         }
 
         this.webSocketEventListeners = [];
@@ -62,12 +72,12 @@ export class NetworkEngine {
         this.webSocketReadyStateUpdate();
     }
 
-    webSocketUpdate() {
+    async webSocketUpdate() {
         clearTimeout(this.webSocketUpdateId);
 
         if (!this.webSocketEnabled || !this.webSocketUrl) {
             clearTimeout(this.webSocketUpdateId);
-            this.webSocketClose();
+            await this.webSocketClose();
             return;
         }
 
@@ -82,20 +92,20 @@ export class NetworkEngine {
 
         if (!urlValidated) {
             clearTimeout(this.webSocketUpdateId);
-            this.webSocketClose();
+            await this.webSocketClose();
             return;
         }
 
         // warning: (native) error is not catched and will crash application
         try {
             clearTimeout(this.webSocketUpdateId);
-            this.webSocketClose();
+            await this.webSocketClose();
 
             this.webSocket = new WebSocket(this.webSocketUrl);
 
             // 'error' triggers 'close' later: no need to double callback
             ['open', 'close'].forEach((state) => {
-                const callback = () => {
+                const callback = async () => {
 
                     // clear time-out in any case
                     clearTimeout(this.webSocketUpdateId);
@@ -105,7 +115,7 @@ export class NetworkEngine {
                     if (state === 'close') {
                         // try again later
                         clearTimeout(this.webSocketUpdateId);
-                        this.webSocketClose();
+                        await this.webSocketClose();
                         this.webSocketUpdateId = setTimeout(() => this.webSocketUpdate(), 1000);
                     }
                 };
@@ -125,7 +135,7 @@ export class NetworkEngine {
 
             // try again later
             clearTimeout(this.webSocketUpdateId);
-            this.webSocketClose();
+            await this.webSocketClose();
             this.webSocketUpdateId = setTimeout(() => this.webSocketUpdate(), 1000);
         }
 
@@ -167,22 +177,26 @@ export class NetworkEngine {
         this.webSocketReadyStateSet(state);
     }
 
-    oscClose() {
+    async oscClose() {
         clearTimeout(this.oscUpdateId);
 
         if (this.osc) {
-            this.osc.close();
+            await new Promise( (resolve, reject) => {
+                this.osc.close(() => {
+                    resolve();
+                });
+            });
         }
         this.osc = null;
         this.oscReadyStateSet('CLOSED');
     }
 
-    oscUpdate() {
+    async oscUpdate() {
         clearTimeout(this.oscUpdateId);
 
         if (!this.oscEnabled || !this.oscUrl) {
             clearTimeout(this.oscUpdateId);
-            this.oscClose();
+            await this.oscClose();
             return;
         }
 
@@ -198,7 +212,7 @@ export class NetworkEngine {
 
         if (!urlValidated) {
             clearTimeout(this.oscUpdateId);
-            this.oscClose();
+            await this.oscClose();
             return;
         }
 
@@ -207,7 +221,7 @@ export class NetworkEngine {
 
         if (!hostname || !port) {
             clearTimeout(this.oscUpdateId);
-            this.oscClose();
+            await this.oscClose();
             return;
         }
 
@@ -217,7 +231,7 @@ export class NetworkEngine {
         // warning: (native) error is not catched and will crash application
         try {
             clearTimeout(this.oscUpdateId);
-            this.oscClose();
+            await this.oscClose();
 
             this.oscReadyStateSet('OPENING');
 
@@ -238,7 +252,7 @@ export class NetworkEngine {
                 this.oscReadyStateSet('OPEN');
             });
 
-            socket.on('error', (error) => {
+            socket.on('error', async (error) => {
                 switch (error.key) {
                     case 'setBroadcast':
                         // Bug in react-native-udp@4.1.7:
@@ -252,21 +266,21 @@ export class NetworkEngine {
 
                 // try again later
                 clearTimeout(this.oscUpdateId);
-                this.oscClose();
+                await this.oscClose();
                 this.oscUpdateId = setTimeout(() => this.oscUpdate(), 1000);
             });
 
-            socket.on('close', () => {
+            socket.on('close', async () => {
                 // try again later
                 clearTimeout(this.oscUpdateId);
-                this.oscClose();
+                await this.oscClose();
                 this.oscUpdateId = setTimeout(() => this.oscUpdate(), 1000);
             });
         } catch (error) {
             console.error(`Error while creating udp socket:`, error.message);
             // try again later
             clearTimeout(this.oscUpdateId);
-            this.oscClose();
+            await this.oscClose();
             this.oscUpdateId = setTimeout(() => this.oscUpdate(), 1000);
         }
     }

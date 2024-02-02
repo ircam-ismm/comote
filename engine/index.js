@@ -46,9 +46,9 @@ export class Engine {
 
     }
 
-    cleanup() {
-        this.sensors.cleanup();
-        this.network.cleanup();
+    async cleanup() {
+        await this.sensors.cleanup();
+        await this.network.cleanup();
     }
 
     async init() {
