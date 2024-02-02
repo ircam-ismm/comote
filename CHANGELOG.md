@@ -1,5 +1,15 @@
 # CHANGELOG
 
+- Fix sensors sample rate issues on first start-up and after app paused
+
+v1.8.7
+
+- Fix crash on startup
+- Fix OSC issues
+- Automatic reconnection
+- Avoid resampling sensors
+- Update logo
+
 v1.2.0
 
 - update wording fr
