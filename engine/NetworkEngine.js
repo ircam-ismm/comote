@@ -57,11 +57,7 @@ export class NetworkEngine {
             if (webSocket.readyState === webSocket.OPEN
                 || webSocket.readyState === webSocket.CONNECTING) {
                 await new Promise((resolve, reject) => {
-                    const resolveOnClose = () => {
-                        webSocket.removeEventListener('close', resolveOnClose);
-                        resolve();
-                    };
-                    webSocket.addEventListener('close', resolveOnClose);
+                    webSocket.once('close', () => resolve() );
                     webSocket.close();
                 });
             }
@@ -180,7 +176,7 @@ export class NetworkEngine {
     async oscClose() {
         clearTimeout(this.oscUpdateId);
 
-        if (this.osc) {
+        if (this.osc && this.oscReadyState === 'OPEN') {
             await new Promise( (resolve, reject) => {
                 this.osc.close(() => {
                     resolve();
