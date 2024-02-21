@@ -189,6 +189,22 @@ While running app, shake the device on the left or on the right to access the de
 You can press `j` in the console to start a debugger.
 
 
+### Pre-production test
+
+The easiest way to simulate how your project will run on end users' devices is with the command:
+
+```sh
+npx expo start --no-dev --minify
+```
+
+However, this might no be enough, as the build is different. It notably differs when the app is suspended (move to background, device lock). Note the usage of the `--device` flag to be able to select a real device.
+
+```sh
+npx expo run:ios --configuration Release --device
+```
+
+
+
 ### Build and deploy
 
 
