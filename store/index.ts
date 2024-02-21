@@ -32,25 +32,27 @@ const settingsTransform = createTransform(
 
   // transform state on its way to being serialized and persisted.
   (inboundState: any) => {
-    // do not store oscEnabled and webSocketEnabled
-    // (copy to avoid state mutation)
     const transformedState = { ...inboundState };
-    const { oscEnabled, webSocketEnabled, ...rest } = transformedState.data;
-    transformedState.data = rest;
+
+    // // do not store oscEnabled and webSocketEnabled
+    // // (copy to avoid state mutation)
+    // const { oscEnabled, webSocketEnabled, ...rest } = transformedState.data;
+    // transformedState.data = rest;
+
     return transformedState;
   },
 
   // transform state being rehydrated
   (outboundState: any) => {
-    // do no restore oscEnabled and webSocketEnabled
-    // (copy to avoid state mutation)
     const transformedState = { ...outboundState };
 
-    if (transformedState && transformedState.data) {
-      // enforce values
-      transformedState.data.oscEnabled = false;
-      transformedState.data.webSocketEnabled = false;
-    }
+    // // do no restore oscEnabled and webSocketEnabled
+    // // (copy to avoid state mutation)
+    // if (transformedState && transformedState.data) {
+    //   // enforce values
+    //   transformedState.data.oscEnabled = false;
+    //   transformedState.data.webSocketEnabled = false;
+    // }
 
     return transformedState;
   },
