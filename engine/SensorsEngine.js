@@ -139,7 +139,14 @@ export class SensorsEngine {
             await this.gyroscopeSubscribe();
 
             // set interval after subscription
+
+            // @TODO: find why, sometimes, the interval is 100 ms on iOS
+            // (after the device went to sleep and woke up again)
+            await this.intervalSet(this.interval + 2, { fake: true });
+            // await new Promise((resolve) => { setTimeout(resolve, 1000); });
             await this.intervalSet();
+
+
         } else {
             // console.error('Sensors not available!');
         }
@@ -306,19 +313,23 @@ export class SensorsEngine {
 
     async intervalSet(interval = this.interval, {
         compensated = false,
+        fake = false,
     } = {}) {
         const intervalLimited = Math.max(sensorsIntervalMin, interval);
 
         clearTimeout(this.intervalId);
         this.intervalEstimateInit();
-        if (compensated) {
-            this.intervalCompensated = intervalLimited;
-            this.intervalRequest = this.intervalCompensated;
-        } else {
-            this.interval = intervalLimited;
-            // no compensation, yet, before any interval estimate
-            this.intervalRequest = this.interval;
+        if (!fake) {
+            if (compensated) {
+                this.intervalCompensated = intervalLimited;
+                this.intervalRequest = this.intervalCompensated;
+            } else {
+                this.interval = intervalLimited;
+                // no compensation, yet, before any interval estimate
+                this.intervalRequest = this.interval;
+            }
         }
+        const intervalRequest = (fake ? this.intervalRequest : interval);
 
         if (this.sensorsEmulation) {
             clearTimeout(this.sensorsEmulationId);
@@ -359,17 +370,17 @@ export class SensorsEngine {
             && gyroscopeAvailable) {
             // optional
             if (magnetometerAvailable) {
-                Magnetometer.setUpdateInterval(this.intervalRequest);
+                Magnetometer.setUpdateInterval(intervalRequest);
             }
 
-            Accelerometer.setUpdateInterval(this.intervalRequest);
-            Gyroscope.setUpdateInterval(this.intervalRequest);
+            Accelerometer.setUpdateInterval(intervalRequest);
+            Gyroscope.setUpdateInterval(intervalRequest);
 
         } else {
             // try again later
             clearTimeout(this.intervalId);
             this.intervalId = setTimeout(() => {
-                this.intervalSet(this.intervalRequest);
+                this.intervalSet(this.intervalRequest, { compensated, fake });
             }, 1000);
         }
     }
