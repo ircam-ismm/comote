@@ -25,7 +25,6 @@ export default function EngineComponent() {
             if (appState.current.match(/inactive|background/)
                 && nextAppState === 'active') {
                 // app has come to the foreground
-
                 // reset
                 await engine.cleanup();
                 await engine.init();

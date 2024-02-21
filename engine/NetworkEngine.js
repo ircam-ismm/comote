@@ -1,3 +1,5 @@
+import { getNetworkStateAsync } from 'expo-network';
+
 // react-native URL is incomplete
 import isURL from 'validator/es/lib/isURL';
 import urlParse from 'url-parse';
@@ -70,6 +72,12 @@ export class NetworkEngine {
 
     async webSocketUpdate() {
         clearTimeout(this.webSocketUpdateId);
+
+        const networkState = await getNetworkStateAsync();
+        if(networkState.isConnected === false) {
+            this.oscUpdateId = setTimeout(() => this.oscUpdate(), 1000);
+            return;
+        }
 
         if (!this.webSocketEnabled || !this.webSocketUrl) {
             clearTimeout(this.webSocketUpdateId);
@@ -189,6 +197,12 @@ export class NetworkEngine {
 
     async oscUpdate() {
         clearTimeout(this.oscUpdateId);
+
+        const networkState = await getNetworkStateAsync();
+        if(networkState.isConnected === false) {
+            this.oscUpdateId = setTimeout(() => this.oscUpdate(), 1000);
+            return;
+        }
 
         if (!this.oscEnabled || !this.oscUrl) {
             clearTimeout(this.oscUpdateId);

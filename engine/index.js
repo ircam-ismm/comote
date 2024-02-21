@@ -22,7 +22,7 @@ export class Engine {
         this.sensors = new SensorsEngine(sensorsRequest);
     }
 
-    set({
+    async set({
         source,
         id,
         network,
@@ -37,11 +37,11 @@ export class Engine {
         }
 
         if (typeof network !== 'undefined') {
-            this.network.set(network);
+            await this.network.set(network);
         }
 
         if (typeof sensors !== 'undefined') {
-            this.sensors.set(sensors);
+            await this.sensors.set(sensors);
         }
 
     }
@@ -52,8 +52,8 @@ export class Engine {
     }
 
     async init() {
+        await this.network.init();
         await this.sensors.init();
-        this.network.init();
     }
 
     send(message) {

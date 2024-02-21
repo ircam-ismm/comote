@@ -108,8 +108,12 @@ export class SensorsEngine {
     async cleanup() {
         clearTimeout(this.intervalId);
 
-        await this.accelerometerUnsubscribe();
+        // unsubscribe first, as it triggers data report
         await this.gyroscopeUnsubscribe();
+
+        await this.accelerometerUnsubscribe();
+
+        // unsubscribe optional sensors last
         await this.magnetometerUnsubscribe();
     }
 
@@ -192,9 +196,12 @@ export class SensorsEngine {
 
     async accelerometerUnsubscribe() {
         clearTimeout(this.accelerometerSubscribeId);
-        if (this.accelerometerListener) {
+
+        const accelerometerAvailable = await Accelerometer.isAvailableAsync();
+        if (accelerometerAvailable && this.accelerometerListener) {
             Accelerometer.removeSubscription(this.accelerometerListener);
         }
+
         this.accelerometerListener = null;
     };
 
@@ -207,7 +214,6 @@ export class SensorsEngine {
         }
 
         const gyroscopeAvailable = await Gyroscope.isAvailableAsync();
-
         if (gyroscopeAvailable) {
             this.gyroscopeListener = Gyroscope.addListener(data => {
                 this.rotationRate = normalizeGyroscope(data);
@@ -229,7 +235,8 @@ export class SensorsEngine {
     async gyroscopeUnsubscribe() {
         clearTimeout(this.gyroscopeSubscribeId);
 
-        if (this.gyroscopeListener) {
+        const gyroscopeAvailable = await Gyroscope.isAvailableAsync();
+        if (gyroscopeAvailable && this.gyroscopeListener) {
             Gyroscope.removeSubscription(this.gyroscopeListener);
         }
         this.gyroscopeListener = null;
@@ -259,8 +266,10 @@ export class SensorsEngine {
     async magnetometerUnsubscribe() {
         clearTimeout(this.magnetometerSubscribeId);
 
-        if (this.magnetometerListener) {
+        const magnetometerAvailable = await Magnetometer.isAvailableAsync();
+        if (magnetometerAvailable && this.magnetometerListener) {
             Magnetometer.removeSubscription(this.magnetometerListener);
+
         }
         this.magnetometerListener = null;
     };
