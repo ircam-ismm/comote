@@ -3,7 +3,7 @@
     "name": "CoMote",
     "slug": "comote",
     "owner": "ircam-ismm",
-    "version": "1.8.11",
+    "version": "1.8.12",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "comote",
@@ -24,7 +24,6 @@
       "bundleIdentifier": "fr.ircam.ismm.comote",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": "NO",
-        "UIBackgroundModes": ["location", "fetch", "remote-notification"],
         "NSCameraUsageDescription": "Allow $(PRODUCT_NAME) to use the camera to scan QR codes",
         "NSMotionUsageDescription": "Allow $(PRODUCT_NAME) to access your device's accelerometer",
         "NSLocalNetworkUsageDescription": "Allow $(PRODUCT_NAME) to access local network",
