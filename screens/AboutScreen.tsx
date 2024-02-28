@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as Linking from 'expo-linking';
-
+import * as Application from 'expo-application';
 import i18n from '../constants/i18n';
 
 import {
@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
 
     // borderWidth: 5,
-    // borderColor: 'red', 
+    // borderColor: 'red',
   },
 
   subcontainer: {
@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     marginVertical: 8,
 
-    // borderColor: 'green', 
+    // borderColor: 'green',
     // borderWidth: 5,
   },
 
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
     maxWidth: '100%',
     maxHeight: '50%',
 
-    // borderColor: 'purple', 
+    // borderColor: 'purple',
     // borderWidth: 5,
   },
 
@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
     aspectRatio: 2,
     resizeMode: 'contain',
 
-    // borderColor: 'blue', 
+    // borderColor: 'blue',
     // borderWidth: 5,
   },
 
@@ -86,6 +86,9 @@ export default function HomeScreen({ color, navigation }) {
         </Text>
         <Text style={styles.paragraph}>
           {i18n.t('about.producedBy')}
+        </Text>
+        <Text>
+            {Application.applicationName} {Application.nativeApplicationVersion} ({Application.nativeBuildVersion})
         </Text>
       </View>
 
