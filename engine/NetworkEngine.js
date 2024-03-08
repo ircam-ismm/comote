@@ -59,7 +59,11 @@ export class NetworkEngine {
             if (webSocket.readyState === webSocket.OPEN
                 || webSocket.readyState === webSocket.CONNECTING) {
                 await new Promise((resolve, reject) => {
-                    webSocket.once('close', () => resolve() );
+                    const resolveOnClose = () => {
+                        webSocket.removeEventListener('close', resolveOnClose);
+                        resolve();
+                    };
+                    webSocket.addEventListener('close', resolveOnClose);
                     webSocket.close();
                 });
             }
