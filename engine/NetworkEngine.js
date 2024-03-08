@@ -79,7 +79,7 @@ export class NetworkEngine {
 
         const networkState = await getNetworkStateAsync();
         if(networkState.isConnected === false) {
-            this.oscUpdateId = setTimeout(() => this.oscUpdate(), 1000);
+            this.webSocketUpdateId = setTimeout(() => this.webSocketUpdate(), 1000);
             return;
         }
 
