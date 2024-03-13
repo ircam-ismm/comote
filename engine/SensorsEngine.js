@@ -13,6 +13,10 @@ import {
 
 import Lowpass from '../helpers/Lowpass';
 
+// By default, gyroscope triggers the sending of data, as it appears to come last
+// When it is not available, 'accelerometer' is used as master
+ let sensorsMaster ='gyroscope';
+
 // helpers
 
 const sensorsIntervalMin = 0; // milliseconds
@@ -96,7 +100,6 @@ export class SensorsEngine {
         // last normalised value
         this.magnetometer = null;
 
-
         this.init();
     }
 
@@ -127,16 +130,24 @@ export class SensorsEngine {
             magnetometerAvailable,
         } = await this.sensorsAvailable();
 
-        if (accelerometerAvailable && gyroscopeAvailable) {
+        if (accelerometerAvailable) {
+            // define master before any subscription
+            if(!gyroscopeAvailable) {
+                sensorsMaster = 'accelerometer';
+            }
+
             // subscribe optional sensors first
             if (magnetometerAvailable) {
                 await this.magnetometerSubscribe();
             }
 
+            // subscribe almost last, as it is used as a backup master
             await this.accelerometerSubscribe();
 
-            // subscribe last, as it triggers data report
-            await this.gyroscopeSubscribe();
+            if (gyroscopeAvailable) {
+                // subscribe last, as  it triggers data report
+                await this.gyroscopeSubscribe();
+            }
 
             // set interval after subscription
 
@@ -191,6 +202,11 @@ export class SensorsEngine {
         if (accelerometerAvailable) {
             this.accelerometerListener = Accelerometer.addListener(data => {
                 this.accelerationIncludingGravity = normalizeAccelerometer(data);
+
+                if (sensorsMaster === 'accelerometer') {
+                    this.intervalEstimateUpdate();
+                    this.sensorsReport();
+                }
             });
         } else {
             // try again later
@@ -225,9 +241,10 @@ export class SensorsEngine {
             this.gyroscopeListener = Gyroscope.addListener(data => {
                 this.rotationRate = normalizeGyroscope(data);
 
-                // gyroscope is master (last)
-                this.intervalEstimateUpdate();
-                this.sensorsReport();
+                if (sensorsMaster === 'gyroscope') {
+                    this.intervalEstimateUpdate();
+                    this.sensorsReport();
+                }
             });
         } else {
             // try again later
@@ -299,13 +316,18 @@ export class SensorsEngine {
                 },
             };
 
-            if (magnetometer) {
+            if(!rotationRate) {
+                delete values.rotationRate;
+            }
+
+            if (!magnetometer) {
+                delete values.magnetometer;
+            } else {
                 values.magnetometer = {
                     interval,
                 };
                 Object.assign(values.magnetometer, { ...magnetometer });
             }
-
             this.dataCallback(values);
         }
 
@@ -366,16 +388,20 @@ export class SensorsEngine {
         const gyroscopeAvailable = await Gyroscope.isAvailableAsync();
         const magnetometerAvailable = await Magnetometer.isAvailableAsync();
 
-        if (accelerometerAvailable
-            && gyroscopeAvailable) {
+        // We need at least the accelerometer
+        if (accelerometerAvailable) {
+
             // optional
             if (magnetometerAvailable) {
                 Magnetometer.setUpdateInterval(intervalRequest);
             }
 
             Accelerometer.setUpdateInterval(intervalRequest);
-            Gyroscope.setUpdateInterval(intervalRequest);
 
+            // gyroscope might not be present
+            if (gyroscopeAvailable) {
+                Gyroscope.setUpdateInterval(intervalRequest);
+            }
         } else {
             // try again later
             clearTimeout(this.intervalId);

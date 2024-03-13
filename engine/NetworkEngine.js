@@ -355,13 +355,19 @@ export class NetworkEngine {
                             rotationRate,
                         } = data[key];
 
-                        if (!accelerationIncludingGravity
-                            || !rotationRate) {
+                        // We need at least the accelerometer to work
+                        if (!accelerationIncludingGravity) {
                             return;
                         }
 
                         const { x, y, z } = accelerationIncludingGravity;
-                        const { alpha, beta, gamma } = rotationRate;
+
+                        // Keep same message format in case gyroscope is not available
+                        const { alpha, beta, gamma } = rotationRate || {
+                            alpha: 0,
+                            beta: 0,
+                            gamma: 0,
+                        };
                         const values = [
                             interval,
                             x, y, z,
