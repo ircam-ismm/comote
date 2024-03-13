@@ -59,7 +59,11 @@ export class NetworkEngine {
             if (webSocket.readyState === webSocket.OPEN
                 || webSocket.readyState === webSocket.CONNECTING) {
                 await new Promise((resolve, reject) => {
-                    webSocket.once('close', () => resolve() );
+                    const resolveOnClose = () => {
+                        webSocket.removeEventListener('close', resolveOnClose);
+                        resolve();
+                    };
+                    webSocket.addEventListener('close', resolveOnClose);
                     webSocket.close();
                 });
             }
@@ -75,7 +79,7 @@ export class NetworkEngine {
 
         const networkState = await getNetworkStateAsync();
         if(networkState.isConnected === false) {
-            this.oscUpdateId = setTimeout(() => this.oscUpdate(), 1000);
+            this.webSocketUpdateId = setTimeout(() => this.webSocketUpdate(), 1000);
             return;
         }
 
@@ -351,13 +355,19 @@ export class NetworkEngine {
                             rotationRate,
                         } = data[key];
 
-                        if (!accelerationIncludingGravity
-                            || !rotationRate) {
+                        // We need at least the accelerometer to work
+                        if (!accelerationIncludingGravity) {
                             return;
                         }
 
                         const { x, y, z } = accelerationIncludingGravity;
-                        const { alpha, beta, gamma } = rotationRate;
+
+                        // Keep same message format in case gyroscope is not available
+                        const { alpha, beta, gamma } = rotationRate || {
+                            alpha: 0,
+                            beta: 0,
+                            gamma: 0,
+                        };
                         const values = [
                             interval,
                             x, y, z,

@@ -15,68 +15,71 @@ import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 import { useAppSelector } from '../hooks';
 
-const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    padding: 16,
-    justifyContent: 'space-between',
-    flexDirection: 'column',
-
-    // borderWidth: 5,
-    // borderColor: 'red',
-  },
-
-  subcontainer: {
-    alignSelf: 'center',
-    flexDirection: 'row',
-    flexWrap: "wrap",
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    marginVertical: 8,
-
-    // borderColor: 'green',
-    // borderWidth: 5,
-  },
-
-  textContainer: {
-    justifyContent: 'flex-start',
-  },
-
-  paragraph: {
-    marginBottom: 16,
-  },
-
-  logosContainer: {
-    maxWidth: '100%',
-    maxHeight: '50%',
-
-    // borderColor: 'purple',
-    // borderWidth: 5,
-  },
-
-  logo: {
-    maxWidth: '100%',
-    maxHeight: '100%',
-    height: undefined,
-    aspectRatio: 2,
-    resizeMode: 'contain',
-
-    // borderColor: 'blue',
-    // borderWidth: 5,
-  },
-
-  button: {
-    alignItems: "center",
-    padding: 16,
-    borderRadius: 4,
-    alignSelf: 'stretch'
-  },
-});
-
 
 export default function HomeScreen({ color, navigation }) {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme];
+
+  const styles = StyleSheet.create({
+    container: {
+      flexGrow: 1,
+      padding: 16,
+      justifyContent: 'space-between',
+      flexDirection: 'column',
+      backgroundColor: colors.background,
+
+      // borderWidth: 5,
+      // borderColor: 'red',
+    },
+
+    subcontainer: {
+      alignSelf: 'center',
+      flexDirection: 'row',
+      flexWrap: "wrap",
+      alignItems: 'center',
+      justifyContent: 'flex-start',
+      marginVertical: 8,
+      backgroundColor: colors.background,
+
+
+      // borderColor: 'green',
+      // borderWidth: 5,
+    },
+
+    textContainer: {
+      justifyContent: 'flex-start',
+    },
+
+    paragraph: {
+      marginBottom: 16,
+    },
+
+    logosContainer: {
+      maxWidth: '100%',
+      maxHeight: '50%',
+
+      // borderColor: 'purple',
+      // borderWidth: 5,
+    },
+
+    logo: {
+      maxWidth: '100%',
+      maxHeight: '100%',
+      height: undefined,
+      aspectRatio: 2,
+      resizeMode: 'contain',
+
+      // borderColor: 'blue',
+      // borderWidth: 5,
+    },
+
+    button: {
+      alignItems: "center",
+      padding: 16,
+      borderRadius: 4,
+      alignSelf: 'stretch'
+    },
+  });
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
