@@ -41,14 +41,21 @@ export default function SensorsComponent() {
                 accelerometerAvailable,
                 gyroscopeAvailable,
                 magnetometerAvailable,
+                headingAvailable,
             } = await engine.sensors.sensorsAvailable();
 
             console.log('- accelerometers available:', accelerometerAvailable);
             console.log('- gyroscopes available:', gyroscopeAvailable);
             console.log('- magnetometers available:', magnetometerAvailable);
+            console.log('- heading available:', headingAvailable);
 
             // We need at least accelerometer to work
-            availableCallback({accelerometerAvailable, gyroscopeAvailable, magnetometerAvailable});
+            availableCallback({
+                accelerometerAvailable,
+                gyroscopeAvailable,
+                magnetometerAvailable,
+                headingAvailable,
+            });
 
             if (!accelerometerAvailable) {
                 // dispatch({
@@ -57,9 +64,7 @@ export default function SensorsComponent() {
                 // });
                 // @todo - show error screen
                 console.error('Sensors not available!');
-            }
-
-            if (!gyroscopeAvailable) {
+            } else if (!gyroscopeAvailable) {
                 console.error('Gyroscope not available!');
             }
 

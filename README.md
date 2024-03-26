@@ -255,26 +255,32 @@ e = {
   source: 'comote',
   id: 42,
   devicemotion: {
-    interval // ms
-    accelerationIncludingGravity = { x, y, z } // m/s2
-    rotationRate = { alpha, beta, gamma } // deg/s
+    interval, // ms
+    accelerationIncludingGravity = { x, y, z }, // m/s2
+    rotationRate = { alpha, beta, gamma }, // deg/s
   },
   magnetometer: {
-    interval // ms
-    magnetometer = {x, y, z} // uT
+    interval, // ms
+    magnetometer = {x, y, z}, // uT
+  },
+  heading: {
+    interval, // ms
+    accuracy, // degrees or -1 of not available
+    magnetometerHeading, // degrees
+    trueHeading, // degrees or -1 if not available
   }
 }
 
 e = {
   source: 'comote',
   id: 42,
-  buttonA: 0 | 1
+  buttonA: 0 | 1,
 }
 
 e = {
   source: 'comote',
   id: 42,
-  buttonB: 0 | 1
+  buttonB: 0 | 1,
 }
 ```
 
@@ -283,6 +289,7 @@ e = {
 ```
 /comote/${id}/devicemotion  [interval, x, y, z, alpha, beta, gamma]
 /comote/${id}/magnetometer  [interval, x, y, z]
+/comote/${id}/heading       [interval, accuracy, magnetometerHeading, trueHeading]
 /comote/${id}/buttonA       [buttonA]
 /comote/${id}/buttonB       [buttonA]
 ```

@@ -1,3 +1,5 @@
+const openAppSettings = `Ouvrir les paramètres de l'application`;
+
 export default {
   nav: {
     home: 'Accueil',
@@ -21,6 +23,16 @@ export default {
   settings: {
     header: 'Réglages',
     scanQrCode: 'Scanner depuis un QR Code',
+    sensors: {
+        header: 'Capteurs',
+        accelerometer: 'Accéléromètre',
+        gyroscope: 'Gyroscope',
+        magnetometer: 'Magnétomètre',
+        heading: 'Boussole',
+        isAvailable: 'Disponible',
+        isNotAvailable: 'Indisponible',
+        openSettings: openAppSettings,
+    },
     general: {
       header: 'Général',
       id: 'Id',
@@ -52,7 +64,7 @@ export default {
     requestingPermission: `Demande d'autorisation pour la caméra...`,
     noPermission: `Aucune autorisation d'accéder à la caméra.`,
     waitingCamera: 'En attente de la caméra...',
-    openSettings: `Ouvrir les paramètres de l'application`,
+    openSettings: openAppSettings,
   },
   about: {
     header: 'À propos de CoMote',

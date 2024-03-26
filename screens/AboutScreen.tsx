@@ -16,7 +16,7 @@ import useColorScheme from '../hooks/useColorScheme';
 import { useAppSelector } from '../hooks';
 
 
-export default function HomeScreen({ color, navigation }) {
+export default function AboutScreen({ color, navigation }) {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme];
 

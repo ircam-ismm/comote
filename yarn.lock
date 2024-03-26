@@ -3889,6 +3889,11 @@ expo-localization@~14.3.0:
   dependencies:
     rtl-detect "^1.0.2"
 
+expo-location@~16.1.0:
+  version "16.1.0"
+  resolved "https://registry.yarnpkg.com/expo-location/-/expo-location-16.1.0.tgz#251a465790d6622f828fd18f0edb2a73b9664b72"
+  integrity sha512-/jfRyYrXb9vjr8HoYmVHnzEqnw+0jaoRbHsxj6ePPAbevXmvXZqYHFRtfZtQ+q32SB4X6kUAXu28eBcLS+tqaA==
+
 expo-manifests@~0.7.0:
   version "0.7.2"
   resolved "https://registry.yarnpkg.com/expo-manifests/-/expo-manifests-0.7.2.tgz#77c2d9476e8130fc9ca6d4274fa1a5495d34358e"

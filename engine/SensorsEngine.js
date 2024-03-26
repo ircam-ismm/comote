@@ -9,6 +9,9 @@ import {
     // Pedometer,
 } from 'expo-sensors';
 
+// for heading
+import * as Location from 'expo-location';
+
 // import throttle from 'lodash/throttle';
 
 import Lowpass from '../helpers/Lowpass';
@@ -25,7 +28,7 @@ const sensorsIntervalMin = 0; // milliseconds
 // @see - https://www.w3.org/TR/orientation-event/#devicemotion
 // @todo - https://w3c.github.io/accelerometer/
 const g = 9.80665;
-const normalizeAccelerometer =
+const accelerometerNormalise =
     (Platform.OS === 'android'
         ? (data) => ({
             x: data.x * g,
@@ -40,14 +43,43 @@ const normalizeAccelerometer =
     );
 
 const radToDegree = 360 / (2 * Math.PI);
-const normalizeGyroscope = (data) => ({
+const gyroscopeNormalise = (data) => ({
     alpha: data.z * radToDegree, // yaw
     beta: data.x * radToDegree,  // pitch
     gamma: data.y * radToDegree, // roll
 });
 
 // placeholder
-const normalizeMagnetometer = (data) => data;
+const magnetometerNormalise = (data) => data;
+
+// @see https://docs.expo.dev/versions/latest/sdk/location/#locationheadingobject
+const headingNormalise = (data) => {
+    const { accuracy: accuracyIndex, trueHeading, magHeading: magneticHeading } = data;
+    let accuracy;
+    switch (accuracyIndex) {
+        case 0:
+            accuracy = 65;
+            break;
+        case 1:
+            accuracy = 50;
+            break;
+        case 2:
+            accuracy = 35;
+            break;
+        case 3:
+            accuracy = 20;
+            break;
+        default:
+            accuracy = -1;
+            break;
+    }
+
+    return {
+        accuracy,
+        trueHeading,
+        magneticHeading,
+    };
+};
 
 export class SensorsEngine {
     constructor({
@@ -100,6 +132,13 @@ export class SensorsEngine {
         // last normalised value
         this.magnetometer = null;
 
+        // ask once
+        this.headingPermissionRequested = false;
+        this.headingSubscribeId = null;
+        this.headingListener = null;
+        // last normalised value
+        this.heading = null;
+
         this.init();
     }
 
@@ -118,6 +157,8 @@ export class SensorsEngine {
 
         // unsubscribe optional sensors last
         await this.magnetometerUnsubscribe();
+
+        await this.headingUnsubscribe();
     }
 
     async init() {
@@ -128,6 +169,7 @@ export class SensorsEngine {
             accelerometerAvailable,
             gyroscopeAvailable,
             magnetometerAvailable,
+            headingAvailable,
         } = await this.sensorsAvailable();
 
         if (accelerometerAvailable) {
@@ -137,6 +179,10 @@ export class SensorsEngine {
             }
 
             // subscribe optional sensors first
+            if(headingAvailable) {
+                await this.headingSubscribe();
+            }
+
             if (magnetometerAvailable) {
                 await this.magnetometerSubscribe();
             }
@@ -167,6 +213,7 @@ export class SensorsEngine {
                 accelerometerAvailable,
                 gyroscopeAvailable,
                 magnetometerAvailable,
+                headingAvailable,
             });
         }
     }
@@ -177,17 +224,46 @@ export class SensorsEngine {
                 accelerometerAvailable: true,
                 gyroscopeAvailable: true,
                 magnetometerAvailable: true,
+                headingAvailable: true,
             };
+        }
+
+        // debugger;
+        const accelerometerPermission = await Accelerometer.getPermissionsAsync();
+        const gyroscopePermission = await Gyroscope.getPermissionsAsync();
+        const magnetometerPermission = await Magnetometer.getPermissionsAsync();
+
+        // heading does not request permission on get, and multiple requests are annoying
+        let headingPermission;
+        if (!this.headingPermissionRequested) {
+          this.headingPermissionRequested = true;
+          headingPermission = await Location.requestForegroundPermissionsAsync();
+        } else {
+          headingPermission = await Location.getForegroundPermissionsAsync();
         }
 
         const accelerometerAvailable = await Accelerometer.isAvailableAsync();
         const gyroscopeAvailable = await Gyroscope.isAvailableAsync();
         const magnetometerAvailable = await Magnetometer.isAvailableAsync();
 
+        const headingAvailable = await Location.hasServicesEnabledAsync();
+
+        // console.log({
+        //     accelerometerPermission,
+        //     gyroscopePermission,
+        //     magnetometerPermission,
+        //     headingPermission,
+        //     accelerometerAvailable,
+        //     gyroscopeAvailable,
+        //     magnetometerAvailable,
+        //     headingAvailable,
+        // });
+
         return {
-            accelerometerAvailable,
-            gyroscopeAvailable,
-            magnetometerAvailable,
+            accelerometerAvailable: accelerometerAvailable && accelerometerPermission.granted,
+            gyroscopeAvailable: gyroscopeAvailable && gyroscopePermission.granted,
+            magnetometerAvailable: magnetometerAvailable && magnetometerPermission.granted,
+            headingAvailable: headingAvailable && headingPermission.granted,
         };
     }
 
@@ -201,7 +277,7 @@ export class SensorsEngine {
         const accelerometerAvailable = await Accelerometer.isAvailableAsync();
         if (accelerometerAvailable) {
             this.accelerometerListener = Accelerometer.addListener(data => {
-                this.accelerationIncludingGravity = normalizeAccelerometer(data);
+                this.accelerationIncludingGravity = accelerometerNormalise(data);
 
                 if (sensorsMaster === 'accelerometer') {
                     this.intervalEstimateUpdate();
@@ -215,7 +291,7 @@ export class SensorsEngine {
                 this.accelerometerSubscribe();
             }, 1000);
         }
-    };
+    }
 
     async accelerometerUnsubscribe() {
         clearTimeout(this.accelerometerSubscribeId);
@@ -226,7 +302,7 @@ export class SensorsEngine {
         }
 
         this.accelerometerListener = null;
-    };
+    }
 
     // gyroscope is master: subscribe last
     async gyroscopeSubscribe() {
@@ -239,7 +315,7 @@ export class SensorsEngine {
         const gyroscopeAvailable = await Gyroscope.isAvailableAsync();
         if (gyroscopeAvailable) {
             this.gyroscopeListener = Gyroscope.addListener(data => {
-                this.rotationRate = normalizeGyroscope(data);
+                this.rotationRate = gyroscopeNormalise(data);
 
                 if (sensorsMaster === 'gyroscope') {
                     this.intervalEstimateUpdate();
@@ -276,7 +352,7 @@ export class SensorsEngine {
         const magnetometerAvailable = await Magnetometer.isAvailableAsync();
         if (magnetometerAvailable) {
             this.magnetometerListener = Magnetometer.addListener(data => {
-                this.magnetometer = normalizeMagnetometer(data);
+                this.magnetometer = magnetometerNormalise(data);
             });
         } else {
             // try again later
@@ -285,7 +361,7 @@ export class SensorsEngine {
                 this.magnetometerSubscribe();
             }, 1000);
         }
-    };
+    }
 
     async magnetometerUnsubscribe() {
         clearTimeout(this.magnetometerSubscribeId);
@@ -296,7 +372,39 @@ export class SensorsEngine {
 
         }
         this.magnetometerListener = null;
-    };
+    }
+
+    async headingSubscribe() {
+        clearTimeout(this.headingSubscribeId);
+
+        if (this.sensorsEmulation) {
+            return;
+        }
+
+        const headingAvailable = Location.hasServicesEnabledAsync();
+        if (headingAvailable) {
+            this.headingListener = await Location.watchHeadingAsync(data => {
+                this.heading = headingNormalise(data);
+            });
+        } else {
+            // try again later
+            clearTimeout(this.headingSubscribeId);
+            this.intervalId = setTimeout(() => {
+                this.headingSubscribe();
+            }, 1000);
+        }
+    }
+
+    async headingUnsubscribe() {
+        clearTimeout(this.headingSubscribeId);
+
+        const headingAvailable = await Location.hasServicesEnabledAsync();
+        if (headingAvailable && this.headingListener) {
+            this.headingListener.remove();
+
+        }
+        this.headingListener = null;
+    }
 
     sensorsReport() {
         if (typeof this.dataCallback === 'function') {
@@ -304,6 +412,7 @@ export class SensorsEngine {
                 accelerationIncludingGravity,
                 rotationRate,
                 magnetometer,
+                heading,
             } = this;
 
             const interval = this.intervalEstimate || this.interval;
@@ -317,17 +426,23 @@ export class SensorsEngine {
             };
 
             if(!rotationRate) {
-                delete values.rotationRate;
+                delete values.devicemotion.rotationRate;
             }
 
-            if (!magnetometer) {
-                delete values.magnetometer;
-            } else {
+            if (magnetometer) {
                 values.magnetometer = {
                     interval,
                 };
                 Object.assign(values.magnetometer, { ...magnetometer });
             }
+
+            if(heading) {
+                values.heading = {
+                    interval,
+                };
+                Object.assign(values.heading, { ...heading });
+            }
+
             this.dataCallback(values);
         }
 
@@ -363,16 +478,24 @@ export class SensorsEngine {
                         y: Math.random() * 2 - 1,
                         z: Math.random() * 2 - 1,
                     },
+
                     rotationRate: {
                         alpha: Math.random() * 2 - 1,
                         beta: Math.random() * 2 - 1,
                         gamma: Math.random() * 2 - 1,
                     },
+
                     magnetometer: {
                         x: Math.random() * 360 - 180,
                         y: Math.random() * 360 - 180,
                         z: Math.random() * 360 - 180,
                     },
+
+                    heading: {
+                        accuracy: 35,
+                        trueHeading: Math.random() * 360,
+                        magneticHeading: Math.random() * 360,
+                    }
                 });
 
                 // emulation is master
@@ -395,6 +518,8 @@ export class SensorsEngine {
             if (magnetometerAvailable) {
                 Magnetometer.setUpdateInterval(intervalRequest);
             }
+
+            // no interval for heading
 
             Accelerometer.setUpdateInterval(intervalRequest);
 
