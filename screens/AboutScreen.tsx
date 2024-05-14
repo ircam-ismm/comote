@@ -90,6 +90,10 @@ export default function AboutScreen({ color, navigation }) {
         <Text style={styles.paragraph}>
           {i18n.t('about.producedBy')}
         </Text>
+        <Text style={styles.paragraph}>
+          {i18n.t('about.producedByUntil12')}
+        </Text>
+
         <Text>
             {Application.applicationName} {Application.nativeApplicationVersion} ({Application.nativeBuildVersion})
         </Text>
