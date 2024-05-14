@@ -15,32 +15,18 @@ function propagateEvent(event) {
 }
 
 const onLoad = `
-  // ['touchstart', 'touchend'].forEach(input => {
-  //   document.addEventListener(input => {
-  //     const target = event.target;
+  ['touchstart', 'touchend'].forEach(input => {
+    document.body.addEventListener(input, (e) => {
+      const target = e.target;
 
-  //     if (target.hasAttribute('comote-key')) {
-  //       if (button.hasAttribute(\`comote-\${input}\`)) {
-  //         const key = button.getAttribute('comote-key');
-  //         const value = button.getAttribute(\`comote-\${input}\`);
-
-  //         window.ReactNativeWebView.postMessage(JSON.stringify({ [key]: value }));
-  //       }
-  //     }
-  //   });
-  // });
-
-  const buttons = document.querySelectorAll('[comote-key]');
-  Array.from(buttons).forEach(button => {
-    ['touchstart', 'touchend'].forEach(input => {
-      button.addEventListener(input, () => {
-        if (button.hasAttribute(\`comote-\${input}\`)) {
-          const key = button.getAttribute('comote-key');
-          const value = button.getAttribute(\`comote-\${input}\`);
+      if (target.hasAttribute('comote-key')) {
+        if (target.hasAttribute(\`comote-\${input}\`)) {
+          const key = target.getAttribute('comote-key');
+          const value = target.getAttribute(\`comote-\${input}\`);
 
           window.ReactNativeWebView.postMessage(JSON.stringify({ [key]: value }));
         }
-      });
+      }
     });
   });
 
@@ -70,22 +56,22 @@ export default function DebugScreen({color}) {
       <WebView style={styles.webview}
         originWhitelist={['*']}
         source={{
-          // uri: 'https://github.com/react-native-webview/react-native-webview',
-          html: `
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title></title>
-</head>
-<body>
-    <button comote-key="coucou-1" comote-touchstart="1" comote-touchend="0">Coucou</button>
-    <button comote-key="coucou-2" comote-touchstart="1" comote-touchend="0">Coucou</button>
-    <button comote-key="coucou-3" comote-touchstart="1" comote-touchend="0">Coucou</button>
-</body>
-</html>
-          `
+          uri: 'http://129.102.67.188:8000',
+//           html: `
+// <!DOCTYPE html>
+// <html>
+// <head>
+//     <meta charset="utf-8">
+//     <meta name="viewport" content="width=device-width, initial-scale=1">
+//     <title></title>
+// </head>
+// <body>
+//     <button comote-key="coucou-1" comote-touchstart="1" comote-touchend="0">Coucou</button>
+//     <button comote-key="coucou-2" comote-touchstart="1" comote-touchend="0">Coucou</button>
+//     <button comote-key="coucou-3" comote-touchstart="1" comote-touchend="0">Coucou</button>
+// </body>
+// </html>
+//           `
         }}
         onMessage={(event) => {
           console.log(JSON.parse(event.nativeEvent.data));
