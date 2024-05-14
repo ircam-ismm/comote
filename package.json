@@ -50,6 +50,7 @@
     "react-native-screens": "~3.22.0",
     "react-native-udp": "^4.1.7",
     "react-native-web": "~0.19.10",
+    "react-native-webview": "13.2.2",
     "react-redux": "^9.0.4",
     "redux": "^5.0.1",
     "redux-persist": "^6.0.0",

@@ -136,7 +136,7 @@ You can also install via `adb`.
 - trust the computer
 - allow for file transfer from USB
 - allow developer mode on device
-- type `adb install build-latest.pak`
+- type `adb install build-latest.apk`
 
 ### iOS
 

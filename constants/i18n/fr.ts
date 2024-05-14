@@ -6,6 +6,7 @@ export default {
     play: 'Jouer',
     settings: 'Réglages',
     qrcode: 'QR Code',
+    webview: 'WebView',
     about: 'À propos',
   },
   home: {
@@ -65,6 +66,9 @@ export default {
     noPermission: `Aucune autorisation d'accéder à la caméra.`,
     waitingCamera: 'En attente de la caméra...',
     openSettings: openAppSettings,
+  },
+  webview: {
+    header: 'WebView',
   },
   about: {
     header: 'À propos de CoMote',
