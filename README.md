@@ -313,6 +313,21 @@ e = {
 
 ## TODO
 
+### Target v2-beta - WebView
+
+- [ ] Unify message format for buttons
+    + [ ] osc `comote/${id}/control/${key} value` 
+    + [ ] ws  `control: { [key]: value }` 
+- [ ] Add QRcode `webviewContent` key
+    + [ ] `url` if starts with `http`
+    + [ ] else `html` 
+    + [ ] fallback in case of 404 error
+    + [ ] define what to do in case of invalid input
+    + [ ] timer for retry (use react ref counter to force component update)
+- [ ] Store `webviewContent`
+- [ ] add Setting field to configure `webviewContent`
+    + [ ] define what to do if html content
+
 ### Target v2
 
 - [ ] check https://www.npmjs.com/package/@react-native-community/netinfo
