@@ -1,9 +1,12 @@
+const openAppSettings = `Apri le impostazioni dell'applicazione`;
+
 export default {
   nav: {
     home: `Home`,
     play: 'Esegui',
     settings: 'Impostazioni',
     qrcode: 'QR Code',
+    webview: 'WebView',
     about: 'Informazioni',
   },
   home: {
@@ -21,6 +24,16 @@ export default {
   settings: {
     header: 'Impostazioni',
     scanQrCode: 'Configura da QR Code',
+    sensors: {
+        header: 'Sensori',
+        accelerometer: 'Accelerometro',
+        gyroscope: 'Giroscopio',
+        magnetometer: 'Magnetometro',
+        heading: 'Bussola',
+        isAvailable: 'Disponibile',
+        isNotAvailable: 'Non disponibile',
+        openSettings: openAppSettings,
+    },
     general: {
       header: 'Generale',
       id: 'Id',
@@ -51,12 +64,16 @@ export default {
     requestingPermission: `Richiesta di autorizzazione per la fotocamera...`,
     noPermission: `Permesso di accesso alla fotocamera negato.`,
     waitingCamera: `In attesa della fotocamera...`,
-    openSettings: `Apri le impostazioni dell'applicazione`,
+    openSettings: openAppSettings,
+  },
+  webview: {
+    header: 'WebView',
   },
   about: {
     header: `Informazioni su CoMote`,
-    developedBy: `CoMote è sviluppato dall'unità mista di ricerca STMS : Ircam-CNRS-Università della Sorbonne-Ministero della Cultura Francese.`,
-    producedBy: `Con il sostegno di: Ministero dell'Educazione Nazionale (Edu-up), ANR (progetto ELEMENT), Arts Convergences.`,
+    developedBy: `CoMote e l'estensione KORAL sono sviluppati dall'unità di ricerca STMS-Lab (Ircam-CNRS-Sorbonne Université-Ministère de la Culture) in collaborazione con l'associazione Arts Convergences.`,
+    producedBy: `Con il sostegno di : Fondation MAAF, Fondation Falret, Département des Yvelines.`,
+    producedByUntil12: `Fino alla versione 1.2 CoMote è stato realizzato con il sostegno di : Éducation Nationale (Edu-up) e Agence Nationale de la Recherche (progetto ELEMENT).`,
     privacyPolicy: 'Politica di confidenzialità',
     privacyPolicyLink: 'https://ismm-apps.ircam.fr/comote-privacy-policy-it',
   },

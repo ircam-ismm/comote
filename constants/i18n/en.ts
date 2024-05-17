@@ -1,9 +1,12 @@
+const openAppSettings = 'Open App settings';
+
 export default {
   nav: {
     home: 'Home',
     play: 'Play',
     settings: 'Settings',
     qrcode: 'QR Code',
+    webview: 'WebView',
     about: 'About',
   },
   home: {
@@ -21,6 +24,16 @@ export default {
   settings: {
     header: 'Settings',
     scanQrCode: 'Scan config from QRCode',
+    sensors: {
+        header: 'Sensors',
+        accelerometer: 'Accelerometer',
+        gyroscope: 'Gyroscope',
+        magnetometer: 'Magnetometer',
+        heading: 'Heading',
+        isAvailable: 'Available',
+        isNotAvailable: 'Not available',
+        openSettings: openAppSettings,
+    },
     general: {
       header: 'General',
       id: 'Id',
@@ -51,12 +64,16 @@ export default {
     requestingPermission: 'Requesting for camera permission...',
     noPermission: 'No permission to access camera.',
     waitingCamera: 'Waiting for camera...',
-    openSettings: 'Open App settings',
+    openSettings: openAppSettings,
+  },
+  webview: {
+    header: 'WebView',
   },
   about: {
     header: 'About CoMote',
-    developedBy: `CoMote is developed by the  STMS lab: Ircam-CNRS-Sorbonne University-French Ministry of Culture.`,
-    producedBy: `With the support of: French Ministry of Education (Edu-up), ANR (ELEMENT project) and Arts Convergences.`,
+    developedBy: `CoMote and the KORAL extension are developed by the STMS-Lab (Ircam-CNRS-Sorbonne Université-Ministère de la Culture) in partnership with the Arts Convergences association.`,
+    producedBy: `With the support of: Fondation MAAF, Fondation Falret, Département des Yvelines.`,
+    producedByUntil12: `Until version 1.2 CoMote was supported by: Éducation Nationale (Edu-up) and Agence Nationale de la Recherche (ELEMENT project).`,
     privacyPolicy: 'Privacy Policy',
     privacyPolicyLink: 'https://ismm-apps.ircam.fr/comote-privacy-policy',
   },

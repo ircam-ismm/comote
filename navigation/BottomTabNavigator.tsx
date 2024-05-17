@@ -24,6 +24,7 @@ import PlayScreen from '../screens/PlayScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import QRScreen from '../screens/QRScreen';
 import AboutScreen from '../screens/AboutScreen';
+import WebViewScreen from '../screens/WebViewScreen';
 // import DebugScreen from '../screens/DebugScreen';
 
 
@@ -92,6 +93,16 @@ export default function BottomTabNavigator() {
         }}
       />
 
+      {/* <BottomTab.Screen
+        name="WebView"
+        title="WebView"
+        component={WebViewNavigator}
+        options={{
+          tabBarLabel: i18n.t('nav.webview'),
+          tabBarIcon: ({ color }) => <AntDesign name="plussquareo" size={26} color={color} />,
+        }}
+      />
+ */}
       <BottomTab.Screen
         name="About"
         title="About CoMo(te)"
@@ -206,6 +217,29 @@ function QRNavigator() {
     </QRStack.Navigator>
   );
 }
+
+const WebViewStack = createNativeStackNavigator<PlayParamList>();
+
+function WebViewNavigator() {
+  const colorScheme = useColorScheme();
+
+  return (
+    <WebViewStack.Navigator>
+      <WebViewStack.Screen
+        name="WebViewScreen"
+        component={WebViewScreen}
+        options={{
+          headerTitle: i18n.t('webview.header'),
+          headerStyle: {
+            backgroundColor: Colors[colorScheme].background,
+          },
+          headerShadowVisible: true, // bottom border
+        }}
+      />
+    </WebViewStack.Navigator>
+  );
+}
+
 
 const AboutStack = createNativeStackNavigator<PlayParamList>();
 

@@ -3,7 +3,7 @@
     "name": "CoMote",
     "slug": "comote",
     "owner": "ircam-ismm",
-    "version": "1.8.14",
+    "version": "1.9.2",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "comote",
@@ -23,11 +23,12 @@
     "ios": {
       "bundleIdentifier": "fr.ircam.ismm.comote",
       "infoPlist": {
+        "CFBundleAllowMixedLocalizations": true,
         "ITSAppUsesNonExemptEncryption": "NO",
         "NSCameraUsageDescription": "Allow $(PRODUCT_NAME) to use the camera to scan QR codes",
-        "NSMotionUsageDescription": "Allow $(PRODUCT_NAME) to access your device's accelerometer",
         "NSLocalNetworkUsageDescription": "Allow $(PRODUCT_NAME) to access local network",
-        "CFBundleAllowMixedLocalizations": true
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to use your location",
+        "NSMotionUsageDescription": "Allow $(PRODUCT_NAME) to access your device's accelerometer",
       },
       "entitlements": {
         "com.apple.security.cs.allow-jit": true,
@@ -45,6 +46,8 @@
       "permissions": [
         "BODY_SENSORS",
         "CAMERA",
+        "FOREGROUND_SERVICE_LOCATION",
+        "FOREGROUND_SERVICE",
         "HIGH_SAMPLING_RATE_SENSORS",
         "WAKE_LOCK"
       ]

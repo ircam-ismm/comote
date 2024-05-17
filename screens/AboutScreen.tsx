@@ -16,7 +16,7 @@ import useColorScheme from '../hooks/useColorScheme';
 import { useAppSelector } from '../hooks';
 
 
-export default function HomeScreen({ color, navigation }) {
+export default function AboutScreen({ color, navigation }) {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme];
 
@@ -90,6 +90,10 @@ export default function HomeScreen({ color, navigation }) {
         <Text style={styles.paragraph}>
           {i18n.t('about.producedBy')}
         </Text>
+        <Text style={styles.paragraph}>
+          {i18n.t('about.producedByUntil12')}
+        </Text>
+
         <Text>
             {Application.applicationName} {Application.nativeApplicationVersion} ({Application.nativeBuildVersion})
         </Text>

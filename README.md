@@ -33,17 +33,17 @@ Therefore we need the build tools for android (Android Studio) and iOS (XCode)
 
 #### Android notes
 
-The build tools require the Java JDK 17, cf. :
-- <https://openjdk.org/projects/jdk/17/>
-- <https://stackoverflow.com/questions/24342886/how-to-install-java-8-on-mac>
-- <https://medium.com/@devkosal/switching-java-jdk-versions-on-macos-80bc868e686a>
+##### Android SDK
+
+Install Android studio. After installation, you can choose `More Actions` then `SDK Manager` to configure SDK tools and emulators.
+
+- In `SDK Platforms`tab, you may need to install extensions `*-ext` for you current platform.
+
+- In `SDK Tools`, install:
+  - Command-line tools
+  - You may need to instlal `NDK`, `CMake`
 
 
-Then select a version in you shell profile.
-```bash
-# android studio tools
-export JAVA_HOME="$(/usr/libexec/java_home -v 17)"
-```
 
 For local builds, The paths to the Android SDK must be registered in `eas.json` for each build channel, i.e.:
 
@@ -77,12 +77,32 @@ if [ -d "$ANDROID_HOME" ] ; then
 fi
 ```
 
+##### Java
+
+The build tools require the Java JDK 17, cf. :
+- <https://adoptium.net/fr/temurin/releases/>
+
+
+Then select a version in you shell profile.
+```bash
+# android studio tools
+export JAVA_HOME="$(/usr/libexec/java_home -v 17)"
+```
+
 #### Apple Notes
+
+##### Xcode
+
+Install Xcode, and open it. Install iOS platform.
+
+##### Dependencies
 
 ```sh
 brew install fastlane
 brew install cocoapods
 ```
+
+Note: if you install native modules, you must install cocoapods again. One way is to run again `npx expo prebuild`.
 
 ##### Certificates
 
@@ -104,15 +124,16 @@ See *[expo] fr.ircam.ismm.comote AdHoc 1674659444844 <https://developer.apple.co
 
 ### Local development and pre-build
 
-Install dependencies.
-
-```sh
-yarn install
-```
-
 Generate prebuild folders, named `ios` and `android`.
+
 ```sh
 npx expo prebuild
+```
+
+If it does not build, you will need to remove the created folders.
+
+```sh
+rm -rf ios android
 ```
 
 ### Android
@@ -136,7 +157,7 @@ You can also install via `adb`.
 - trust the computer
 - allow for file transfer from USB
 - allow developer mode on device
-- type `adb install build-latest.pak`
+- type `adb install build-latest.apk`
 
 ### iOS
 
@@ -147,7 +168,7 @@ eas build --local --profile development --platform ios
 
 Be sure to select the local devices allowed to install the app.
 
-If it does not build, use xCode.
+If it does not build, use xCode. In particular, check the signing capabilities.
 
 ```sh
 xed ios
@@ -255,27 +276,29 @@ e = {
   source: 'comote',
   id: 42,
   devicemotion: {
-    interval // ms
-    accelerationIncludingGravity = { x, y, z } // m/s2
-    rotationRate = { alpha, beta, gamma } // deg/s
+    interval, // ms
+    accelerationIncludingGravity = { x, y, z }, // m/s2
+    rotationRate = { alpha, beta, gamma }, // deg/s
   },
   magnetometer: {
-    interval // ms
-    magnetometer = {x, y, z} // uT
+    interval, // ms
+    magnetometer = {x, y, z}, // uT
+  },
+  heading: {
+    interval, // ms
+    accuracy, // degrees or -1 of not available
+    magnetometerHeading, // degrees
+    trueHeading, // degrees or -1 if not available
+  },
+  control: {
+    [key]: value,
+    // examples
+    buttonA: 1,
+    buttonA: 0,
+    buttonB: 1,
   }
 }
 
-e = {
-  source: 'comote',
-  id: 42,
-  buttonA: 0 | 1
-}
-
-e = {
-  source: 'comote',
-  id: 42,
-  buttonB: 0 | 1
-}
 ```
 
 ### OSC format
@@ -283,8 +306,9 @@ e = {
 ```
 /comote/${id}/devicemotion  [interval, x, y, z, alpha, beta, gamma]
 /comote/${id}/magnetometer  [interval, x, y, z]
-/comote/${id}/buttonA       [buttonA]
-/comote/${id}/buttonB       [buttonA]
+/comote/${id}/heading       [interval, accuracy, magnetometerHeading, trueHeading]
+/comote/${id}/control/buttonA       [buttonA]
+/comote/${id}/control/buttonB       [buttonA]
 ```
 
 ## TODO

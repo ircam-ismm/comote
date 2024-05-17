@@ -12,6 +12,8 @@ const highContrastColorDark = '#666666';
 
 const blue = '#0c7bdc';
 const yellow = '#ffc20a';
+const green = '#28a745';
+const red = '#dc3545';
 
 
 export default {
@@ -24,6 +26,8 @@ export default {
     highContrast: highContrastColorLight,
     blue,
     yellow,
+    green,
+    red,
     tabIconDefault: '#ccc',
     tabIconSelected: tintColorLight,
     tabIconBackground: '#f7f7f7',
@@ -38,8 +42,10 @@ export default {
     lowContrast: lowContrastColorDark,
     mediumContrast: mediumContrastColorDark,
     highContrast: highContrastColorDark,
-    blue: blue,
+    blue,
     yellow,
+    green,
+    red,
     tabIconDefault: '#ccc',
     tabIconSelected: tintColorDark,
     tabIconBackground: '#272727',

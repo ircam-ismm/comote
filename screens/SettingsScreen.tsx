@@ -7,6 +7,8 @@ import {
 } from 'react-native';
 import { batch } from 'react-redux';
 
+import * as Linking from 'expo-linking';
+
 import i18n from '../constants/i18n';
 
 import { useFocusEffect } from '@react-navigation/native';
@@ -42,24 +44,24 @@ export default function SettingsScreen({ color, navigation }) {
     container: {
       padding: 16,
     },
-  
+
     groupContainer: {
       alignItems: 'flex-start',
       marginBottom: 20,
     },
-  
+
     groupTitle: {
       marginBottom: 3,
       fontSize: Platform.OS === 'ios' ? 18 : 16,
     },
-  
+
     borderBottom: {
       borderBottomWidth: 1,
       borderBottomColor: '#989898',
       width: '100%', // we want the border to be full width
       marginVertical: 10,
     },
-  
+
     itemContainer: {
       flexDirection: 'row',
       flexWrap: "wrap",
@@ -67,15 +69,19 @@ export default function SettingsScreen({ color, navigation }) {
       justifyContent: 'flex-start',
       marginVertical: 8,
     },
-  
+
     item: {
       fontSize: Platform.OS === 'ios' ? 16 : 14,
     },
-  
+
     label: {
       width: 80,
     },
-  
+
+    labelLarge: {
+        width: 140,
+    },
+
     input: {
       flex: 1,
       fontSize: Platform.OS === 'ios' ? 16 : 14,
@@ -89,13 +95,13 @@ export default function SettingsScreen({ color, navigation }) {
       borderRadius: 4,
       backgroundColor: colors.inputBackground,
     },
-  
+
     smallInput: {
       flex: 0,
       width: 50,
       textAlign: 'center',
     },
-  
+
     mediumInput: {
       flex: 0,
       width: 80,
@@ -107,7 +113,7 @@ export default function SettingsScreen({ color, navigation }) {
       width: 110,
       textAlign: 'center',
     },
-  
+
     button: {
       alignItems: "center",
       padding: 16,
@@ -119,9 +125,30 @@ export default function SettingsScreen({ color, navigation }) {
     switch: {
 
     },
+
+    sensorAvailable: {
+        color: colors.green,
+    },
+
+    sensorNotAvailable: {
+        color: colors.red,
+    },
+
   });
-  
-  
+
+  // local value for display
+  const [sensorsMultipleAvailable, setSensorsMultipleAvailable] = React.useState({});
+  React.useEffect(() => {
+    // before async mount
+
+    (async () => {
+      const sensorsMultipleAvailable = await engine.sensors.sensorsAvailable();
+        setSensorsMultipleAvailable(sensorsMultipleAvailable);
+    })();
+
+  }, []);
+
+
   // temporary value for editing
   const [webSocketUrl, setWebSocketUrl]
     = React.useState(settings.webSocketUrl ? `${settings.webSocketUrl}` : '');
@@ -151,7 +178,7 @@ export default function SettingsScreen({ color, navigation }) {
     setOscUrl(`udp://${oscHostname}:${oscPort}`);
   }, [oscHostname, oscPort])
 
-    // temporary value for editing
+  // temporary value for editing
   const [deviceMotionInterval, setDeviceMotionInterval]
     = React.useState(`${settings.deviceMotionInterval}`);
 
@@ -169,7 +196,7 @@ export default function SettingsScreen({ color, navigation }) {
   }, [settings.id]);
 
   // local value for display
-  const [sensorsIntervalEstimate, setSensorsIntervalEstimate] = React.useState(0);
+  const [sensorsIntervalEstimate, setSensorsIntervalEstimate] = React.useState({});
   // declare callback in main render function
   const setSensorsIntervalEstimateFromEngine = React.useCallback( () => {
     setSensorsIntervalEstimate(engine.sensors.intervalEstimate)
@@ -191,7 +218,7 @@ export default function SettingsScreen({ color, navigation }) {
       const sensorsIntervalEstimateUpdateId = setInterval(() => {
         setSensorsIntervalEstimateFromEngine();
       }, 1000);
-  
+
       return () => {
         deactivateKeepAwake(keepAwakeTag);
         clearInterval(sensorsIntervalEstimateUpdateId);
@@ -212,6 +239,88 @@ export default function SettingsScreen({ color, navigation }) {
           >
             <Text style={{color: 'white'}}>{i18n.t('settings.scanQrCode')}</Text>
           </TouchableOpacity>
+        </View>
+
+        {/* SENSORS SECTION */}
+        <View style={styles.groupContainer}>
+          <View style={styles.borderBottom}>
+            <Text style={styles.groupTitle}>
+              {i18n.t('settings.sensors.header')}
+            </Text>
+          </View>
+          <View style={styles.separator}></View>
+
+          <View style={styles.itemContainer}>
+            <Text style={[styles.item, styles.labelLarge]}>
+              {i18n.t('settings.sensors.accelerometer')}
+            </Text>
+            <Text style={[
+                styles.item,
+                sensorsMultipleAvailable.accelerometerAvailable
+                  ? styles.sensorAvailable
+                  : styles.sensorNotAvailable
+                ]}>
+              {sensorsMultipleAvailable.accelerometerAvailable
+                ? i18n.t('settings.sensors.isAvailable')
+                : i18n.t('settings.sensors.isNotAvailable') }
+            </Text>
+          </View>
+
+          <View style={styles.itemContainer}>
+            <Text style={[styles.item, styles.labelLarge]}>
+              {i18n.t('settings.sensors.gyroscope')}
+            </Text>
+            <Text style={[
+                styles.item,
+                sensorsMultipleAvailable.gyroscopeAvailable
+                  ? styles.sensorAvailable
+                  : styles.sensorNotAvailable
+                ]}>
+              {sensorsMultipleAvailable.gyroscopeAvailable
+                ? i18n.t('settings.sensors.isAvailable')
+                : i18n.t('settings.sensors.isNotAvailable') }
+            </Text>
+          </View>
+
+          <View style={styles.itemContainer}>
+            <Text style={[styles.item, styles.labelLarge]}>
+              {i18n.t('settings.sensors.magnetometer')}
+            </Text>
+            <Text style={[
+                styles.item,
+                sensorsMultipleAvailable.magnetometerAvailable
+                  ? styles.sensorAvailable
+                  : styles.sensorNotAvailable
+                ]}>
+              {sensorsMultipleAvailable.magnetometerAvailable
+                ? i18n.t('settings.sensors.isAvailable')
+                : i18n.t('settings.sensors.isNotAvailable') }
+            </Text>
+          </View>
+
+          <View style={styles.itemContainer}>
+            <Text style={[styles.item, styles.labelLarge]}>
+              {i18n.t('settings.sensors.heading')}
+            </Text>
+            <Text style={[
+                styles.item,
+                sensorsMultipleAvailable.headingAvailable
+                  ? styles.sensorAvailable
+                  : styles.sensorNotAvailable
+                ]}>
+              {sensorsMultipleAvailable.headingAvailable
+                ? i18n.t('settings.sensors.isAvailable')
+                : i18n.t('settings.sensors.isNotAvailable') }
+            </Text>
+          </View>
+
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => Linking.openSettings()}
+          >
+            <Text style={{color: 'white'}}>{i18n.t('settings.sensors.openSettings')}</Text>
+          </TouchableOpacity>
+
         </View>
 
         {/* MISC SECTION */}
@@ -317,10 +426,10 @@ export default function SettingsScreen({ color, navigation }) {
                                   type: 'settings/set',
                                   payload: { webSocketEnabled: value },
                                 });
-              
+
                               });
-                            }} 
-            /> 
+                            }}
+            />
 
           </View>
 
@@ -379,10 +488,10 @@ export default function SettingsScreen({ color, navigation }) {
                                   type: 'settings/set',
                                   payload: { oscEnabled: value },
                                 });
-              
+
                               });
-                            }} 
-            /> 
+                            }}
+            />
 
           </View>
 

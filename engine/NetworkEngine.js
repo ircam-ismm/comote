@@ -376,8 +376,23 @@ export class NetworkEngine {
                         const devicemotionMessage = new OSC.Message(address, ...values);
 
                         /////// optional sensors
-                        let isBundle = true;
+                        let isBundle = false;
                         const messages = [devicemotionMessage];
+
+                        const heading = data.heading;
+                        if (heading) {
+                            isBundle = true;
+                            const address = `/${data.source}/${data.id}/heading`;
+                            const {interval, accuracy, magneticHeading, trueHeading } = heading;
+                            const values = [
+                                interval,
+                                accuracy,
+                                magneticHeading,
+                                trueHeading,
+                            ];
+                            const headingMessage = new OSC.Message(address, ...values);
+                            messages.push(headingMessage);
+                        }
 
                         const magnetometer = data.magnetometer;
                         if (magnetometer) {
