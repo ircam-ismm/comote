@@ -93,7 +93,7 @@ export default function BottomTabNavigator() {
         }}
       />
 
-      <BottomTab.Screen
+      {/* <BottomTab.Screen
         name="WebView"
         title="WebView"
         component={WebViewNavigator}
@@ -102,7 +102,7 @@ export default function BottomTabNavigator() {
           tabBarIcon: ({ color }) => <AntDesign name="plussquareo" size={26} color={color} />,
         }}
       />
-
+ */}
       <BottomTab.Screen
         name="About"
         title="About CoMo(te)"
