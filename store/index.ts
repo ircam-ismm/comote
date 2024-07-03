@@ -23,7 +23,6 @@ import stateReconciler from 'reduxjs-toolkit-persist/lib/stateReconciler/autoMer
 import settingsReducer from '../features/settings/settingsSlice';
 import sensorsReducer from '../features/sensors/sensorsSlice';
 import networkReducer from '../features/network/networkSlice';
-import { CombinedSliceReducer } from '@reduxjs/toolkit/dist/combineSlices';
 
 // console.log('[debug] clear storage');
 // storage.clear();

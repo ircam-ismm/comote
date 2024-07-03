@@ -128,17 +128,9 @@ export default function NetworkComponent() {
   // @note: these are triggered on startup
   React.useEffect(() => {
     // console.log('button A');
-    const { buttonA } = sensors;
-    engine.send({ buttonA });
-  }, [sensors.buttonA]);
-
-  // @TODO: group data and limit in time
-  // @note: these are triggered on startup
-  React.useEffect(() => {
-    // console.log('button B');
-    const { buttonB } = sensors;
-    engine.send({ buttonB });
-  }, [sensors.buttonB]);
+    const { control } = sensors;
+    engine.send({ control });
+  }, [sensors.control]);
 
   // send sensors data on new set of data, according to id
   React.useEffect(() => {

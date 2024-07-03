@@ -26,6 +26,7 @@ const initialState = {
     webSocketUrl: null,
     oscEnabled: false,
     oscUrl: null,
+    webviewContent: null,
   },
   status: 'idle',
 } as SettingsState;
@@ -42,8 +43,8 @@ const settingsSlice = createSlice({
   name: 'settings',
   initialState,
   reducers: {
-
     set: (state, action: PayloadAction<any>) => {
+      console.log(action.payload);
       Object.assign(state.data, action.payload);
 
       // replace empty value, undefined, NaN, or 0, with default value
@@ -77,8 +78,11 @@ const settingsSlice = createSlice({
           state.data.oscUrl = splitted.join('://');
         }
       }
-    },
 
+      if (state.data.webviewContent && state.data.webviewContent.trim() === '') {
+        state.data.webviewContent = null;
+      }
+    },
   },
 
   // The `extraReducers` field lets the slice handle actions defined elsewhere,

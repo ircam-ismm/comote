@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { batch } from 'react-redux';
-
 import * as Linking from 'expo-linking';
 
 import i18n from '../constants/i18n';
@@ -31,6 +30,7 @@ import urlParse from 'url-parse';
 import { engine } from '../engine';
 
 import stringIsNumeric from '../helpers/stringIsNumeric.js';
+import isURL from '../helpers/isURL';
 
 export default function SettingsScreen({ color, navigation }) {
   const settings = useAppSelector((state) => selectSettings(state));
@@ -188,6 +188,24 @@ export default function SettingsScreen({ color, navigation }) {
   }, [settings.deviceMotionInterval]);
 
   // temporary value for editing
+  const [webviewContent, setWebviewContent] = React.useState(`${settings.webviewContent}`);
+
+  // update local value for coercion by store (...not really sure what this does)
+  React.useEffect(() => {
+    let sanitized;
+
+    if (isURL(settings.webviewContent)) {
+      sanitized = settings.webviewContent;
+    } else if (settings.webviewContent === '') {
+      sanitized = '';
+    } else {
+      sanitized = '[HTML]';
+    }
+
+    setWebviewContent(sanitized);
+  }, [settings.webviewContent]);
+
+  // temporary value for editing
   const [id, setId] = React.useState(`${settings.id}`);
 
   // update local value for coercion by store (...not really sure what this does)
@@ -198,7 +216,7 @@ export default function SettingsScreen({ color, navigation }) {
   // local value for display
   const [sensorsIntervalEstimate, setSensorsIntervalEstimate] = React.useState({});
   // declare callback in main render function
-  const setSensorsIntervalEstimateFromEngine = React.useCallback( () => {
+  const setSensorsIntervalEstimateFromEngine = React.useCallback(() => {
     setSensorsIntervalEstimate(engine.sensors.intervalEstimate)
   }, []);
 
@@ -342,6 +360,7 @@ export default function SettingsScreen({ color, navigation }) {
               returnKeyType='done'
               selectTextOnFocus={false}
               placeholder='Enter Id here'
+              placeholderTextColor="#676767"
               value={id}
               onChange={e => {
                 setId(e.nativeEvent.text);
@@ -370,6 +389,7 @@ export default function SettingsScreen({ color, navigation }) {
               returnKeyType='done'
               selectTextOnFocus={true}
               placeholder='Enter period (in ms) here'
+              placeholderTextColor="#676767"
               value={deviceMotionInterval}
               onChange={e => {
                 setDeviceMotionInterval(e.nativeEvent.text);
@@ -450,6 +470,7 @@ export default function SettingsScreen({ color, navigation }) {
               returnKeyType='done'
               selectTextOnFocus={false}
               placeholder={i18n.t('settings.websocket.urlPlaceholder')}
+              placeholderTextColor="#676767"
               value={webSocketUrl}
               onChange={(e) => {
                 setWebSocketUrl(e.nativeEvent.text);
@@ -512,6 +533,7 @@ export default function SettingsScreen({ color, navigation }) {
               returnKeyType='done'
               selectTextOnFocus={false}
               placeholder={i18n.t('settings.osc.hostnamePlaceholder')}
+              placeholderTextColor="#676767"
               value={oscHostname}
               onChange={(e) => {
                 setOscHostname(e.nativeEvent.text);
@@ -537,6 +559,7 @@ export default function SettingsScreen({ color, navigation }) {
               returnKeyType='done'
               selectTextOnFocus={false}
               placeholder={i18n.t('settings.osc.portPlaceholder')}
+              placeholderTextColor="#676767"
               value={oscPort}
               onChange={(e) => {
                 setOscPort(e.nativeEvent.text);
@@ -558,16 +581,41 @@ export default function SettingsScreen({ color, navigation }) {
               }}
             />
           </View>
+        </View>
 
-          {/* <View style={styles.itemContainer}>
+        {/* WEBVIEW SECTION */}
+        <View style={styles.groupContainer}>
+          <View style={styles.borderBottom}>
+            <Text style={styles.groupTitle}>
+              {i18n.t('settings.webview.header')}
+            </Text>
+          </View>
+
+          <View style={styles.itemContainer}>
             <Text style={[styles.item, styles.label]}>
-              {i18n.t('settings.osc.url')}
+              {i18n.t('settings.webview.url')}
             </Text>
-            <Text style={styles.item}
-            >{settings.oscUrl}
-            </Text>
-          </View> */}
-
+            <TextInput
+              style={styles.input}
+              keyboardType='default'
+              returnKeyType='done'
+              selectTextOnFocus={false}
+              placeholder={i18n.t('settings.webview.urlPlaceholder')}
+              placeholderTextColor="#676767"
+              value={webviewContent}
+              onChange={(e) => {
+                setWebviewContent(e.nativeEvent.text);
+              }}
+              onBlur={(e) => {
+                batch(() => {
+                  dispatch({
+                    type: 'settings/set',
+                    payload: { webviewContent },
+                  });
+                });
+              }}
+            />
+          </View>
         </View>
 
       </View>

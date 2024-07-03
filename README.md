@@ -292,10 +292,7 @@ e = {
   },
   control: {
     [key]: value,
-    // examples
-    buttonA: 1,
-    buttonA: 0,
-    buttonB: 1,
+    // e.g. `buttonA: 1,`
   }
 }
 
@@ -307,26 +304,28 @@ e = {
 /comote/${id}/devicemotion  [interval, x, y, z, alpha, beta, gamma]
 /comote/${id}/magnetometer  [interval, x, y, z]
 /comote/${id}/heading       [interval, accuracy, magnetometerHeading, trueHeading]
-/comote/${id}/control/buttonA       [buttonA]
-/comote/${id}/control/buttonB       [buttonA]
+/comote/${id}/control/[key]       [value]
 ```
 
 ## TODO
 
 ### Target v2-beta - WebView
 
-- [ ] Unify message format for buttons
-    + [ ] osc `comote/${id}/control/${key} value` 
-    + [ ] ws  `control: { [key]: value }` 
-- [ ] Add QRcode `webviewContent` key
-    + [ ] `url` if starts with `http`
-    + [ ] else `html` 
-    + [ ] fallback in case of 404 error
-    + [ ] define what to do in case of invalid input
-    + [ ] timer for retry (use react ref counter to force component update)
-- [ ] Store `webviewContent`
-- [ ] add Setting field to configure `webviewContent`
-    + [ ] define what to do if html content
+- [x] Unify message format for buttons
+    + [x] osc `comote/${id}/control/${key} value` 
+    + [x] ws  `control: { [key]: value }` 
+- [x] Add QRcode `webview` key
+    + [x] `url` if starts with `http`
+    + [x] else `html`
+- [x] add Setting field to configure `webview`
+    + [x] `[HTML]` content if not URL
+- [x] Store `webviewContent` (tbc)
+- [x] WebView
+    + [-] fallback in case of 404 error
+    + [-] define what to do in case of invalid input
+    -> let's just rely on default browser behavior
+    + [x] timer for retry on load error
+- [x] properly redirect `QRcode` to `Play` or `WebView`
 
 ### Target v2
 

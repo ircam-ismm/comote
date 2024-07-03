@@ -5,6 +5,7 @@ import { useAppDispatch } from '../hooks';
 
 export default function ButtonsView({ styles }) {
     const dispatch = useAppDispatch();
+
     return (
         <View style={styles.buttonsContainer}>
             <Pressable
@@ -14,22 +15,22 @@ export default function ButtonsView({ styles }) {
                     pressed ? { opacity: 0.5 } : {},
                 ]}
                 onPressIn={() => {
-                    // console.log('button A: 1');
-
                     dispatch({
                         type: 'sensors/set',
                         payload: {
-                            buttonA: 1,
+                            control: {
+                                buttonA: 1,
+                            },
                         },
                     })
                 }}
                 onPressOut={() => {
-                    // console.log('button A: 0');
-
                     dispatch({
                         type: 'sensors/set',
                         payload: {
-                            buttonA: 0,
+                            control: {
+                                buttonA: 0,
+                            },
                         },
                     })
                 }}
@@ -46,22 +47,22 @@ export default function ButtonsView({ styles }) {
                     pressed ? { opacity: 0.5 } : {},
                 ]}
                 onPressIn={() => {
-                    // console.log('button B: 1');
-
                     dispatch({
                         type: 'sensors/set',
                         payload: {
-                            buttonB: 1,
+                            control: {
+                                buttonB: 1,
+                            },
                         },
                     })
                 }}
                 onPressOut={() => {
-                    // console.log('button B: 0');
-
                     dispatch({
                         type: 'sensors/set',
                         payload: {
-                            buttonB: 0,
+                            control: {
+                                buttonB: 0,
+                            },
                         },
                     })
                 }}
