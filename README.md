@@ -327,6 +327,8 @@ e = {
     + [x] timer for retry on load error
 - [x] properly redirect `QRcode` to `Play` or `WebView`
 
+- [ ] fix: webview should try reload only when screen is focused
+
 ### Target v2
 
 - [ ] check https://www.npmjs.com/package/@react-native-community/netinfo

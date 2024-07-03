@@ -1,4 +1,5 @@
-import * as React from 'react';
+import { useState, useRef } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { StyleSheet } from 'react-native';
 import { WebView } from 'react-native-webview';
 
@@ -35,11 +36,22 @@ const onLoad = `
 `;
 
 export default function WebViewScreen({ color }) {
+  // const [timeoutId, setTimeoutId] = useState(null);
   const settings = useAppSelector((state) => selectSettings(state));
   const dispatch = useAppDispatch();
 
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme];
+
+  // // HAAAAAAA !!!!!!!!!!!!!
+  // useFocusEffect(() => {
+  //   console.log('enter screen')
+  //   // unmount
+  //   return () => {
+  //     console.log('exit screen', timeoutId);
+  //     clearTimeout(timeoutId);
+  //   }
+  // })
 
   const styles = StyleSheet.create({
     container: {
@@ -59,13 +71,11 @@ export default function WebViewScreen({ color }) {
   });
 
   // force reload if http error
-  const webViewRef = React.useRef();
+  const webViewRef = useRef();
 
   const content = settings.webviewContent === null || settings.webviewContent === ''
     ? `<p style="font-size: 40px; margin-top: 150px; text-align: center; color: ${colors.text}">No webview content defined</p>`
     : settings.webviewContent;
-
-  console.log(content);
 
   const source = isURL(content) ? { uri: content } : { html: content };
 
@@ -86,7 +96,7 @@ export default function WebViewScreen({ color }) {
         ref={(ref) => webViewRef.current = ref}
         onError={(syntheticEvent) => {
           const { nativeEvent } = syntheticEvent;
-          console.log('Error loading webview, retry on 2 seconds', nativeEvent);
+          console.log('Error loading webview, retry in 2 seconds', nativeEvent);
           setTimeout(() => webViewRef.current.reload(), 2000);
         }}
       />
