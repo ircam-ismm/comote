@@ -1,9 +1,10 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Pressable, Modal } from 'react-native';
 import { WebView } from 'react-native-webview';
+import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 
-import { View } from '../components/Themed';
+import { View, Text } from '../components/Themed';
 import ConnectionStatusComponent from '../components/ConnectionStatusComponent';
 import { useAppSelector, useAppDispatch } from '../hooks';
 
@@ -13,7 +14,8 @@ import useColorScheme from '../hooks/useColorScheme';
 import { selectSettings } from '../features/settings/settingsSlice';
 import isURL from '../helpers/isURL';
 
-const onLoad = `
+// this is extended later with variable to pass some state to the webview
+const injectJavascript = `
   ['touchstart', 'touchend'].forEach(input => {
     document.body.addEventListener(input, (e) => {
       const target = e.target;
@@ -23,35 +25,28 @@ const onLoad = `
           const key = target.getAttribute('comote-key');
           const value = target.getAttribute(\`comote-\${input}\`);
 
-          window.ReactNativeWebView.postMessage(JSON.stringify({ [key]: value }));
+          window.sendEvent(key, value);
         }
       }
     });
   });
 
   window.sendEvent = (key, value) => {
-    console.log(key, value);
-    window.ReactNativeWebView.postMessage(JSON.stringify({ [key]: value }));
+    window.ReactNativeWebView.postMessage(JSON.stringify({ cmd: 'control', data: { [key]: value } }));
+  };
+
+  window.toggleModal = () => {
+    window.ReactNativeWebView.postMessage(JSON.stringify({ cmd: 'toggleModal' }));
+  };
+
+  window.log = (...value) => {
+    window.ReactNativeWebView.postMessage(JSON.stringify({ cmd: 'log', data: value }));
   };
 `;
 
 export default function WebViewScreen({ color }) {
-  // const [timeoutId, setTimeoutId] = useState(null);
-  const settings = useAppSelector((state) => selectSettings(state));
-  const dispatch = useAppDispatch();
-
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme];
-
-  // // HAAAAAAA !!!!!!!!!!!!!
-  // useFocusEffect(() => {
-  //   console.log('enter screen')
-  //   // unmount
-  //   return () => {
-  //     console.log('exit screen', timeoutId);
-  //     clearTimeout(timeoutId);
-  //   }
-  // })
 
   const styles = StyleSheet.create({
     container: {
@@ -60,15 +55,52 @@ export default function WebViewScreen({ color }) {
       justifyContent: 'space-around',
       backgroundColor: colors.background,
       color: colors.text,
+      paddingTop: 50,
+    },
+    header: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+    },
+    button: {
+      width: 50,
+      backgroundColor: '#454545',
+    },
+    buttonText: {
+      fontSize: 24,
+      textAlign: 'center',
     },
     webview: {
       flex: 1,
       minWidth: '100%',
-      border: '1px solid green',
       backgroundColor: colors.background,
       color: colors.text,
     },
+    modal: {
+      height: '100%',
+      flex: 1,
+      justifyContent: 'flex-end',
+      flexDirection: 'column',
+      alignContent: 'space-around',
+      backgroundColor: colors.lowContrast,
+    },
   });
+
+  const dispatch = useAppDispatch();
+  const settings = useAppSelector((state) => selectSettings(state));
+  const [modalVisible, setModalVisible] = useState(false);
+
+  // prevent sleep when tab is focused
+  useFocusEffect(
+    useCallback(() => {
+      // prevent sleep when tab is focused
+      const keepAwakeTag = 'comote:play';
+      activateKeepAwakeAsync(keepAwakeTag);
+
+      return () => {
+        deactivateKeepAwake(keepAwakeTag);
+      };
+    }, [])
+  );
 
   // force reload if http error
   const webViewRef = useRef();
@@ -79,27 +111,83 @@ export default function WebViewScreen({ color }) {
 
   const source = isURL(content) ? { uri: content } : { html: content };
 
+  const onWebViewMessage = event => {
+    event = JSON.parse(event.nativeEvent.data);
+
+    switch(event.cmd) {
+      case 'control': {
+        dispatch({
+            type: 'sensors/set',
+            payload: { control: event.data },
+        });
+        break;
+      }
+      case 'toggleModal': {
+        setModalVisible(!modalVisible);
+        break;
+      }
+
+      // debug
+      case 'log': {
+        console.log(...event.data);
+        break;
+      }
+    }
+  };
+
+  const onWebViewError = syntheticEvent => {
+    const { nativeEvent } = syntheticEvent;
+    console.log('Error loading webview, retry in 2 seconds', nativeEvent);
+    setTimeout(() => webViewRef.current.reload(), 2000);
+  };
+
   return (
     <View style={styles.container}>
-      <ConnectionStatusComponent color={color} />
-      <WebView style={styles.webview}
-        originWhitelist={['*']}
-        source={source}
-        onMessage={(event) => {
-          const control = JSON.parse(event.nativeEvent.data);
-          dispatch({
-            type: 'sensors/set',
-            payload: { control },
-          });
-        }}
-        injectedJavaScript={onLoad}
-        ref={(ref) => webViewRef.current = ref}
-        onError={(syntheticEvent) => {
-          const { nativeEvent } = syntheticEvent;
-          console.log('Error loading webview, retry in 2 seconds', nativeEvent);
-          setTimeout(() => webViewRef.current.reload(), 2000);
-        }}
-      />
+
+      <Modal
+        animationType="none"
+        transparent={true}
+        visible={modalVisible}
+      >
+        <View style={styles.modal}>
+          <WebView style={styles.webview}
+            originWhitelist={['*']}
+            source={source}
+            onMessage={onWebViewMessage}
+            injectedJavaScript={injectJavascript}
+            ref={(ref) => webViewRef.current = ref}
+            onError={onWebViewError}
+          />
+        </View>
+      </Modal>
+
+      <View style={styles.header}>
+        <ConnectionStatusComponent color={color} compact={true} />
+        <Pressable
+          style={({ pressed }) => [
+            styles.button,
+            pressed ? { opacity: 0.5 } : {},
+          ]}
+          onPressOut={() => {
+            webViewRef.current.reload();
+          }}
+        >
+          <Text style={styles.buttonText} selectable={false}>⟳</Text>
+        </Pressable>
+      </View>
+
+      {!modalVisible ?
+        <WebView style={styles.webview}
+          originWhitelist={['*']}
+          source={source}
+          onMessage={onWebViewMessage}
+          injectedJavaScript={injectJavascript}
+          ref={(ref) => webViewRef.current = ref}
+          onError={onWebViewError}
+        />
+        : <View style={styles.webview}></View>
+      }
+
     </View>
   );
 }

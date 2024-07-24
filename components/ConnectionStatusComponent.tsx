@@ -16,7 +16,7 @@ import { useAppSelector, useAppDispatch } from '../hooks';
 import { selectNetwork } from '../features/network/networkSlice';
 import { selectSettings } from '../features/settings/settingsSlice';
 
-export default function ConnectionStatusComponent({ color, invisible }) {
+export default function ConnectionStatusComponent({ color, compact, invisible }) {
   const network = useAppSelector((state) => selectNetwork(state));
   const settings = useAppSelector((state) => selectSettings(state));
   const dispatch = useAppDispatch();
@@ -44,56 +44,87 @@ export default function ConnectionStatusComponent({ color, invisible }) {
       width: 90,
       fontWeight: 'bold',
     },
+
+    containerCompact: {
+      flexDirection: 'row',
+      flexWrap: "wrap",
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingLeft: 10,
+      paddingRight: 10,
+      height: 36,
+      width: 350,
+      verticalAlign: 'middle',
+    },
+
+    labelCompact: {
+      fontWeight: 'bold',
+    },
   });
-  
-  return (
-    <View style={styles.container}>
-      <View style={styles.subgroup}>
-        <Text style={styles.label}>WebSocket</Text>
 
-        <ColouredSwitch
-          styles={styles}
-          colors={colors}
-          value={settings.webSocketEnabled}
-          onValueChange={(value) => {
-            batch(() => {
-              dispatch({
-                type: 'settings/set',
-                payload: { webSocketEnabled: value },
-              });
-
-            });
-          }}
-        />
+  if (compact) {
+    return (
+      <View style={styles.containerCompact}>
+        <Text style={styles.labelCompact}>WebSocket</Text>
         <WebSocketConnectionStatus
-          style={{ marginLeft: 'auto' }}
           status={network.webSocketReadyState}
         />
-      </View>
-      <View style={styles.subgroup}>
-        <Text style={styles.label}>OSC</Text>
-
-        <ColouredSwitch
-          styles={styles}
-          colors={colors}
-          value={settings.oscEnabled}
-          onValueChange={(value) => {
-            batch(() => {
-              dispatch({
-                type: 'settings/set',
-                payload: { oscEnabled: value },
-              });
-
-            });
-          }}
-        />
-
+        <Text style={styles.labelCompact}>OSC</Text>
         <OscConnectionStatus
-          style={{ marginLeft: 'auto' }}
           status={network.oscReadyState}
         />
       </View>
-    </View>
-  );
+    )
+  } else {
+    return (
+      <View style={styles.container}>
+        <View style={styles.subgroup}>
+          <Text style={styles.label}>WebSocket</Text>
+
+          <ColouredSwitch
+            styles={styles}
+            colors={colors}
+            value={settings.webSocketEnabled}
+            onValueChange={(value) => {
+              batch(() => {
+                dispatch({
+                  type: 'settings/set',
+                  payload: { webSocketEnabled: value },
+                });
+
+              });
+            }}
+          />
+          <WebSocketConnectionStatus
+            style={{ marginLeft: 'auto' }}
+            status={network.webSocketReadyState}
+          />
+        </View>
+        <View style={styles.subgroup}>
+          <Text style={styles.label}>OSC</Text>
+
+          <ColouredSwitch
+            styles={styles}
+            colors={colors}
+            value={settings.oscEnabled}
+            onValueChange={(value) => {
+              batch(() => {
+                dispatch({
+                  type: 'settings/set',
+                  payload: { oscEnabled: value },
+                });
+
+              });
+            }}
+          />
+
+          <OscConnectionStatus
+            style={{ marginLeft: 'auto' }}
+            status={network.oscReadyState}
+          />
+        </View>
+      </View>
+    );
+  }
 }
 
