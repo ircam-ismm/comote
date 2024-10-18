@@ -331,6 +331,7 @@ e = {
 
 ### Target v2
 
+- [ ] barcode-scanner is deprecated. Cf. <https://github.com/expo/fyi/blob/main/barcode-scanner-to-expo-camera.md>
 - [ ] check https://www.npmjs.com/package/@react-native-community/netinfo
 - [ ] multitouch support for buttons
 - [ ] add 2D touch support (what does it mean?)
