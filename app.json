@@ -3,7 +3,7 @@
     "name": "CoMote",
     "slug": "comote",
     "owner": "ircam-ismm",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "comote",
@@ -50,7 +50,10 @@
         "FOREGROUND_SERVICE",
         "HIGH_SAMPLING_RATE_SENSORS",
         "WAKE_LOCK"
-      ]
+      ],
+      "blockedPermissions": [
+        "ACTIVITY_RECOGNITION"
+        ]
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
