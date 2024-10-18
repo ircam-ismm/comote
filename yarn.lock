@@ -1552,19 +1552,6 @@
   dependencies:
     "@hapi/hoek" "^9.0.0"
 
-"@ircam/sc-gettime@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@ircam/sc-gettime/-/sc-gettime-1.0.1.tgz#a54448bd3c87db3dd4325a9797d436967a4a01ad"
-  integrity sha512-wCW5OVWjtoezKRu3FSl/97LA6VYdatjZfO3azITNYOKIRwDwRtBtZP6PbNNdOY9Qe0/N+tOYxTvmXmRePPjMUw==
-
-"@ircam/sc-utils@^1.4.0":
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/@ircam/sc-utils/-/sc-utils-1.4.0.tgz#b0d58555148e903fc2a0356916aea84c770c8567"
-  integrity sha512-Wzlz5QqBTAb4uG9/a9TBXQu2g0TzO0EYF/qaTfh7Ml99x4ewWwjpCzQwLOEBGFHxAximJjnO7R4/IFaVls/Kcw==
-  dependencies:
-    "@ircam/sc-gettime" "^1.0.1"
-    is-plain-obj "^4.1.0"
-
 "@isaacs/cliui@^8.0.2":
   version "8.0.2"
   resolved "https://registry.yarnpkg.com/@isaacs/cliui/-/cliui-8.0.2.tgz#b37667b7bc181c168782259bab42474fbf52b550"
@@ -4767,11 +4754,6 @@ is-plain-obj@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/is-plain-obj/-/is-plain-obj-2.1.0.tgz#45e42e37fccf1f40da8e5f76ee21515840c09287"
   integrity sha512-YWnfyRwxL/+SsrWYfOpUtz5b3YD+nyfkHvjbcanzk8zgyO4ASD67uVMRt8k5bM4lLMDnXfriRhOpemw+NfT1eA==
-
-is-plain-obj@^4.1.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/is-plain-obj/-/is-plain-obj-4.1.0.tgz#d65025edec3657ce032fd7db63c97883eaed71f0"
-  integrity sha512-+Pgi+vMuUNkJyExiMBt5IlFoMyKnr5zhJ4Uspz58WOhBF5QoIZkFyNHIbBAtHwzVAgk5RtndVNsDRN61/mmDqg==
 
 is-plain-object@^2.0.4:
   version "2.0.4"
