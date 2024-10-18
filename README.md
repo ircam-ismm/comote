@@ -18,7 +18,7 @@ yarn install
 ```
 
 Tested with:
-- node 16
+- node 20
 - java 17
 - npx expo (locally installed in project, not global, also called "versioned expo")
 
