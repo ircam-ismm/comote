@@ -3,7 +3,7 @@
     "name": "CoMote",
     "slug": "comote",
     "owner": "ircam-ismm",
-    "version": "2.1.0",
+    "version": "2.1.2",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "comote",
@@ -27,7 +27,7 @@
         "ITSAppUsesNonExemptEncryption": "NO",
         "NSCameraUsageDescription": "Allow $(PRODUCT_NAME) to use the camera to scan QR codes",
         "NSLocalNetworkUsageDescription": "Allow $(PRODUCT_NAME) to access local network",
-        "NSLocationAlwaysAndWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to use your location",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to use your location for heading",
         "NSMotionUsageDescription": "Allow $(PRODUCT_NAME) to access your device's accelerometer",
       },
       "entitlements": {
@@ -52,8 +52,9 @@
         "WAKE_LOCK"
       ],
       "blockedPermissions": [
-        "ACTIVITY_RECOGNITION"
-        ]
+        "android.permission.ACTIVITY_RECOGNITION",
+        "com.google.android.gms.permission.ACTIVITY_RECOGNITION"
+      ]
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
