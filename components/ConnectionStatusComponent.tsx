@@ -27,7 +27,6 @@ export default function ConnectionStatusComponent({ color, compact, invisible })
   const styles = StyleSheet.create({
     container: {
       justifyContent: 'space-evenly',
-      height: 100,
       borderRadius: 2,
     },
 
@@ -36,8 +35,6 @@ export default function ConnectionStatusComponent({ color, compact, invisible })
       flexWrap: "wrap",
       alignItems: 'center',
       justifyContent: 'flex-start',
-      marginHorizontal: 12,
-      backgroundColor: 'rgba(255, 255, 255, 0)',
     },
 
     label: {
@@ -49,11 +46,8 @@ export default function ConnectionStatusComponent({ color, compact, invisible })
       flexDirection: 'row',
       flexWrap: "wrap",
       alignItems: 'center',
-      justifyContent: 'space-between',
-      paddingLeft: 10,
-      paddingRight: 10,
-      height: 36,
-      width: 350,
+      justifyContent: 'space-evenly',
+      flex: 370,
       verticalAlign: 'middle',
     },
 

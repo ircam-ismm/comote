@@ -62,11 +62,12 @@ export default function WebViewScreen({ color }) {
       justifyContent: 'space-between',
     },
     button: {
-      width: 50,
-      backgroundColor: '#454545',
+      flex: 50,
+      backgroundColor: colors.highContrast,
     },
     buttonText: {
       fontSize: 24,
+      lineHeight: 24,
       textAlign: 'center',
     },
     webview: {
