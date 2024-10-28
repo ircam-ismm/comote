@@ -58,6 +58,11 @@ export default {
       url: 'URL',
       urlPlaceholder: 'udp://osc.server.ip:port',
     },
+    webview: {
+      header: 'WebView',
+      url: 'URL',
+      urlPlaceholder: 'http://192.168.1.100/webview',
+    },
   },
   qrcode: {
     header: 'Scansiona QR Code',

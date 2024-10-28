@@ -5,7 +5,11 @@ import { StyleSheet, Button } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 
+// import { useAppSelector } from '../hooks';
+// import { selectSettings } from '../features/settings/settingsSlice';
+
 import i18n from '../constants/i18n';
+import store from '../store';
 
 import { Text, View  } from '../components/Themed';
 import { RootTabScreenProps } from '../types';
@@ -63,7 +67,6 @@ const styles = StyleSheet.create({
 
 export default function QRScreen({ navigation }: RootTabScreenProps<'QR'>) {
   const [hasPermission, setHasPermission] = useState<Boolean|null>(null);
-
   const isFocused = useIsFocused();
 
   useEffect(() => {
@@ -74,47 +77,53 @@ export default function QRScreen({ navigation }: RootTabScreenProps<'QR'>) {
       } catch (error) {
         console.log('Error requesting permission for camera', error);
         setHasPermission(false);
-        }
+      }
     })();
   }, []);
 
   const handleBarCodeScanned = ({ type, data }: {type: any, data: string}): void => {
-    console.log('scanned',
-                'type = ', type,
-                'data = ', data,
-               );
-    urlHandler({url: data});
-    navigation.navigate('Play');
+    console.log('scanned', 'type =', type, 'data =', data);
+    // this is not synchronous
+    urlHandler({ url: data });
+    // access store directly, for some reason using `settings` from `useAppSelector`
+    // does not reflect the changes
+    const state = store.getState();
+
+    if (state.settings.data.webviewContent === null) {
+      navigation.navigate('Play');
+    } else {
+      navigation.navigate('WebView');
+    }
   };
 
   if (hasPermission === null) {
     return (
-    <View style={styles.container}>
-      <View style={styles.info}>
-        <Text style={styles.text}>
-          {i18n.t('qrcode.requestingPermission')}
-        </Text>
+      <View style={styles.container}>
+        <View style={styles.info}>
+          <Text style={styles.text}>
+            {i18n.t('qrcode.requestingPermission')}
+          </Text>
+        </View>
       </View>
-    </View>
     );
   }
 
   if (hasPermission === false) {
     return (
-    <View style={styles.container}>
-      <View style={styles.info}>
-        <Text style={styles.text}>
-          {i18n.t('qrcode.noPermission')}
-        </Text>
-        <Button
-          style={styles.button}
-          title={i18n.t('qrcode.openSettings')}
-          onPress={() => {
-            Linking.openSettings();
-          }}
-        />
+      <View style={styles.container}>
+        <View style={styles.info}>
+          <Text style={styles.text}>
+            {i18n.t('qrcode.noPermission')}
+          </Text>
+          <Button
+            style={styles.button}
+            title={i18n.t('qrcode.openSettings')}
+            onPress={() => {
+              Linking.openSettings();
+            }}
+          />
+        </View>
       </View>
-    </View>
     );
   }
 

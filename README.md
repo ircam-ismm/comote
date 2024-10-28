@@ -18,7 +18,7 @@ yarn install
 ```
 
 Tested with:
-- node 16
+- node 20
 - java 17
 - npx expo (locally installed in project, not global, also called "versioned expo")
 
@@ -292,10 +292,7 @@ e = {
   },
   control: {
     [key]: value,
-    // examples
-    buttonA: 1,
-    buttonA: 0,
-    buttonB: 1,
+    // e.g. `buttonA: 1,`
   }
 }
 
@@ -307,41 +304,12 @@ e = {
 /comote/${id}/devicemotion  [interval, x, y, z, alpha, beta, gamma]
 /comote/${id}/magnetometer  [interval, x, y, z]
 /comote/${id}/heading       [interval, accuracy, magnetometerHeading, trueHeading]
-/comote/${id}/control/buttonA       [buttonA]
-/comote/${id}/control/buttonB       [buttonA]
+/comote/${id}/control/[key]       [value]
 ```
 
 ## TODO
 
-### Target v2
-
-- [ ] check https://www.npmjs.com/package/@react-native-community/netinfo
-- [ ] multitouch support for buttons
-- [ ] add 2D touch support (what does it mean?)
-- [ ] add x/y pad (switch on play screen)?
-- [ ] connect WiFi in QRCode?
-- [ ] other sensors
-- [x] follow Sensor API spec
-- [ ] binary webSocket
-- [ ] check sensors against MotionSender (iOS)
-
-### Target v1.5
-
-- [ ] Wait for next Expo version (50?) for background worker for engine (already in react-native v0.72)
-    Cf. <https://reactnative.dev/docs/next/the-new-architecture/use-app-template>
-    > If you're using Expo, you can't enable the New Architecture at the moment and will have to wait for a future release of the Expo SDK.
-
-### Target v1.4 - September 2023
-
-- [x] no more background image
-- [x] OSC port and host
-- [x] display sensors period in settings screen
-- [x] float input for sensors rate
-- [x] lock screen with playable buttons
-- [ ] update Android version, as required by Google Play Store
-- [ ] update Expo version
-
-BUGS
+### BUGS
 
 - [ ] bad sample rate on first run of application (100 ms instead of 10 ms as displayed)
 - [ ] wake-up lock does not work with iPhone XR and iOS 17.12
@@ -371,6 +339,57 @@ BUGS
      - 20 (request 18)
      - 40 (request 38)
 
+
+### Target v2-beta - WebView
+
+- [x] Unify message format for buttons
+    + [x] osc `comote/${id}/control/${key} value` 
+    + [x] ws  `control: { [key]: value }` 
+- [x] Add QRcode `webview` key
+    + [x] `url` if starts with `http`
+    + [x] else `html`
+- [x] add Setting field to configure `webview`
+    + [x] `[HTML]` content if not URL
+- [x] Store `webviewContent` (tbc)
+- [x] WebView
+    + [-] fallback in case of 404 error
+    + [-] define what to do in case of invalid input
+    -> let's just rely on default browser behavior
+    + [x] timer for retry on load error
+- [x] properly redirect `QRcode` to `Play` or `WebView`
+
+- [ ] fix: webview should try reload only when screen is focused
+
+### Target v2.1
+
+- [ ] barcode-scanner is deprecated. Cf. <https://github.com/expo/fyi/blob/main/barcode-scanner-to-expo-camera.md>
+  - [ ] Wait until `expo-camera/next` is promoted to `expo-camera`
+
+### Target v2
+
+- [ ] bad sample-rate on first start (check before any change of settings)
+
+- [ ] check https://www.npmjs.com/package/@react-native-community/netinfo
+- [ ] connect WiFi in QRCode?
+- [x] other sensors
+- [x] follow Sensor API spec
+- [ ] binary webSocket
+- [ ] check sensors against MotionSender (iOS)
+
+- [ ] Wait for next Expo version (50?) for background worker for engine (already in react-native v0.72)
+    Cf. <https://reactnative.dev/docs/next/the-new-architecture/use-app-template>
+    > If you're using Expo, you can't enable the New Architecture at the moment and will have to wait for a future release of the Expo SDK.
+
+### Target v1.4 - September 2023
+
+- [x] no more background image
+- [x] OSC port and host
+- [x] display sensors period in settings screen
+- [x] float input for sensors rate
+- [x] lock screen with playable buttons
+- [x] update Android version, as required by Google Play Store
+- [x] update Expo version
+
 ### Target v1.3 - June 2023
 
 Rename CoMo.te to Comote:
@@ -378,12 +397,12 @@ Rename CoMo.te to Comote:
   - [x] texts
   - [ ] picture in welcome screen
 - [ ] Ircam Forum
-- [ ] Apple Store
-   - [ ] text
-   - [ ] screenshots
-- [ ] Google Store
-   - [ ] text
-   - [ ] screenshots
+- [w] Apple Store
+   - [x] text
+   - [x] screenshots
+- [x] Google Store
+   - [x] text
+   - [x] screenshots
 
 - [x] do not bind udp socket: use automatic port
 - [x] exclusive port

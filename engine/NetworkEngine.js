@@ -422,16 +422,17 @@ export class NetworkEngine {
 
                         break;
                     }
-                    // buttonA / buttonB
-                    case 'buttonA':
-                    case 'buttonB': {
-                        const address = `/${data.source}/${data.id}/${key}`;
-                        const value = data[key];
+                    // control
+                    case 'control': {
+                        for (let name in data[key]) {
+                            const address = `/${data.source}/${data.id}/${key}/${name}`;
+                            const value = data[key][name];
 
-                        const message = new OSC.Message(address, value);
-                        this.oscSend(message, port, hostname, (err) => {
-                            if (err) { return console.error(err); }
-                        });
+                            const message = new OSC.Message(address, value);
+                            this.oscSend(message, port, hostname, (err) => {
+                                if (err) { return console.error(err); }
+                            });
+                        }
                         break;
                     }
 

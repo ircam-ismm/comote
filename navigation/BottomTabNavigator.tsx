@@ -95,7 +95,6 @@ export default function BottomTabNavigator() {
 
       {/* <BottomTab.Screen
         name="WebView"
-        title="WebView"
         component={WebViewNavigator}
         options={{
           tabBarLabel: i18n.t('nav.webview'),
@@ -105,7 +104,6 @@ export default function BottomTabNavigator() {
  */}
       <BottomTab.Screen
         name="About"
-        title="About CoMo(te)"
         component={AboutNavigator}
         options={{
           tabBarLabel: i18n.t('nav.about'),
@@ -229,6 +227,7 @@ function WebViewNavigator() {
         name="WebViewScreen"
         component={WebViewScreen}
         options={{
+          headerShown: false,
           headerTitle: i18n.t('webview.header'),
           headerStyle: {
             backgroundColor: Colors[colorScheme].background,

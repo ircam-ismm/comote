@@ -32,64 +32,45 @@ export function urlHandler({
   // console.log('queryParams = ', queryParams);
 
   if (hostname === 'settings' && Object.keys(queryParams).length > 0) {
+    const payload = {
+      // reset if not not given in qr code
+      webviewContent: null,
+    }
+
     Object.entries(queryParams).forEach(([key, value]) => {
       switch (key) {
         case 'ws-url': {
-          store.dispatch({
-            type: 'settings/set',
-            payload: {
-              webSocketUrl: value,
-            },
-          });
+          payload.webSocketUrl = value;
           break;
         }
         case 'ws-enable': {
-          store.dispatch({
-            type: 'settings/set',
-            payload: {
-              webSocketEnabled: !!JSON.parse(value), // convert to boolean
-            },
-          });
+          payload.webSocketEnabled = !!JSON.parse(value); // convert to boolean
           break;
         }
         case 'osc-url': {
-          store.dispatch({
-            type: 'settings/set',
-            payload: {
-              oscUrl: value,
-            },
-          });
+          payload.oscUrl = value;
           break;
         }
         case 'osc-enable': {
-          store.dispatch({
-            type: 'settings/set',
-            payload: {
-              oscEnabled: !!JSON.parse(value), // convert to boolean
-            },
-          });
+          payload.oscEnabled = !!JSON.parse(value); // convert to boolean
           break;
         }
         case 'interval': {
-          store.dispatch({
-          type: 'settings/set',
-            payload: {
-              deviceMotionInterval: parseInt(value, 10),
-            },
-          });
+          payload.deviceMotionInterval = parseInt(value, 10);
           break;
         }
         case 'id': {
-          store.dispatch({
-          type: 'settings/set',
-            payload: {
-              id: value,
-            },
-          });
+          payload.id = value;
+          break;
+        }
+        case 'webview': {
+          payload.webviewContent = decodeURIComponent(value);
           break;
         }
       }
     });
+
+    store.dispatch({ type: 'settings/set', payload });
   }
 }
 
@@ -131,6 +112,11 @@ const linking: LinkingOptions<RootStackParamList> = {
           QR: {
             screens: {
               QRScreen: 'qr',
+            },
+          },
+          WebView: {
+            screens: {
+              WebViewScreen: 'webview',
             },
           },
           About: {
