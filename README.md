@@ -245,6 +245,8 @@ eas submit --platform ios
 If the submission fails, use the expo.dev website:
 <https://expo.dev/accounts/ircam-ismm/projects/comote>
 
+Sometimes it is not possible to log to the Apple developer account. It is possible to build without connecting, using old credentials.
+
 
 #### Android
 
@@ -253,6 +255,10 @@ Build (online) and submit.
 eas build --profile production --platform android
 eas submit --platform android
 ```
+
+If there is a problem during submission, it might be necessary to to a manual submission. This can happen if there is a new permission for the application or when Google changed its policy.
+
+Download the build artifact and submit via the Google Play Console. It might trigger a new permission setting, that was not displayed until a version uses a build that uses this permission.
 
 ## Update
 
