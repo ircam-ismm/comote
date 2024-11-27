@@ -94,7 +94,7 @@ export default function WebViewScreen({ color }) {
   useFocusEffect(
     useCallback(() => {
       // prevent sleep when tab is focused
-      const keepAwakeTag = 'comote:play';
+      const keepAwakeTag = 'comote:webview';
       activateKeepAwakeAsync(keepAwakeTag);
 
       return () => {
