@@ -47,7 +47,7 @@ export default function ConnectionStatusComponent({ color, compact, invisible })
       flexWrap: "wrap",
       alignItems: 'center',
       justifyContent: 'space-evenly',
-      flex: 370,
+      flex: 700,
       verticalAlign: 'middle',
     },
 
