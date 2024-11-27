@@ -37,7 +37,7 @@ export default function AboutScreen({ color, navigation }) {
       flexDirection: 'row',
       flexWrap: "wrap",
       alignItems: 'center',
-      justifyContent: 'flex-start',
+      justifyContent: 'flex-center',
       marginVertical: 8,
       backgroundColor: colors.background,
 
@@ -65,8 +65,8 @@ export default function AboutScreen({ color, navigation }) {
     logo: {
       maxWidth: '100%',
       maxHeight: '100%',
-      height: undefined,
-      aspectRatio: 2,
+      // height: undefined,
+      aspectRatio: 3,
       resizeMode: 'contain',
 
       // borderColor: 'blue',
