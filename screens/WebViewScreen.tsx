@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { useState, useRef, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { StyleSheet, Pressable, Modal } from 'react-native';
@@ -39,6 +38,11 @@ const injectJavascript = `
   window.toggleModal = () => {
     window.ReactNativeWebView.postMessage(JSON.stringify({ cmd: 'toggleModal' }));
   };
+
+  window.setModal = (value) => {
+    window.ReactNativeWebView.postMessage(JSON.stringify({ cmd: 'setModal', data: value}));
+  };
+
 
   window.log = (...value) => {
     window.ReactNativeWebView.postMessage(JSON.stringify({ cmd: 'log', data: value }));
@@ -126,6 +130,11 @@ export default function WebViewScreen({ color }) {
       }
       case 'toggleModal': {
         setModalVisible(!modalVisible);
+        break;
+      }
+
+      case 'setModal': {
+        setModalVisible(event.data);
         break;
       }
 
