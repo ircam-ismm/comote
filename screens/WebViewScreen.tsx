@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { useState, useRef, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { StyleSheet, Pressable, Modal } from 'react-native';
@@ -151,14 +152,17 @@ export default function WebViewScreen({ color }) {
         visible={modalVisible}
       >
         <View style={styles.modal}>
-          <WebView style={styles.webview}
-            originWhitelist={['*']}
-            source={source}
-            onMessage={onWebViewMessage}
-            injectedJavaScript={injectJavascript}
-            ref={(ref) => webViewRef.current = ref}
-            onError={onWebViewError}
-          />
+          {modalVisible ?
+            <WebView style={styles.webview}
+              originWhitelist={['*']}
+              source={source}
+              onMessage={onWebViewMessage}
+              injectedJavaScript={injectJavascript}
+              ref={(ref) => webViewRef.current = ref}
+              onError={onWebViewError}
+            />
+            : null
+          }
         </View>
       </Modal>
 
@@ -186,7 +190,7 @@ export default function WebViewScreen({ color }) {
           ref={(ref) => webViewRef.current = ref}
           onError={onWebViewError}
         />
-        : <View style={styles.webview}></View>
+        : null
       }
 
     </View>
