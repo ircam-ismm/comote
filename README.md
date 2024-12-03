@@ -317,6 +317,11 @@ e = {
 
 ### BUGS
 
+- [ ] fix full-screen glitches
+  - [ ] do not reload page
+    - in React (CoMote), re-use WebView (cf. `createPortal`, `forwardRef`, etc.)
+    - in Soundworks (user WebView), use createHook on the server side
+
 - [ ] bad sample rate on first run of application (100 ms instead of 10 ms as displayed)
 - [ ] wake-up lock does not work with iPhone XR and iOS 17.12
 
