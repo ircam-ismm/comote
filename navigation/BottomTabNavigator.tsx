@@ -47,11 +47,11 @@ export default function BottomTabNavigator() {
       // initialRouteName="Play"
 
       screenOptions={{
-        activeTintColor: Colors[colorScheme].tabIconSelected,
+        tabBarActiveTintColor: Colors[colorScheme].tabIconSelected,
         headerShown: false,
         tabBarStyle: {
           height: 60,
-          paddingBottom: 10,
+          paddingBottom: 8,
           paddingTop: 8,
           backgroundColor: Colors[colorScheme].tabIconBackground,
         },
