@@ -77,7 +77,7 @@ export default {
   about: {
     header: `Informazioni su CoMote`,
     developedBy: `CoMote e l'estensione KORAL sono sviluppati dall'unità di ricerca STMS-Lab (Ircam-CNRS-Sorbonne Université-Ministère de la Culture) in collaborazione con l'associazione Arts Convergences.`,
-    producedBy: `Con il sostegno di : Fondation MAAF, Fondation Falret, Département des Yvelines.`,
+    producedBy: `Con il sostegno di : Fondation MAAF, Fondation Falret, Département des Yvelines, Fondation Afnic (Fondation de France).`,
     producedByUntil12: `Fino alla versione 1.2 CoMote è stato realizzato con il sostegno di : Éducation Nationale (Edu-up) e Agence Nationale de la Recherche (progetto ELEMENT).`,
     privacyPolicy: 'Politica di confidenzialità',
     privacyPolicyLink: 'https://ismm-apps.ircam.fr/comote-privacy-policy-it',
