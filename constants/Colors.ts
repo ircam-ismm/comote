@@ -1,5 +1,6 @@
-const tintColorLight = '#2f95dc';
-const tintColorDark = '#2f95dc';
+
+const backgroundColorLight = '#fafafc';
+const backgroundColorDark = '#000000';
 
 const lowContrastColorLight = '#efefef';
 const lowContrastColorDark = '#202020';
@@ -15,12 +16,28 @@ const yellow = '#ffc20a';
 const green = '#28a745';
 const red = '#dc3545';
 
+const textColorLight = '#000000';
+const textColorDark = '#ffffff';
+
+const textColorDimLight = '#505050';
+const textColorDimDark = '#afafaf';
+
+const tintActiveColorLight = blue;
+const tintActiveColorDark =  blue;
+
+// const tintActiveColorLight = '#0060d0';
+// const tintActiveColorDark = '#0f7ddf';
+
+const tintInactiveColorLight = highContrastColorLight;
+const tintInactiveColorDark = highContrastColorDark;
+
+
 
 export default {
   light: {
-    text: '#000000',
-    background: '#fafafc',
-    tint: tintColorLight,
+    text: textColorLight,
+    background: backgroundColorLight,
+    tint: tintActiveColorLight,
     lowContrast: lowContrastColorLight,
     mediumContrast: mediumContrastColorLight,
     highContrast: highContrastColorLight,
@@ -28,17 +45,17 @@ export default {
     yellow,
     green,
     red,
-    tabIconDefault: '#ccc',
-    tabIconSelected: tintColorLight,
-    tabIconBackground: '#efefef',
-    genericButton: tintColorLight,
+    tabIconDefault: textColorDimLight,
+    tabIconSelected: tintActiveColorLight,
+    tabIconBackground: lowContrastColorLight,
+    genericButton: tintActiveColorLight,
     inputBackground: lowContrastColorLight,
     inputBorder: highContrastColorLight,
   },
   dark: {
-    text: '#ffffff',
-    background: '#000000',
-    tint: tintColorDark,
+    text: textColorDark,
+    background: backgroundColorDark,
+    tint: tintActiveColorDark,
     lowContrast: lowContrastColorDark,
     mediumContrast: mediumContrastColorDark,
     highContrast: highContrastColorDark,
@@ -46,10 +63,10 @@ export default {
     yellow,
     green,
     red,
-    tabIconDefault: '#ccc',
-    tabIconSelected: tintColorDark,
-    tabIconBackground: '#101010',
-    genericButton: tintColorLight,
+    tabIconDefault: textColorDimDark,
+    tabIconSelected: tintActiveColorDark,
+    tabIconBackground: lowContrastColorDark,
+    genericButton: tintActiveColorLight,
     inputBackground: lowContrastColorDark,
     inputBorder: highContrastColorDark,
   },
