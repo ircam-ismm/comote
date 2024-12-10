@@ -3,6 +3,8 @@
  * https://reactnavigation.org/docs/bottom-tab-navigator
  */
 
+import { Platform } from 'react-native';
+
 import {
   AntDesign, // QR-code
   Ionicons,
@@ -19,7 +21,7 @@ import i18n from '../constants/i18n';
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 
-import HomeScreen from '../screens/HomeScreen';
+// import HomeScreen from '../screens/HomeScreen';
 import PlayScreen from '../screens/PlayScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import QRScreen from '../screens/QRScreen';
@@ -43,11 +45,12 @@ export default function BottomTabNavigator() {
 
   return (
     <BottomTab.Navigator
-      initialRouteName="Home"
-      // initialRouteName="Play"
+      // initialRouteName="Home"
+      initialRouteName="Play"
 
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme].tabIconSelected,
+        tabBarInactiveTintColor: Colors[colorScheme].tabIconDefault,
         headerShown: false,
         tabBarStyle: {
           height: 60,
@@ -55,16 +58,19 @@ export default function BottomTabNavigator() {
           paddingTop: 8,
           backgroundColor: Colors[colorScheme].tabIconBackground,
         },
+        tabBarLabelStyle: {
+          fontSize: Platform.OS === 'ios' ? 12 : 12,
+        },
       }}>
 
-      <BottomTab.Screen
+      {/* <BottomTab.Screen
         name="Home"
         component={HomeNavigator}
         options={{
           tabBarLabel: i18n.t('nav.home'),
           tabBarIcon: ({ color }) => <AntDesign name="home" size={26} color={color} />,
         }}
-      />
+      /> */}
 
       <BottomTab.Screen
         name="Play"
@@ -72,6 +78,15 @@ export default function BottomTabNavigator() {
         options={{
           tabBarLabel: i18n.t('nav.play'),
           tabBarIcon: ({ color }) => <AntDesign name="playcircleo" size={26} color={color} />,
+        }}
+      />
+
+      <BottomTab.Screen
+        name="WebView"
+        component={WebViewNavigator}
+        options={{
+          tabBarLabel: i18n.t('nav.webview'),
+          tabBarIcon: ({ color }) => <AntDesign name="plussquareo" size={26} color={color} />,
         }}
       />
 
@@ -90,15 +105,6 @@ export default function BottomTabNavigator() {
         options={{
           tabBarLabel: i18n.t('nav.qrcode'),
           tabBarIcon: ({ color }) => <AntDesign name="qrcode" size={26} color={color} />,
-        }}
-      />
-
-      <BottomTab.Screen
-        name="WebView"
-        component={WebViewNavigator}
-        options={{
-          tabBarLabel: i18n.t('nav.webview'),
-          tabBarIcon: ({ color }) => <AntDesign name="plussquareo" size={26} color={color} />,
         }}
       />
 
@@ -131,23 +137,23 @@ function TabBarIcon(props: { name: React.ComponentProps<typeof Ionicons>['name']
 // Each tab has its own navigation stack, you can read more about this pattern here:
 // https://reactnavigation.org/docs/tab-based-navigation#a-stack-navigator-for-each-tab
 
-const HomeStack = createNativeStackNavigator<PlayParamList>();
+// const HomeStack = createNativeStackNavigator<PlayParamList>();
 
-function HomeNavigator() {
-  const colorScheme = useColorScheme();
+// function HomeNavigator() {
+//   const colorScheme = useColorScheme();
 
-  return (
-    <HomeStack.Navigator>
-      <HomeStack.Screen
-        name="HomeScreen"
-        component={HomeScreen}
-        options={{
-          headerShown: false,
-        }}
-      />
-    </HomeStack.Navigator>
-  );
-}
+//   return (
+//     <HomeStack.Navigator>
+//       <HomeStack.Screen
+//         name="HomeScreen"
+//         component={HomeScreen}
+//         options={{
+//           headerShown: false,
+//         }}
+//       />
+//     </HomeStack.Navigator>
+//   );
+// }
 
 const PlayStack = createNativeStackNavigator<PlayParamList>();
 

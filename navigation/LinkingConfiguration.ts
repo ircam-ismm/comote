@@ -104,6 +104,11 @@ const linking: LinkingOptions<RootStackParamList> = {
               PlayScreen: 'play',
             },
           },
+          WebView: {
+            screens: {
+              WebViewScreen: 'webview',
+            },
+          },
           Settings: {
             screens: {
               SettingsScreen: 'settings',
@@ -112,11 +117,6 @@ const linking: LinkingOptions<RootStackParamList> = {
           QR: {
             screens: {
               QRScreen: 'qr',
-            },
-          },
-          WebView: {
-            screens: {
-              WebViewScreen: 'webview',
             },
           },
           About: {
