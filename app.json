@@ -27,9 +27,9 @@
         "ITSAppUsesNonExemptEncryption": "NO",
         "NSCameraUsageDescription": "Allow $(PRODUCT_NAME) to use the camera to scan QR codes.",
         "NSLocalNetworkUsageDescription": "Allow $(PRODUCT_NAME) to access local network to stream data from sensors.",
-        "NSLocationAlwaysAndWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to use your location to compute heading and use it as a sensor",
-        "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to use your location to compute heading and use it as a sensor",
-        "NSMotionUsageDescription": "Allow $(PRODUCT_NAME) to access your device's accelerometer to use it as a sensor."
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access location to compute heading and use it as a sensor.",
+        "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access location to compute heading and use it as a sensor.",
+        "NSMotionUsageDescription": "Allow $(PRODUCT_NAME) to access device's accelerometer to use it as a sensor."
       },
       "entitlements": {
         "com.apple.security.cs.allow-jit": true,

@@ -1,6 +1,11 @@
 const openAppSettings = `Apri le impostazioni dell'applicazione`;
 
 export default {
+  "NSCameraUsageDescription": "Consentire a $(PRODUCT_NAME) di utilizzare la fotocamera per la scansione di codici QR.",
+  "NSLocalNetworkUsageDescription": "Consentire a $(PRODUCT_NAME) di accedere alla rete locale per trasmettere i dati del sensore.",
+  "NSLocationAlwaysAndWhenInUseUsageDescription": "Consentire a $(PRODUCT_NAME) di accedere alla posizione per calcolare la bussola e utilizzarla come sensore.",
+  "NSLocationWhenInUseUsageDescription": "Consentire a $(NOME PRODOTTO) di accedere alla posizione per calcolare la bussola e utilizzarla come sensore.",
+  "NSMotionUsageDescription": "Consentire a $(PRODUCT_NAME) di accedere all'accelerometro per utilizzarlo come sensore.",
   nav: {
     home: `Home`,
     play: 'Esegui',

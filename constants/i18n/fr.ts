@@ -1,6 +1,11 @@
 const openAppSettings = `Ouvrir les paramètres de l'application`;
 
 export default {
+  "NSCameraUsageDescription": "Autoriser $(PRODUCT_NAME) à utiliser la caméra pour scanner des codes QR.",
+  "NSLocalNetworkUsageDescription": "Autoriser $(PRODUCT_NAME) à accéder au réseau local pour transmettre les données des capteurs.",
+  "NSLocationAlwaysAndWhenInUseUsageDescription": "Autoriser $(PRODUCT_NAME) à accéder à la position pour calculer la boussole et l'utiliser comme capteur.",
+  "NSLocationWhenInUseUsageDescription": "Autoriser $(PRODUCT_NAME) à accéder à la position pour calculer la boussole et l'utiliser comme capteur.",
+  "NSMotionUsageDescription": "Autoriser $(PRODUCT_NAME) à accéder l'accéléromètre pour l'utiliser comme capteur.",
   nav: {
     home: 'Accueil',
     play: 'Jouer',
