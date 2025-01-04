@@ -57,6 +57,11 @@
         "com.google.android.gms.permission.ACTIVITY_RECOGNITION"
       ]
     },
+    "locales": {
+      "en": "./constants/i18n/en.json",
+      "fr": "./constants/i18n/fr.json",
+      "it": "./constants/i18n/it.json"
+    },
     "web": {
       "favicon": "./assets/images/favicon.png"
     },
