@@ -67,6 +67,8 @@ export class Engine {
 }
 
 // single instance
+// must init on EngineComponent mount
+// (no top-level await in react)
 export const engine = new Engine();
 
 export default Engine;

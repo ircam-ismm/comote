@@ -241,7 +241,7 @@ export class NetworkEngine {
         this.oscHostname = hostname;
         this.oscPort = parseInt(port, 10);
 
-        // warning: (native) error is not catched and will crash application
+        // warning: (native) error is not catch and will crash application
         try {
             clearTimeout(this.oscUpdateId);
             await this.oscClose();

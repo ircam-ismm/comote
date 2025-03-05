@@ -105,15 +105,15 @@ export class SensorsEngine {
 
         this.sensorsEmulationId = null;
 
-        // // attempt to compensate request to rea user-specified
+        // // attempt to compensate request to match user-specified value
         // this.intervalCompensated = null;
 
         this.sensorsLastTime = null;
         this.intervalId = null;
 
         // this.intervalSetThrottled = throttle(this.intervalSet.bind(this),  sensorsSetThrottlePeriod, {
-        //     leading: true,  // do not wait to triggger
-        //     trailing: true, // be sure to aply last request
+        //     leading: true,  // do not wait to trigger
+        //     trailing: true, // be sure to apply last request
         // });
 
         this.accelerometerSubscribeId = null;
@@ -198,6 +198,7 @@ export class SensorsEngine {
 
             // @TODO: find why, sometimes, the interval is 100 ms on iOS
             // (after the device went to sleep and woke up again)
+            // set to something different, then call is again
             await this.intervalSet(this.interval + 2, { fake: true });
             // await new Promise((resolve) => { setTimeout(resolve, 1000); });
             await this.intervalSet();
@@ -551,7 +552,7 @@ export class SensorsEngine {
             this.intervalEstimate = estimate;
 
             // @TODO: should we compensate for inaccurate sensors sample period ?
-            // Android seems to add on display frame (1/60 ?)
+            // Android seems to add one display frame (1/60 ?)
 
             // This is bad, as it may change way too often
 

@@ -44,11 +44,12 @@ const settingsSlice = createSlice({
   initialState,
   reducers: {
     set: (state, action: PayloadAction<any>) => {
-      console.log(action.payload);
       Object.assign(state.data, action.payload);
 
       // replace empty value, undefined, NaN, or 0, with default value
-      if (state.data.deviceMotionInterval < 0) {
+      if (state.data.deviceMotionInterval < 0
+        || Number.isNaN(state.data.deviceMotionInterval)
+      ) {
         state.data.deviceMotionInterval = initialState.data.deviceMotionInterval;
       }
 
