@@ -130,6 +130,8 @@ Generate prebuild folders, named `ios` and `android`.
 npx expo prebuild
 ```
 
+(The previous command may fail due to the debugger of Visual Studio Code. In that case, try to run in in a standard terminal.)
+
 If it does not build, you will need to remove the created folders.
 
 ```sh
@@ -166,6 +168,12 @@ Generate development build.
 eas build --local --profile development --platform ios
 ```
 
+You can install and run a build on a device with the following command:
+
+```sh
+npx expo run:ios --device
+```
+
 Be sure to select the local devices allowed to install the app.
 
 If it does not build, use xCode. In particular, check the signing capabilities.
@@ -184,7 +192,8 @@ To install and run on an iOs simulator, repeat the xCode procedure (select a sim
 
 ### Expo
 
-Start expo. (The `--dev-client` unnecessary since expo 49.)
+Start expo. (The `--dev-client` is unnecessary since expo 49.)
+
 ```sh
 npx expo start
 ```
