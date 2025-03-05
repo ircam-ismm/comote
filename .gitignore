@@ -79,3 +79,6 @@ web-build/
 dist/
 
 # @end expo-cli
+
+# Visual Studio Code
+.vscode/
