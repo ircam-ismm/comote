@@ -20,7 +20,10 @@ export default function EngineComponent() {
 
     React.useEffect(() => {
         // mount
-        const appStateSubscription = AppState.addEventListener('change', async (nextAppState) => {
+        (async () => {
+            await engine.init();
+
+            const appStateSubscription = AppState.addEventListener('change', async (nextAppState) => {
 
             if (appState.current.match(/inactive|background/)
                 && nextAppState === 'active') {
@@ -39,7 +42,10 @@ export default function EngineComponent() {
                 await engine.cleanup();
                 appStateSubscription.remove();
             })();
-        }
+        };
+
+      })();
+
     }, []);
 
     return (

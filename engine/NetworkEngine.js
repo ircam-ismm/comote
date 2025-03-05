@@ -31,7 +31,6 @@ export class NetworkEngine {
         this.oscReadyStateSet('CLOSED');
         this.oscUpdateId = null;
 
-        this.init();
     }
 
     async set(attributes) {

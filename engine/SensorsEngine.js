@@ -139,7 +139,6 @@ export class SensorsEngine {
         // last normalised value
         this.heading = null;
 
-        this.init();
     }
 
     async set(attributes) {
