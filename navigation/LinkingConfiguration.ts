@@ -56,7 +56,7 @@ export function urlHandler({
           break;
         }
         case 'interval': {
-          payload.deviceMotionInterval = parseInt(value, 10);
+          payload.sensorsInterval = parseInt(value, 10);
           break;
         }
         case 'id': {

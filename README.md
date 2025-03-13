@@ -9,7 +9,7 @@ Install (or update) `npm`, `yarn` and `eas-cli` globally.
 
 ```sh
 npm -g install npm yarn eas-cli
-```
+```markdown
 
 Install project dependencies with `yarn`.
 
@@ -18,7 +18,7 @@ yarn install
 ```
 
 Tested with:
-- node 20
+- node 22
 - java 17
 - npx expo (locally installed in project, not global, also called "versioned expo")
 
@@ -41,7 +41,7 @@ Install Android studio. After installation, you can choose `More Actions` then `
 
 - In `SDK Tools`, install:
   - Command-line tools
-  - You may need to instlal `NDK`, `CMake`
+  - You may need to install `NDK`, `CMake`
 
 
 
@@ -161,17 +161,24 @@ You can also install via `adb`.
 - allow developer mode on device
 - type `adb install build-latest.apk`
 
-### iOS
+You can also install and run a build on a device with the following command:
 
-Generate development build.
 ```sh
-eas build --local --profile development --platform ios
+npx expo run:android --device
 ```
+
+### iOS
 
 You can install and run a build on a device with the following command:
 
 ```sh
 npx expo run:ios --device
+```
+
+Alternatively, you can generate development build.
+
+```sh
+eas build --local --profile development --platform ios
 ```
 
 Be sure to select the local devices allowed to install the app.
@@ -286,28 +293,70 @@ Prebuild and build again the development versions, to use with expo.
 ## Message format
 
 ### WebSocket
-```js
+
+```javascript
 e = {
   source: 'comote',
-  id: 42,
-  devicemotion: {
-    interval, // ms
-    accelerationIncludingGravity = { x, y, z }, // m/s2
-    rotationRate = { alpha, beta, gamma }, // deg/s
+  api: 'v3',
+  id, // string
+
+  // attributes, inherited Sensor attributes, constructor options
+  // https://w3c.github.io/sensors/#the-sensor-interface
+
+  // timestamp is a monotonic time, in milliseconds
+
+  // https://w3c.github.io/accelerometer/#accelerometer-interface 
+  accelerometer: {
+    x, // m/s^2
+    y, // m/s^2
+    z, // m/s^2
+    timestamp, // ms
+    frequency, // hz
   },
+
+  // https://w3c.github.io/gyroscope/#gyroscope-interface 
+  gyroscope: {
+    x, // rad/s
+    y, // rad/s
+    z, // rad/s
+    timestamp, // ms
+    frequency, // hz
+  },
+
+  // https://w3c.github.io/magnetometer/#magnetometer-interface
   magnetometer: {
-    interval, // ms
-    magnetometer = {x, y, z}, // uT
+    x, // uT
+    y, // uT
+    z, // uT
+    timestamp, // ms
+    frequency, // hz
   },
+
+  // https://w3c.github.io/accelerometer/#gravitysensor-interface
+  gravity: {
+    x, // uT
+    y, // uT
+    z, // uT
+    timestamp, // ms
+    frequency, // hz
+  },
+
+  // not standardised, yet. 
+  // See https://w3c.github.io/deviceorientation/spec-source-orientation.html#worked-example
   heading: {
-    interval, // ms
+    magnetic, // degrees (0 is magnetic north, 90 is east)
+    geographic, // degrees (0 is geographic north, 90 is east), -1 if not available
     accuracy, // degrees or -1 of not available
-    magnetometerHeading, // degrees
-    trueHeading, // degrees or -1 if not available
+    timestamp, // ms
+    frequency, // hz
   },
+
   control: {
-    [key]: value,
-    // e.g. `buttonA: 1,`
+    
+    [key]: value, // e.g. `buttonA: 1,`
+    // Any complex value must be serialised to a string, like:
+    // 'kpad/pad': '[{"x":0.5155333381717427,"y":0.7701943570672625}]'
+    timestamp, // ms
   }
 }
 
@@ -315,11 +364,20 @@ e = {
 
 ### OSC format
 
-```
-/comote/${id}/devicemotion  [interval, x, y, z, alpha, beta, gamma]
-/comote/${id}/magnetometer  [interval, x, y, z]
-/comote/${id}/heading       [interval, accuracy, magnetometerHeading, trueHeading]
-/comote/${id}/control/[key]       [value]
+Notes:
+
+- All values are float32 `f`, int32 `i` or string `s`. Complex values must be serialised to a string.
+- `timestamp` is a monotonic time in milliseconds that should start at 0 with the application to fit in float32, or it should be a float64.
+- Undefined values are set to -1.
+- Any boolean value is converted to an integer: 1 for true and 0 for false
+
+```text
+/<source>/<api>/<id>/accelerometer  [x, y, z, timestamp, frequency]
+/<source>/<api>/<id>/gyroscope      [x, y, z, timestamp, frequency]
+/<source>/<api>/<id>/magnetometer   [x, y, z, timestamp, frequency]
+/<source>/<api>/<id>/gravity        [x, y, z, timestamp, frequency]
+/<source>/<api>/<id>/heading        [magnetic, geographic, accuracy, timestamp, frequency]
+/<source>/<api>/<id>/control/<key>  [value, timestamp]
 ```
 
 ## TODO

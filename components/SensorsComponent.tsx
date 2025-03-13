@@ -74,10 +74,9 @@ export default function SensorsComponent() {
     }, []);
 
     React.useEffect(() => {
-        // @TODO: rename settings.deviceMotionInterval to settings.sensorsInterval
-        const interval = settings.deviceMotionInterval;
+        const interval = settings.sensorsInterval;
         engine.sensors.intervalSet(interval);
-    }, [settings.deviceMotionInterval]);
+    }, [settings.sensorsInterval]);
 
     return null;
 }

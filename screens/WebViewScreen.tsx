@@ -14,6 +14,8 @@ import useColorScheme from '../hooks/useColorScheme';
 import { selectSettings } from '../features/settings/settingsSlice';
 import isURL from '../helpers/isURL';
 
+import { timestampGet } from '../helpers/timestamp';
+
 // this is extended later with variable to pass some state to the webview
 const injectJavascript = `
   ['touchstart', 'touchend'].forEach(input => {
@@ -117,14 +119,24 @@ export default function WebViewScreen({ color }) {
 
   const source = isURL(content) ? { uri: content } : { html: content };
 
-  const onWebViewMessage = event => {
+  const onWebViewMessage = (event) => {
     event = JSON.parse(event.nativeEvent.data);
 
     switch(event.cmd) {
       case 'control': {
+        const timestamp = timestampGet();
+        const controls = {};
+        Object.entries(event.data).forEach( ([key, value]) => {
+          controls[key] = value;
+        });
+
         dispatch({
             type: 'sensors/set',
-            payload: { control: event.data },
+            payload: { control: {
+                ...controls,
+                timestamp,
+              }
+            },
         });
         break;
       }
@@ -146,7 +158,7 @@ export default function WebViewScreen({ color }) {
     }
   };
 
-  const onWebViewError = syntheticEvent => {
+  const onWebViewError = (syntheticEvent) => {
     const { nativeEvent } = syntheticEvent;
     console.log('Error loading webview, retry in 2 seconds', nativeEvent);
     setTimeout(() => webViewRef.current.reload(), 2000);

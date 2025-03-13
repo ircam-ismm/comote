@@ -18,8 +18,8 @@ interface SensorsState {
 const initialState = {
   data: {
     id: 0,
-    accelerationIncludingGravity: {},
-    rotationRate: {},
+    accelerometer: {},
+    gyroscope: {},
     control: {},
     available: null,
     interval: 0,

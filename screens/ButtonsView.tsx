@@ -3,6 +3,8 @@ import i18n from '../constants/i18n';
 import { Text, View } from '../components/Themed';
 import { useAppDispatch } from '../hooks';
 
+import { timestampGet } from '../helpers/timestamp';
+
 export default function ButtonsView({ styles }) {
     const dispatch = useAppDispatch();
 
@@ -20,6 +22,7 @@ export default function ButtonsView({ styles }) {
                         payload: {
                             control: {
                                 buttonA: 1,
+                                timestamp: timestampGet(),
                             },
                         },
                     })
@@ -30,6 +33,7 @@ export default function ButtonsView({ styles }) {
                         payload: {
                             control: {
                                 buttonA: 0,
+                                timestamp: timestampGet(),
                             },
                         },
                     })
@@ -52,6 +56,7 @@ export default function ButtonsView({ styles }) {
                         payload: {
                             control: {
                                 buttonB: 1,
+                                timestamp: timestampGet(),
                             },
                         },
                     })
@@ -62,6 +67,7 @@ export default function ButtonsView({ styles }) {
                         payload: {
                             control: {
                                 buttonB: 0,
+                                timestamp: timestampGet(),
                             },
                         },
                     })

@@ -4,11 +4,13 @@ import { SensorsEngine } from "./SensorsEngine";
 export class Engine {
     constructor({
         source = 'comote',
+        api = 'v3',
         id = 0,
         network = {},
         sensors = {},
     } = {}) {
         this.source = source;
+        this.api = api;
         this.id = id;
         this.network = new NetworkEngine(network);
 
@@ -20,16 +22,25 @@ export class Engine {
         }
 
         this.sensors = new SensorsEngine(sensorsRequest);
+
+        // note: controls are registered in EngineComponent
+
+        // note: async init is called by EngineComponent on mount
     }
 
     async set({
         source,
+        api,
         id,
         network,
         sensors,
     } = {}) {
         if (typeof source !== 'undefined') {
             this.source = source;
+        }
+
+        if (typeof api !== 'undefined') {
+            this.api = api;
         }
 
         if (typeof id !== 'undefined') {
@@ -57,9 +68,11 @@ export class Engine {
     }
 
     send(message) {
-        const { source, id } = this;
+
+        const { source, api, id } = this;
         this.network.send({
             source,
+            api,
             id,
             ...message,
         })

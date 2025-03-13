@@ -21,7 +21,7 @@ interface SettingsState {
 const initialState = {
   data: {
     id: '0',
-    deviceMotionInterval: 10,  // in ms
+    sensorsInterval: 10,  // in ms
     webSocketEnabled: false,
     webSocketUrl: null,
     oscEnabled: false,
@@ -47,10 +47,10 @@ const settingsSlice = createSlice({
       Object.assign(state.data, action.payload);
 
       // replace empty value, undefined, NaN, or 0, with default value
-      if (state.data.deviceMotionInterval < 0
-        || Number.isNaN(state.data.deviceMotionInterval)
+      if (state.data.sensorsInterval < 0
+        || Number.isNaN(state.data.sensorsInterval)
       ) {
-        state.data.deviceMotionInterval = initialState.data.deviceMotionInterval;
+        state.data.sensorsInterval = initialState.data.sensorsInterval;
       }
 
       // make sure we don't have garbage in id, as it used for OSC addresses
@@ -113,8 +113,8 @@ export const selectSettings = (state: RootState) => {
   return state.settings.data;
 }
 
-export const selectDeviceMotionInterval = (state: RootState) => {
-  return state.settings.data.deviceMotionInterval;
+export const selectSensorsInterval = (state: RootState) => {
+  return state.settings.data.sensorsInterval;
 }
 
 export default settingsSlice.reducer;

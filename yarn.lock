@@ -6653,7 +6653,7 @@ os-tmpdir@^1.0.0, os-tmpdir@~1.0.2:
   resolved "https://registry.yarnpkg.com/os-tmpdir/-/os-tmpdir-1.0.2.tgz#bbe67406c79aa85c5cfec766fe5734555dfa1274"
   integrity sha512-D2FR03Vir7FIu45XBY20mTb+/ZSWB00sjU9jdQXt83gDrI4Ztz5Fs7/yy74g2N5SVQY4xY1qDr4rNddwYRVX0g==
 
-osc-js@^2.4.0:
+osc-js@^2.4.1:
   version "2.4.1"
   resolved "https://registry.yarnpkg.com/osc-js/-/osc-js-2.4.1.tgz#4f6b72307ab0dfa7e41b43dd7f667d57aaee1650"
   integrity sha512-QlSeRKJclL47FNvO1MUCAAp9frmCF9zcYbnf6R9HpcklAst8ZyX3ISsk1v/Vghr/5GmXn0bhVjFXF9h+hfnl4Q==

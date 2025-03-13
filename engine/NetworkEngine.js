@@ -89,7 +89,7 @@ export class NetworkEngine {
         }
 
         // validate URL before creating socket,
-        // because (native) error is not catched and will crash application
+        // because (native) error is not caught and will crash application
         const urlValidated = isURL(this.webSocketUrl, {
             require_protocol: true,
             require_valid_protocol: true,
@@ -103,7 +103,7 @@ export class NetworkEngine {
             return;
         }
 
-        // warning: (native) error is not catched and will crash application
+        // warning: (native) error is not caught and will crash application
         try {
             clearTimeout(this.webSocketUpdateId);
             await this.webSocketClose();
@@ -214,7 +214,7 @@ export class NetworkEngine {
         }
 
         // validate URL before creating socket,
-        // because (native) error is not catched and will crash application
+        // because (native) error is not caught and will crash application
         const urlValidated = isURL(this.oscUrl, {
             require_protocol: true,
             require_valid_protocol: true,
@@ -325,8 +325,13 @@ export class NetworkEngine {
         });
     }
 
-    // @TODO - refactor, we probably can do better can do better than packing and
-    // unpacking everything here
+    oscMessageAddTimestamp(message, timestamp) {
+        message.add(timestamp);
+        // we should use double type but
+        //   - Bundle does not accept TypedMessages
+        //   - changing messages.types crashes the application
+    }
+
     send(data) {
 
         if (this.webSocketEnabled && this.webSocket
@@ -342,107 +347,90 @@ export class NetworkEngine {
 
             const hostname = this.oscHostname;
             const port = this.oscPort;
+            const messages = [];
 
-            for (let key in data) {
-                switch (key) {
-                    case 'devicemotion': {
-                        const address = `/${data.source}/${data.id}/${key}`;
+            const { accelerometer } = data;
+            if (accelerometer) {
+                const address = `/${data.source}/${data.api}/${data.id}/accelerometer`;
+                const { x, y, z, timestamp, frequency } = accelerometer;
+                const message = new OSC.Message(address, x, y, z);
+                this.oscMessageAddTimestamp(message, timestamp);
+                message.add(frequency);
+                messages.push(message);
+            }
 
-                        const {
-                            interval,
-                            accelerationIncludingGravity,
-                            rotationRate,
-                        } = data[key];
+            const { gyroscope } = data;
+            if (gyroscope) {
+                const address = `/${data.source}/${data.api}/${data.id}/gyroscope`;
+                const { x, y, z, timestamp, frequency } = gyroscope;
+                const message = new OSC.Message(address, x, y, z);
+                this.oscMessageAddTimestamp(message, timestamp);
+                message.add(frequency);
+                messages.push(message);
+            }
 
-                        // We need at least the accelerometer to work
-                        if (!accelerationIncludingGravity) {
-                            return;
-                        }
+            const { magnetometer } = data;
+            if (magnetometer) {
+                const address = `/${data.source}/${data.api}/${data.id}/magnetometer`;
+                const { x, y, z, timestamp, frequency } = magnetometer;
+                const message = new OSC.Message(address, x, y, z);
+                this.oscMessageAddTimestamp(message, timestamp);
+                message.add(frequency);
+                messages.push(message);
+            }
 
-                        const { x, y, z } = accelerationIncludingGravity;
+            const { heading } = data;
+            if (heading) {
+                const address = `/${data.source}/${data.api}/${data.id}/heading`;
+                const { magnetic, geographic, accuracy, timestamp, frequency } = heading;
+                const message = new OSC.Message(address, magnetic, geographic, accuracy);
+                this.oscMessageAddTimestamp(message, timestamp);
+                message.add(frequency);
+                messages.push(message);
+            }
 
-                        // Keep same message format in case gyroscope is not available
-                        const { alpha, beta, gamma } = rotationRate || {
-                            alpha: 0,
-                            beta: 0,
-                            gamma: 0,
-                        };
-                        const values = [
-                            interval,
-                            x, y, z,
-                            alpha, beta, gamma,
-                        ];
-                        const devicemotionMessage = new OSC.Message(address, ...values);
+            const { control } = data;
+            if (control) {
+                const { timestamp } = control;
 
-                        /////// optional sensors
-                        let isBundle = false;
-                        const messages = [devicemotionMessage];
-
-                        const heading = data.heading;
-                        if (heading) {
-                            isBundle = true;
-                            const address = `/${data.source}/${data.id}/heading`;
-                            const {interval, accuracy, magneticHeading, trueHeading } = heading;
-                            const values = [
-                                interval,
-                                accuracy,
-                                magneticHeading,
-                                trueHeading,
-                            ];
-                            const headingMessage = new OSC.Message(address, ...values);
-                            messages.push(headingMessage);
-                        }
-
-                        const magnetometer = data.magnetometer;
-                        if (magnetometer) {
-                            isBundle = true;
-                            const address = `/${data.source}/${data.id}/magnetometer`;
-                            const {x, y, z} = magnetometer;
-                            const values = [
-                                interval,
-                                x, y, z,
-                            ];
-                            const magnetometerMessage = new OSC.Message(address, ...values);
-                            messages.push(magnetometerMessage);
-                        }
-
-                        /////// send everything
-                        if(!isBundle) {
-                            this.oscSend(devicemotionMessage, port, hostname, (err) => {
-                                if (err) { return console.error(err); }
-                            });
-                        } else {
-                            const date = data.timestamp;
-                            const bundle = new OSC.Bundle(messages, date);
-                            this.oscSend(bundle, port, hostname, (err) => {
-                                if (err) { return console.error(err); }
-                            });
-                        }
-
-                        break;
+                for (let name in control) {
+                    if (name === 'timestamp') {
+                        continue;
                     }
-                    // control
-                    case 'control': {
-                        for (let name in data[key]) {
-                            const address = `/${data.source}/${data.id}/${key}/${name}`;
-                            const value = data[key][name];
+                    const address = `/${data.source}/${data.api}/${data.id}/control/${name}`;
 
-                            const message = new OSC.Message(address, value);
-                            this.oscSend(message, port, hostname, (err) => {
-                                if (err) { return console.error(err); }
-                            });
-                        }
-                        break;
+                    let value = control[name];
+                    // use OSC simple integer type 'i' for boolean
+                    if (typeof value === 'boolean') {
+                        value = value ? 1 : 0;
                     }
+                    const message = new OSC.Message(address, value);
 
-                    default: {
-                        break;
-                    }
+                    this.oscMessageAddTimestamp(message, timestamp);
+                    messages.push(message);
                 }
             }
+
+            if (messages.length === 1) {
+                this.oscSend(messages[0], port, hostname, (err) => {
+                    if (err) { return console.error(err); }
+                });
+            } else if (messages.length > 1) {
+                try {
+                    const bundle = new OSC.Bundle(messages);
+                    bundle.timetag.value.timestamp(data.timestamp);
+                    this.oscSend(bundle, port, hostname, (err) => {
+                        if (err) { return console.error(err); }
+                    });
+                }
+                catch (e) {
+                    console.error(e);
+                }
+
+            }
+
         }
     }
-
 
 }
 export default NetworkEngine;

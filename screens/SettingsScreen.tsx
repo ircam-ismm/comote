@@ -179,13 +179,13 @@ export default function SettingsScreen({ color, navigation }) {
   }, [oscHostname, oscPort])
 
   // temporary value for editing
-  const [deviceMotionInterval, setDeviceMotionInterval]
-    = React.useState(`${settings.deviceMotionInterval}`);
+  const [sensorsInterval, setSensorsInterval]
+    = React.useState(`${settings.sensorsInterval}`);
 
   // update local value for coercion by store
   React.useEffect(() => {
-    setDeviceMotionInterval(`${settings.deviceMotionInterval}`);
-  }, [settings.deviceMotionInterval]);
+    setSensorsInterval(`${settings.sensorsInterval}`);
+  }, [settings.sensorsInterval]);
 
   // temporary value for editing
   const [webviewContent, setWebviewContent] = React.useState(`${settings.webviewContent}`);
@@ -390,22 +390,22 @@ export default function SettingsScreen({ color, navigation }) {
               selectTextOnFocus={true}
               placeholder='Enter period (in ms) here'
               placeholderTextColor="#676767"
-              value={deviceMotionInterval}
+              value={sensorsInterval}
               onChange={e => {
-                setDeviceMotionInterval(e.nativeEvent.text);
+                setSensorsInterval(e.nativeEvent.text);
               }}
               onBlur={e => {
-                if (stringIsNumeric(deviceMotionInterval)) {
+                if (stringIsNumeric(sensorsInterval)) {
                   batch(() => {
                     dispatch({
                       type: 'settings/set',
                       payload: {
-                        deviceMotionInterval: parseFloat(deviceMotionInterval),
+                        sensorsInterval: parseFloat(sensorsInterval),
                       },
                     });
                   });
                 } else {
-                  setDeviceMotionInterval(`${settings.deviceMotionInterval}`);
+                  setSensorsInterval(`${settings.sensorsInterval}`);
                 }
               }}
             />
