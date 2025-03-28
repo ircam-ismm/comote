@@ -137,7 +137,7 @@ export class SensorsEngine {
         this.magnetometer = null;
 
         // ask once
-        this.headingPermissionRequestCount = 0;
+        this.headingPermissionRequested = false;
         this.headingSubscribeId = null;
         this.headingListener = null;
         // last normalised value
@@ -236,18 +236,15 @@ export class SensorsEngine {
         const gyroscopePermission = await Gyroscope.getPermissionsAsync();
         const magnetometerPermission = await Magnetometer.getPermissionsAsync();
 
-        // heading does not request permission on get, and multiple requests are annoying
+        // Heading does not request permission on get, and multiple requests are annoying
         // and disturb all processes.
-        // on init, the calls from SensorsComponent and SensorsEngine appear to be
-        // simultaneous (count start at 2), so we need to accept both
+        // On init, the asynchronous calls from SensorsComponent and SensorsEngine are pending,
+        // so we need to accept both.
         let headingPermission;
-        if (this.headingPermissionRequestCount++ <= 2) {
+        if (!this.headingPermissionRequested) {
             try {
                 headingPermission = await Location.requestForegroundPermissionsAsync();
-                // console.log('Location.requestForegroundPermissionsAsync',
-                //     this.headingPermissionRequestCount,
-                //     headingPermission,
-                // );
+                this.headingPermissionRequested = true;
             } catch (error) {
                 console.error('Location.requestForegroundPermissionsAsync', error);
                 headingPermission.granted = false;
@@ -255,10 +252,6 @@ export class SensorsEngine {
         } else {
             try {
                 headingPermission = await Location.getForegroundPermissionsAsync();
-                // console.log('Location.getForegroundPermissionsAsync',
-                //     this.headingPermissionRequestCount,
-                //     headingPermission,
-                // );
             } catch (error) {
                 console.error('Location.getForegroundPermissionsAsync', error);
                 headingPermission.granted = false;
