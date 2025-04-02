@@ -23,8 +23,8 @@ export default {
     header: 'Jouer',
     a: 'A',
     b: 'B',
-    lock: `Verrouiller l'écran (appuyez longtemps...)`,
-    unlock: `Déverrouiller l'écran (appuyez longtemps...)`,
+    lock: `Verrouiller l'écran (appuyer longtemps...)`,
+    unlock: `Déverrouiller l'écran (appuyer longtemps...)`,
   },
   settings: {
     header: 'Réglages',
