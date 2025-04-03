@@ -99,7 +99,7 @@ export class SensorsEngine {
         this.intervalRequest = this.interval; // sensors setUpdateInterval
         this.intervalEstimate = null;
         this.intervalEstimateLowpass = new Lowpass({
-            lowpassFrequency: 0.1,
+            lowpassFrequency: 0.01,
         });
 
         this.sensorsEmulation = sensorsEmulation;
@@ -616,6 +616,8 @@ export class SensorsEngine {
 
     intervalEstimateInit() {
         this.intervalEstimateLowpass.reset();
+        // initialise expected interval with request
+        this.intervalEstimateLowpass.process(this.interval);
         this.intervalEstimate = null;
         this.sensorsLastTime = null;
         this.intervalCompensated = null;
