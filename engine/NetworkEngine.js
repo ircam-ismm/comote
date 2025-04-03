@@ -369,6 +369,16 @@ export class NetworkEngine {
                 messages.push(message);
             }
 
+            const { gravity } = data;
+            if (gravity) {
+                const { x, y, z, timestamp, frequency } = gravity;
+                const address = `/${data.source}/${data.api}/${data.id}/gravity`;
+                const message = new OSC.Message(address, x, y, z);
+                this.oscMessageAddTimestamp(message, timestamp);
+                message.add(frequency);
+                messages.push(message);
+            }
+
             const { magnetometer } = data;
             if (magnetometer) {
                 const address = `/${data.source}/${data.api}/${data.id}/magnetometer`;

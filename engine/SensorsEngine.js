@@ -9,6 +9,8 @@ import {
     // Pedometer,
 } from 'expo-sensors';
 
+import { Gravity } from '@ircam/sc-motion';
+
 // for heading
 import * as Location from 'expo-location';
 
@@ -16,10 +18,6 @@ import * as Location from 'expo-location';
 
 import Lowpass from '../helpers/Lowpass';
 import { timestampGet } from '../helpers/timestamp';
-
-// By default, gyroscope triggers the sending of data, as it appears to come last
-// When it is not available, 'accelerometer' is used as master
- let sensorsMaster ='gyroscope';
 
 // helpers
 
@@ -120,6 +118,10 @@ export class SensorsEngine {
         //     trailing: true, // be sure to apply last request
         // });
 
+        // By default, gyroscope triggers the sending of data, as it appears to come last
+        // When it is not available, 'accelerometer' is used as master
+        this.sensorsMaster = 'gyroscope';
+
         this.accelerometerSubscribeId = null;
         this.accelerometerListener = null;
         // last normalised value
@@ -130,6 +132,9 @@ export class SensorsEngine {
         this.gyroscopeListener = null;
         // last normalised value
         this.gyroscope = null;
+
+        this.gravityProcessor = null;
+        this.gravity = null;
 
         this.magnetometerSubscribeId = null;
         this.magnetometerListener = null;
@@ -178,7 +183,7 @@ export class SensorsEngine {
         if (accelerometerAvailable) {
             // define master before any subscription
             if(!gyroscopeAvailable) {
-                sensorsMaster = 'accelerometer';
+                this.sensorsMaster = 'accelerometer';
             }
 
             // subscribe optional sensors first
@@ -196,6 +201,12 @@ export class SensorsEngine {
             if (gyroscopeAvailable) {
                 // subscribe last, as  it triggers data report
                 await this.gyroscopeSubscribe();
+
+                // gravity requires accelerometer and gyroscope
+                this.gravityProcessor = new Gravity({
+                    sampleRate: 1000 / this.interval,
+                    outputApi: 'v3',
+                });
             }
 
             // set interval after subscription
@@ -295,8 +306,10 @@ export class SensorsEngine {
             this.accelerometerListener = Accelerometer.addListener(data => {
                 this.accelerometer = accelerometerNormalise(data);
 
-                if (sensorsMaster === 'accelerometer') {
+                if (this.sensorsMaster === 'accelerometer') {
+
                     this.intervalEstimateUpdate();
+                    this.gravityUpdate();
                     this.sensorsReport();
                 }
             });
@@ -333,8 +346,9 @@ export class SensorsEngine {
             this.gyroscopeListener = Gyroscope.addListener(data => {
                 this.gyroscope = gyroscopeNormalise(data);
 
-                if (sensorsMaster === 'gyroscope') {
+                if (this.sensorsMaster === 'gyroscope') {
                     this.intervalEstimateUpdate();
+                    this.gravityUpdate();
                     this.sensorsReport();
                 }
             });
@@ -356,6 +370,23 @@ export class SensorsEngine {
             Gyroscope.removeSubscription(this.gyroscopeListener);
         }
         this.gyroscopeListener = null;
+    }
+
+    gravityUpdate() {
+        const { accelerometer, gyroscope } = this;
+        if (this.gravityProcessor && accelerometer && gyroscope) {
+            const { accelerometer, gyroscope } = this;
+            try {
+                const gravity = this.gravityProcessor.process({
+                    api: 'v3',
+                    accelerometer,
+                    gyroscope,
+                });
+                Object.assign(this, gravity);
+            } catch (error) {
+                console.error('Gravity processor error', error.message);
+            }
+        }
     }
 
     async magnetometerSubscribe() {
@@ -432,6 +463,7 @@ export class SensorsEngine {
             const {
                 accelerometer,
                 gyroscope,
+                gravity,
                 magnetometer,
                 heading,
             } = this;
@@ -442,6 +474,10 @@ export class SensorsEngine {
 
             if(gyroscope) {
                 Object.assign(gyroscope, { timestamp, frequency });
+            }
+
+            if(gravity) {
+                Object.assign(gravity, { timestamp, frequency });
             }
 
             if(magnetometer) {
@@ -456,6 +492,7 @@ export class SensorsEngine {
                 timestamp,
                 accelerometer,
                 gyroscope,
+                gravity,
                 magnetometer,
                 heading,
                 // devicemotion: {
@@ -465,17 +502,12 @@ export class SensorsEngine {
                 // },
             };
 
-            if(!gyroscope) {
-                delete values.devicemotion.gyroscope;
-            }
-
-            if(!magnetometer) {
-                delete values.magnetometer;
-            }
-
-            if(!heading) {
-                delete values.heading;
-            }
+            // remove empty values
+            Object.keys(values).forEach((key) => {
+                if (values[key] === null || values[key] === undefined) {
+                    delete values[key];
+                }
+            });
 
             this.dataCallback(values);
         }
@@ -560,6 +592,10 @@ export class SensorsEngine {
             // gyroscope might not be present
             if (gyroscopeAvailable) {
                 Gyroscope.setUpdateInterval(intervalRequest);
+                if (this.gravityProcessor) {
+                    const sampleRate = 1000 / this.intervalRequest;
+                    this.gravityProcessor.set({ sampleRate });
+                }
             }
         } else {
             // try again later
@@ -584,6 +620,10 @@ export class SensorsEngine {
             }
             const estimate = this.intervalEstimateLowpass.process(measure);
             this.intervalEstimate = estimate;
+            if (this.gravityProcessor) {
+                const sampleRate = 1000 / this.intervalEstimate;
+                this.gravityProcessor.set({ sampleRate });
+            }
 
             // @TODO: should we compensate for inaccurate sensors sample period ?
             // Android seems to add one display frame (1/60 ?)
