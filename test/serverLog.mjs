@@ -89,9 +89,3 @@ webSocketServer.on('connection', (socket, rinfo) => {
 
 });
 
-const webSocketHello = new WebSocket(`ws://localhost:${port}`);
-
-webSocketHello.addEventListener('open', () => {
-  console.log(`ws: client open`);
-  webSocketHello.send('hello');
-});

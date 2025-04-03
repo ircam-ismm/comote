@@ -16,17 +16,20 @@ import { RootTabScreenProps } from '../types';
 
 import { urlHandler } from '../navigation/LinkingConfiguration';
 
+// @TODO:
+// BarCodeScanner has been deprecated and will be removed in a future SDK
+// version. Please use `expo-camera` instead.
+//
+// See https://expo.fyi/barcode-scanner-to-expo-camera for more details on
+//  how to migrate.
+//
 
-// @TODO: activate camera (and scanner) only when view is active
+// @TODO: limit code type to what is generated
 
 // https://docs.expo.dev/versions/latest/sdk/bar-code-scanner/
 // Note: Passing undefined to the onBarCodeScanned prop will result in no
 // scanning. This can be used to effectively "pause" the scanner so that it
 // doesn't continually scan even after data has been retrieved.
-
-
-// @TODO: limit code type to what is generated
-
 
 const styles = StyleSheet.create({
   container: {
