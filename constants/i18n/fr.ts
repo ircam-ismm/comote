@@ -34,7 +34,7 @@ export default {
         accelerometer: 'Accéléromètre',
         gyroscope: 'Gyroscope',
         magnetometer: 'Magnétomètre',
-        heading: 'Boussole',
+        heading: 'Cap',
         isAvailable: 'Disponible',
         isNotAvailable: 'Indisponible',
         openSettings: openAppSettings,

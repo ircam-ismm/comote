@@ -34,7 +34,7 @@ export default {
         accelerometer: 'Accelerometro',
         gyroscope: 'Giroscopio',
         magnetometer: 'Magnetometro',
-        heading: 'Bussola',
+        heading: 'Rotta',
         isAvailable: 'Disponibile',
         isNotAvailable: 'Non disponibile',
         openSettings: openAppSettings,
