@@ -23,6 +23,9 @@ export default {
   },
   settings: {
     header: 'Settings',
+    v3FormatChange: 'Please note that the version 3 of CoMote uses a different format than the version 2. Please refer to the documentation.',
+    v2CompatibilityModeAvailable: 'See below for a temporary compatibility mode.',
+    comoteWebsite: 'CoMote Website',
     scanQrCode: 'Scan config from QRCode',
     sensors: {
         header: 'Sensors',
@@ -63,6 +66,12 @@ export default {
       url: 'URL',
       urlPlaceholder: 'http://192.168.1.100/webview',
     },
+    v2CompatibilityMode: {
+      header: 'Version 2 Compatibility Mode',
+      activate: 'Activate',
+      notice: 'Note',
+      deprecationNotice: 'This mode is deprecated and will be removed in future versions.',
+    },
   },
   qrcode: {
     header: 'Scan QR Code',
@@ -76,6 +85,7 @@ export default {
   },
   about: {
     header: 'About CoMote',
+    comoteWebsite: 'CoMote Website',
     developedBy: `CoMote and the KORAL extension are developed by the STMS-Lab (Ircam-CNRS-Sorbonne Université-Ministère de la Culture) in partnership with the Arts Convergences association.`,
     producedBy: `With the support of: Fondation MAAF, Fondation Falret, Département des Yvelines and Foundation Afnic (Fondation de France).`,
     producedByUntil12: `Until version 1.2 CoMote was supported by: Éducation Nationale (Edu-up) and Agence Nationale de la Recherche (ELEMENT project).`,

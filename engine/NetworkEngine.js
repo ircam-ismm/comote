@@ -8,6 +8,17 @@ import dgram from 'react-native-udp';
 
 import OSC from 'osc-js';
 
+import { format } from '@ircam/sc-motion';
+
+function frequencyToInterval(frequency) {
+    if(frequency) {
+        return 1000 / frequency;
+    } else {
+        return 0;
+    }
+}
+
+const { accelerometerGyroscopeToDevicemotion } = format;
 export class NetworkEngine {
     constructor({
         webSocketReadyStateCallback = null,
@@ -31,6 +42,7 @@ export class NetworkEngine {
         this.oscReadyStateSet('CLOSED');
         this.oscUpdateId = null;
 
+        this.v2CompatibilityMode = false;
     }
 
     async set(attributes) {
@@ -333,6 +345,37 @@ export class NetworkEngine {
     }
 
     send(data) {
+        if (this.v2CompatibilityMode) {
+            // WebSocket format is a direct mapping of the data
+            // It should be compatible with v2 and v3 format, with extra fields
+
+            // already in v2 format: add interval
+            [
+                'heading',
+                'magnetometer',
+            ].forEach((sensor) => {
+                if (data[sensor]) {
+                    const { frequency } = data[sensor];
+                    const interval = frequencyToInterval(frequency);
+                    Object.assign(data[sensor], { interval });
+                }
+            });
+
+            const { accelerometer, gyroscope } = data;
+            if (accelerometer || gyroscope) {
+                const devicemotion = accelerometerGyroscopeToDevicemotion({
+                    accelerometer,
+                    gyroscope,
+                });
+
+                const { frequency } = (accelerometer ? accelerometer : gyroscope);
+                const interval = frequencyToInterval(frequency);
+                Object.assign(devicemotion, { interval });
+
+                Object.assign(data, { devicemotion });
+            }
+
+        }
 
         if (this.webSocketEnabled && this.webSocket
             && this.webSocketReadyState === 'OPEN'
@@ -349,9 +392,16 @@ export class NetworkEngine {
             const port = this.oscPort;
             const messages = [];
 
+            // no data.api before v3
+            const oscPrefix = (this.v2CompatibilityMode
+              ? `/${data.source}/${data.id}`
+              : `/${data.source}/${data.api}/${data.id}`
+            );
+
+            // since v3
             const { accelerometer } = data;
-            if (accelerometer) {
-                const address = `/${data.source}/${data.api}/${data.id}/accelerometer`;
+            if (accelerometer && !this.v2CompatibilityMode) {
+                const address = `${oscPrefix}/accelerometer`;
                 const { x, y, z, timestamp, frequency } = accelerometer;
                 const message = new OSC.Message(address, x, y, z);
                 this.oscMessageAddTimestamp(message, timestamp);
@@ -359,9 +409,10 @@ export class NetworkEngine {
                 messages.push(message);
             }
 
+            // since v3
             const { gyroscope } = data;
-            if (gyroscope) {
-                const address = `/${data.source}/${data.api}/${data.id}/gyroscope`;
+            if (gyroscope && !this.v2CompatibilityMode) {
+                const address = `${oscPrefix}/gyroscope`;
                 const { x, y, z, timestamp, frequency } = gyroscope;
                 const message = new OSC.Message(address, x, y, z);
                 this.oscMessageAddTimestamp(message, timestamp);
@@ -369,36 +420,80 @@ export class NetworkEngine {
                 messages.push(message);
             }
 
+            // until v2
+            const { devicemotion } = data;
+            if (devicemotion && this.v2CompatibilityMode) {
+                const address = `${oscPrefix}/devicemotion`;
+                const {
+                    interval, // v2 format
+                    accelerationIncludingGravity = { x: 0, y: 0, z: 0 },
+                    rotationRate = { alpha: 0, beta: 0, gamma: 0 },
+                } = devicemotion;
+                const { x, y, z } = accelerationIncludingGravity;
+                const { alpha, beta, gamma } = rotationRate;
+
+                const message = new OSC.Message(
+                    address,
+                    interval,
+                    x, y, z,
+                    alpha, beta, gamma,
+                );
+
+                messages.push(message);
+            }
+
+            // since v3
             const { gravity } = data;
-            if (gravity) {
+            if (gravity && !this.v2CompatibilityMode) {
+                const address = `${oscPrefix}/gravity`;
                 const { x, y, z, timestamp, frequency } = gravity;
-                const address = `/${data.source}/${data.api}/${data.id}/gravity`;
                 const message = new OSC.Message(address, x, y, z);
                 this.oscMessageAddTimestamp(message, timestamp);
                 message.add(frequency);
                 messages.push(message);
             }
 
+            // since v2
             const { magnetometer } = data;
             if (magnetometer) {
-                const address = `/${data.source}/${data.api}/${data.id}/magnetometer`;
-                const { x, y, z, timestamp, frequency } = magnetometer;
-                const message = new OSC.Message(address, x, y, z);
-                this.oscMessageAddTimestamp(message, timestamp);
-                message.add(frequency);
+                let message;
+                const address = `${oscPrefix}/magnetometer`;
+                const { interval, x, y, z, timestamp, frequency } = magnetometer;
+                if (this.v2CompatibilityMode) {
+                    message = new OSC.Message(address, interval, x, y, z);
+                } else {
+                    message = new OSC.Message(address, x, y, z);
+                    this.oscMessageAddTimestamp(message, timestamp);
+                    message.add(frequency);
+                }
                 messages.push(message);
             }
 
+            // since v2
             const { heading } = data;
             if (heading) {
-                const address = `/${data.source}/${data.api}/${data.id}/heading`;
-                const { magnetic, geographic, accuracy, timestamp, frequency } = heading;
-                const message = new OSC.Message(address, magnetic, geographic, accuracy);
-                this.oscMessageAddTimestamp(message, timestamp);
-                message.add(frequency);
+                let message;
+                const address = `${oscPrefix}/heading`;
+                const {
+                    interval,
+                    magnetic,
+                    geographic,
+                    accuracy,
+                    timestamp,
+                    frequency,
+                 } = heading;
+
+                if (this.v2CompatibilityMode) {
+                    message = new OSC.Message(address, interval, magnetic, geographic, accuracy);
+                } else {
+                    message = new OSC.Message(address, magnetic, geographic, accuracy);
+                    this.oscMessageAddTimestamp(message, timestamp);
+                    message.add(frequency);
+                }
                 messages.push(message);
             }
 
+            // since v2
             const { control } = data;
             if (control) {
                 const { timestamp } = control;
@@ -407,7 +502,7 @@ export class NetworkEngine {
                     if (name === 'timestamp') {
                         continue;
                     }
-                    const address = `/${data.source}/${data.api}/${data.id}/control/${name}`;
+                    const address = `${oscPrefix}/control/${name}`;
 
                     let value = control[name];
                     // use OSC simple integer type 'i' for boolean
@@ -416,7 +511,9 @@ export class NetworkEngine {
                     }
                     const message = new OSC.Message(address, value);
 
-                    this.oscMessageAddTimestamp(message, timestamp);
+                    if (!this.v2CompatibilityMode) {
+                        this.oscMessageAddTimestamp(message, timestamp);
+                    }
                     messages.push(message);
                 }
             }

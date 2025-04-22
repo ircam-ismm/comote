@@ -55,6 +55,11 @@ export default function SettingsScreen({ color, navigation }) {
       fontSize: Platform.OS === 'ios' ? 18 : 16,
     },
 
+    description: {
+      marginVertical: 10,
+      fontSize: Platform.OS === 'ios' ? 18 : 16,
+    },
+
     borderBottom: {
       borderBottomWidth: 1,
       borderBottomColor: '#989898',
@@ -257,7 +262,32 @@ export default function SettingsScreen({ color, navigation }) {
           >
             <Text style={{color: 'white'}}>{i18n.t('settings.scanQrCode')}</Text>
           </TouchableOpacity>
+
         </View>
+
+        {/* INFO SECTION */}
+        <View style={[styles.groupContainer, styles.borderBottom]}>
+
+
+          <Text style={styles.description}>
+            {i18n.t('settings.v3FormatChange')}
+          </Text>
+
+          <TouchableOpacity
+            style={[styles.button, styles.item]}
+            onPress={() => {
+              Linking.openURL('https://apps.ismm.ircam.fr/comote');
+            }}>
+            <Text style={{color: 'white'}}>{i18n.t('about.comoteWebsite')}</Text>
+          </TouchableOpacity>
+
+          <Text style={styles.description}>
+            {i18n.t('settings.v2CompatibilityModeAvailable')}
+          </Text>
+
+        </View>
+
+        <View style={styles.separator}></View>
 
         {/* SENSORS SECTION */}
         <View style={styles.groupContainer}>
@@ -618,6 +648,41 @@ export default function SettingsScreen({ color, navigation }) {
           </View>
         </View>
 
+        {/* V2 MODE SECTION */}
+        <View style={styles.groupContainer}>
+          <View style={styles.borderBottom}>
+            <Text style={styles.groupTitle}>
+              {i18n.t('settings.v2CompatibilityMode.header')}
+            </Text>
+          </View>
+
+          <View style={styles.itemContainer}>
+
+            <Text style={[styles.description, { color: colors.red }]}>
+              {i18n.t('settings.v2CompatibilityMode.deprecationNotice')}
+            </Text>
+
+            <Text style={[styles.label, styles.item]}>
+              {i18n.t('settings.v2CompatibilityMode.activate')}
+            </Text>
+
+            <ColouredSwitch styles={styles}
+              colors={colors}
+              value={settings.v2CompatibilityMode}
+              onValueChange={(value) => {
+                batch(() => {
+                  dispatch({
+                    type: 'settings/set',
+                    payload: { v2CompatibilityMode: value },
+                  });
+
+                });
+              }}
+            />
+
+          </View>
+
+        </View>
       </View>
     </KeyboardAwareScrollView>
   );

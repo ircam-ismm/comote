@@ -83,6 +83,18 @@ export default function AboutScreen({ color, navigation }) {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
+
+      <View style={styles.subcontainer}>
+        <TouchableOpacity
+          style={[styles.button, { backgroundColor: colors.genericButton }]}
+          onPress={() => {
+            Linking.openURL('https://apps.ismm.ircam.fr/comote');
+          }}
+        >
+          <Text style={{ color: 'white' }}>{i18n.t('about.comoteWebsite')}</Text>
+        </TouchableOpacity>
+      </View>
+
       <View style={[styles.subcontainer, styles.textContainer]}>
         <Text style={styles.paragraph}>
           {i18n.t('about.developedBy')}

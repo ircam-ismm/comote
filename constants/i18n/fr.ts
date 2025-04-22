@@ -28,6 +28,8 @@ export default {
   },
   settings: {
     header: 'Réglages',
+    v3FormatChange: "Merci de noter que la version 3 de CoMote utilise un format différent de celui de la version 2. Merci de consulter la documentation.",
+    v2CompatibilityModeAvailable: "Voir ci-dessous pour un mode de compatibilité temporaire.",
     scanQrCode: 'Scanner depuis un QR Code',
     sensors: {
         header: 'Capteurs',
@@ -69,6 +71,13 @@ export default {
       url: 'URL',
       urlPlaceholder: 'http://192.168.1.100/webview',
     },
+    v2CompatibilityMode: {
+      header: 'Mode de compatibilité version 2',
+      activate: 'Activer',
+      notice: 'Note',
+      deprecationNotice: 'Ce mode est obsolète et sera supprimé dans les versions futures.',
+    },
+
   },
   qrcode: {
     header: 'Scanner le QR Code',
@@ -82,6 +91,7 @@ export default {
   },
   about: {
     header: 'À propos de CoMote',
+    comoteWebsite: 'Site Web de CoMote',
     developedBy: `CoMote et l’extension KORAL sont développées par l'Unité Mixte de Recherche STMS (Ircam-CNRS-Sorbonne Université-Ministère de la Culture) en partenariat avec l’association Arts Convergences.`,
     producedBy: `Avec le soutien de : Fondation MAAF, Fondation Falret, Département des Yvelines, et la Fondation Afnic (sour l'égide de la Fondation de France). `,
     producedByUntil12: `Jusqu'à la version 1.2 CoMote a été réalisé avec le soutien de: Éducation Nationale (Edu-up) et Agence Nationale de la Recherche (projet ELEMENT).`,

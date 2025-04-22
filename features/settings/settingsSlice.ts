@@ -27,6 +27,7 @@ const initialState = {
     oscEnabled: false,
     oscUrl: null,
     webviewContent: null,
+    v2CompatibilityMode: false,
   },
   status: 'idle',
 } as SettingsState;

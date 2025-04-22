@@ -30,6 +30,11 @@ export default function NetworkComponent() {
     engine.network.set({ oscUrl });
   }, [settings.oscUrl]);
 
+  React.useEffect(() => {
+    const { v2CompatibilityMode } = settings;
+    engine.network.set({ v2CompatibilityMode });
+  }, [settings.v2CompatibilityMode]);
+
   // declare dispatch in main render function
   const dispatch = useAppDispatch();
   const webSocketReadyStateCallback = React.useCallback((state) => {
