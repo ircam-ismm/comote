@@ -69,18 +69,31 @@ oscServer.bind(port);
 
 
 const webSocketServer = new WebSocketServer.Server({ port });
+console.log(`ws: server listening on port ${port}`);
 
 webSocketServer.on('connection', (socket, rinfo) => {
+  socket.binaryType = 'arraybuffer';
+
   console.log(`ws: server connection`);
 
   socket.on('message', (data) => {
     let message;
+    let messageType;
     try {
-      message = JSON.parse(data);
+      if(data.buffer) {
+        messageType = 'ArrayBuffer';
+        message = Array.from(data);
+      } else {
+        messageType = 'JSON';
+        message = JSON.parse(data);
+      }
+
     } catch (e) {
+      messageType = 'String';
       message = data;
     }
-    console.log(`ws: socket message:`, message);
+
+    console.log(`ws: ${messageType} message from ${rinfo.client.remoteAddress}:`, message);
   });
 
   socket.on('close', () => {
