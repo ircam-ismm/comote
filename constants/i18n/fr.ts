@@ -8,14 +8,13 @@ export default {
   "NSMotionUsageDescription": "Autoriser $(PRODUCT_NAME) à accéder l'accéléromètre pour l'utiliser comme capteur.",
   nav: {
     home: 'Accueil',
-    play: 'Jouer',
     settings: 'Réglages',
     qrcode: 'QR Code',
     webview: 'WebView',
     about: 'À propos',
   },
-  play: {
-    header: 'Jouer',
+  home: {
+    header: 'Accueil',
     a: 'A',
     b: 'B',
     lock: `Verrouiller l'écran (appuyer longtemps...)`,

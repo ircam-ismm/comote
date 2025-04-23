@@ -40,7 +40,7 @@ export default function ButtonsView({ styles }) {
                 }}
             >
                 <Text style={styles.buttonText} selectable={false}>
-                    {i18n.t('play.a')}
+                    {i18n.t('home.a')}
                 </Text>
             </Pressable>
 
@@ -74,7 +74,7 @@ export default function ButtonsView({ styles }) {
                 }}
             >
                 <Text style={styles.buttonText} selectable={false}>
-                    {i18n.t('play.b')}
+                    {i18n.t('home.b')}
                 </Text>
             </Pressable>
         </View>

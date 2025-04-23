@@ -3,14 +3,13 @@ const openAppSettings = 'Open App settings';
 export default {
   nav: {
     home: 'Home',
-    play: 'Play',
     settings: 'Settings',
     qrcode: 'QR Code',
     webview: 'WebView',
     about: 'About',
   },
-  play: {
-    header: 'Play',
+  home: {
+    header: 'Home',
     a: 'A',
     b: 'B',
     lock: 'Lock the screen (press for a while...)',

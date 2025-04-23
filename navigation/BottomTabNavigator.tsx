@@ -21,7 +21,7 @@ import i18n from '../constants/i18n';
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 
-import PlayScreen from '../screens/PlayScreen';
+import HomeScreen from '../screens/HomeScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import QRScreen from '../screens/QRScreen';
 import AboutScreen from '../screens/AboutScreen';
@@ -30,11 +30,13 @@ import WebViewScreen from '../screens/WebViewScreen';
 
 
 import {
-  BottomTabParamList,
-  QRParamList,
+  HomeParamList,
+  WebViewParamList,
   SettingsParamList,
+  QRParamList,
+  AboutParamsList,
+  BottomTabParamList,
   DebugParamList,
-  PlayParamList,
  } from '../types';
 
 const BottomTab = createBottomTabNavigator<BottomTabParamList>();
@@ -44,7 +46,7 @@ export default function BottomTabNavigator() {
 
   return (
     <BottomTab.Navigator
-      initialRouteName="Play"
+      initialRouteName="Home"
 
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme].tabIconSelected,
@@ -62,11 +64,11 @@ export default function BottomTabNavigator() {
       }}>
 
       <BottomTab.Screen
-        name="Play"
-        component={PlayNavigator}
+        name="Home"
+        component={HomeNavigator}
         options={{
-          tabBarLabel: i18n.t('nav.play'),
-          tabBarIcon: ({ color }) => <AntDesign name="playcircleo" size={26} color={color} />,
+          tabBarLabel: i18n.t('nav.home'),
+          tabBarIcon: ({ color }) => <AntDesign name="home" size={26} color={color} />,
         }}
       />
 
@@ -126,25 +128,25 @@ function TabBarIcon(props: { name: React.ComponentProps<typeof Ionicons>['name']
 // Each tab has its own navigation stack, you can read more about this pattern here:
 // https://reactnavigation.org/docs/tab-based-navigation#a-stack-navigator-for-each-tab
 
-const PlayStack = createNativeStackNavigator<PlayParamList>();
+const HomeStack = createNativeStackNavigator<HomeParamList>();
 
-function PlayNavigator() {
+function HomeNavigator() {
   const colorScheme = useColorScheme();
 
   return (
-    <PlayStack.Navigator>
-      <PlayStack.Screen
-        name="PlayScreen"
-        component={PlayScreen}
+    <HomeStack.Navigator>
+      <HomeStack.Screen
+        name="HomeScreen"
+        component={HomeScreen}
         options={{
-          headerTitle: i18n.t('play.header'),
+          headerTitle: i18n.t('home.header'),
           headerStyle: {
             backgroundColor: Colors[colorScheme].background,
           },
           headerShadowVisible: true, // bottom border
         }}
       />
-    </PlayStack.Navigator>
+    </HomeStack.Navigator>
   );
 }
 
@@ -193,7 +195,7 @@ function QRNavigator() {
   );
 }
 
-const WebViewStack = createNativeStackNavigator<PlayParamList>();
+const WebViewStack = createNativeStackNavigator<WebViewParamList>();
 
 function WebViewNavigator() {
   const colorScheme = useColorScheme();
@@ -217,7 +219,7 @@ function WebViewNavigator() {
 }
 
 
-const AboutStack = createNativeStackNavigator<PlayParamList>();
+const AboutStack = createNativeStackNavigator<AboutParamList>();
 
 function AboutNavigator() {
   const colorScheme = useColorScheme();

@@ -21,7 +21,7 @@ import useColorScheme from '../hooks/useColorScheme';
 
 import ButtonsView from './ButtonsView';
 
-export default function PlayScreen({ color }) {
+export default function HomeScreen({ color }) {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme];
 
@@ -126,7 +126,7 @@ export default function PlayScreen({ color }) {
   useFocusEffect(
     React.useCallback(() => {
       // prevent sleep when tab is focused
-      const keepAwakeTag = 'comote:play';
+      const keepAwakeTag = 'comote:home';
       activateKeepAwakeAsync(keepAwakeTag);
 
       return () => {
@@ -159,7 +159,7 @@ export default function PlayScreen({ color }) {
             ]}
             onLongPress={() => setModalVisible(false)}
           >
-            <Text style={styles.buttonLockText}>{i18n.t('play.unlock')}</Text>
+            <Text style={styles.buttonLockText}>{i18n.t('home.unlock')}</Text>
           </Pressable>
         </View>
       </Modal>
@@ -175,7 +175,7 @@ export default function PlayScreen({ color }) {
         ]}
         onLongPress={() => setModalVisible(true)}
       >
-        <Text style={styles.buttonLockText}>{i18n.t('play.lock')}</Text>
+        <Text style={styles.buttonLockText}>{i18n.t('home.lock')}</Text>
       </Pressable>
     </View>
   );

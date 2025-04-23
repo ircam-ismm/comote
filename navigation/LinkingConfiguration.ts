@@ -99,9 +99,9 @@ const linking: LinkingOptions<RootStackParamList> = {
               HomeScreen: 'home',
             }
           },
-          Play: {
+          Home: {
             screens: {
-              PlayScreen: 'play',
+              HomeScreen: 'home',
             },
           },
           WebView: {

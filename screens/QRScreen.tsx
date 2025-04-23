@@ -93,7 +93,7 @@ export default function QRScreen({ navigation }: RootTabScreenProps<'QR'>) {
     const state = store.getState();
 
     if (state.settings.data.webviewContent === null) {
-      navigation.navigate('Play');
+      navigation.navigate('Home');
     } else {
       navigation.navigate('WebView');
     }

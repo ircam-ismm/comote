@@ -8,14 +8,13 @@ export default {
   "NSMotionUsageDescription": "Consentire a $(PRODUCT_NAME) di accedere all'accelerometro per utilizzarlo come sensore.",
   nav: {
     home: `Home`,
-    play: 'Esegui',
     settings: 'Impostazioni',
     qrcode: 'QR Code',
     webview: 'WebView',
     about: 'Informazioni',
   },
-  play: {
-    header: 'Esegui',
+  home: {
+    header: 'Home',
     a: 'A',
     b: 'B',
     lock: `Blocca lo schermo (premere a lungo...)`,
