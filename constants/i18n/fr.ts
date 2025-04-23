@@ -22,8 +22,8 @@ export default {
   },
   settings: {
     header: 'Réglages',
-    v3FormatChange: "Merci de noter que la version 3 de CoMote utilise un format différent de celui de la version 2. Merci de consulter la documentation.",
-    v2CompatibilityModeAvailable: "Voir ci-dessous pour un mode de compatibilité temporaire.",
+    outputApiChange: "Merci de noter que la version 3 de CoMote utilise un format différent de celui de la version 2. Merci de consulter la documentation.",
+    outputApiAvailable: "Voir ci-dessous pour un mode de compatibilité temporaire.",
     scanQrCode: 'Scanner depuis un QR Code',
     sensors: {
         header: 'Capteurs',
@@ -65,7 +65,7 @@ export default {
       url: 'URL',
       urlPlaceholder: 'http://192.168.1.100/webview',
     },
-    v2CompatibilityMode: {
+    outputApi: {
       header: 'Mode de compatibilité version 2',
       activate: 'Activer',
       notice: 'Note',

@@ -31,9 +31,9 @@ export default function NetworkComponent() {
   }, [settings.oscUrl]);
 
   React.useEffect(() => {
-    const { v2CompatibilityMode } = settings;
-    engine.network.set({ v2CompatibilityMode });
-  }, [settings.v2CompatibilityMode]);
+    const { outputApi } = settings;
+    engine.network.set({ outputApi });
+  }, [settings.outputApi]);
 
   // declare dispatch in main render function
   const dispatch = useAppDispatch();

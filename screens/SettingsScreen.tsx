@@ -270,7 +270,7 @@ export default function SettingsScreen({ color, navigation }) {
 
 
           <Text style={styles.description}>
-            {i18n.t('settings.v3FormatChange')}
+            {i18n.t('settings.outputApiChange')}
           </Text>
 
           <TouchableOpacity
@@ -282,7 +282,7 @@ export default function SettingsScreen({ color, navigation }) {
           </TouchableOpacity>
 
           <Text style={styles.description}>
-            {i18n.t('settings.v2CompatibilityModeAvailable')}
+            {i18n.t('settings.outputApiAvailable')}
           </Text>
 
         </View>
@@ -652,28 +652,28 @@ export default function SettingsScreen({ color, navigation }) {
         <View style={styles.groupContainer}>
           <View style={styles.borderBottom}>
             <Text style={styles.groupTitle}>
-              {i18n.t('settings.v2CompatibilityMode.header')}
+              {i18n.t('settings.outputApi.header')}
             </Text>
           </View>
 
           <View style={styles.itemContainer}>
 
             <Text style={[styles.description, { color: colors.red }]}>
-              {i18n.t('settings.v2CompatibilityMode.deprecationNotice')}
+              {i18n.t('settings.outputApi.deprecationNotice')}
             </Text>
 
             <Text style={[styles.label, styles.item]}>
-              {i18n.t('settings.v2CompatibilityMode.activate')}
+              {i18n.t('settings.outputApi.activate')}
             </Text>
 
             <ColouredSwitch styles={styles}
               colors={colors}
-              value={settings.v2CompatibilityMode}
+              value={settings.outputApi === 'v2'}
               onValueChange={(value) => {
                 batch(() => {
                   dispatch({
                     type: 'settings/set',
-                    payload: { v2CompatibilityMode: value },
+                    payload: { outputApi: value ? 'v2' : 'v3' },
                   });
 
                 });

@@ -27,7 +27,7 @@ const initialState = {
     oscEnabled: false,
     oscUrl: null,
     webviewContent: null,
-    v2CompatibilityMode: false,
+    outputApi: 'v3',
   },
   status: 'idle',
 } as SettingsState;

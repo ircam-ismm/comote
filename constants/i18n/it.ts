@@ -22,8 +22,8 @@ export default {
   },
   settings: {
     header: 'Impostazioni',
-    v3FormatChange: "Si noti che la versione 3 di CoMote utilizza un formato diverso dalla versione 2. Consultare la documentazione.",
-    v2CompatibilityModeAvailable: "Vedere di seguito per una modalità di compatibilità temporanea.",
+    outputApiChange: "Si noti che la versione 3 di CoMote utilizza un formato diverso dalla versione 2. Consultare la documentazione.",
+    outputApiAvailable: "Vedere di seguito per una modalità di compatibilità temporanea.",
     scanQrCode: 'Configura da QR Code',
     sensors: {
         header: 'Sensori',
@@ -75,7 +75,7 @@ export default {
   webview: {
     header: 'WebView',
   },
-  v2CompatibilityMode: {
+  outputApi: {
     header: 'Modalità di compatibilità versione 2',
     activate: 'Attiva',
     notice: 'Nota',

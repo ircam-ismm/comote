@@ -42,7 +42,7 @@ export class NetworkEngine {
         this.oscReadyStateSet('CLOSED');
         this.oscUpdateId = null;
 
-        this.v2CompatibilityMode = false;
+        this.outputApi = 'v3';
     }
 
     async set(attributes) {
@@ -345,7 +345,17 @@ export class NetworkEngine {
     }
 
     send(data) {
-        if (this.v2CompatibilityMode) {
+        if (!data || !this.outputApi) {
+            return;
+        }
+
+        const outputApiVersion = parseInt(this.outputApi.slice(1), 10);
+        if(!outputApiVersion) {
+            console.error(`Invalid outputApi: ${this.outputApi}`);
+            return;
+        }
+
+        if (outputApiVersion < 3) {
             // WebSocket format is a direct mapping of the data
             // It should be compatible with v2 and v3 format, with extra fields
 
@@ -393,14 +403,14 @@ export class NetworkEngine {
             const messages = [];
 
             // no data.api before v3
-            const oscPrefix = (this.v2CompatibilityMode
+            const oscPrefix = (outputApiVersion < 3
               ? `/${data.source}/${data.id}`
               : `/${data.source}/${data.api}/${data.id}`
             );
 
             // since v3
             const { accelerometer } = data;
-            if (accelerometer && !this.v2CompatibilityMode) {
+            if (accelerometer && outputApiVersion >= 3) {
                 const address = `${oscPrefix}/accelerometer`;
                 const { x, y, z, timestamp, frequency } = accelerometer;
                 const message = new OSC.Message(address, x, y, z);
@@ -411,7 +421,7 @@ export class NetworkEngine {
 
             // since v3
             const { gyroscope } = data;
-            if (gyroscope && !this.v2CompatibilityMode) {
+            if (gyroscope && outputApiVersion >= 3) {
                 const address = `${oscPrefix}/gyroscope`;
                 const { x, y, z, timestamp, frequency } = gyroscope;
                 const message = new OSC.Message(address, x, y, z);
@@ -422,7 +432,7 @@ export class NetworkEngine {
 
             // until v2
             const { devicemotion } = data;
-            if (devicemotion && this.v2CompatibilityMode) {
+            if (devicemotion && outputApiVersion < 3) {
                 const address = `${oscPrefix}/devicemotion`;
                 const {
                     interval, // v2 format
@@ -444,7 +454,7 @@ export class NetworkEngine {
 
             // since v3
             const { gravity } = data;
-            if (gravity && !this.v2CompatibilityMode) {
+            if (gravity && outputApiVersion >= 3) {
                 const address = `${oscPrefix}/gravity`;
                 const { x, y, z, timestamp, frequency } = gravity;
                 const message = new OSC.Message(address, x, y, z);
@@ -459,7 +469,7 @@ export class NetworkEngine {
                 let message;
                 const address = `${oscPrefix}/magnetometer`;
                 const { interval, x, y, z, timestamp, frequency } = magnetometer;
-                if (this.v2CompatibilityMode) {
+                if (outputApiVersion < 3) {
                     message = new OSC.Message(address, interval, x, y, z);
                 } else {
                     message = new OSC.Message(address, x, y, z);
@@ -483,7 +493,7 @@ export class NetworkEngine {
                     frequency,
                  } = heading;
 
-                if (this.v2CompatibilityMode) {
+                if (outputApiVersion < 3) {
                     message = new OSC.Message(address, interval, magnetic, geographic, accuracy);
                 } else {
                     message = new OSC.Message(address, magnetic, geographic, accuracy);
@@ -511,7 +521,7 @@ export class NetworkEngine {
                     }
                     const message = new OSC.Message(address, value);
 
-                    if (!this.v2CompatibilityMode) {
+                    if (outputApiVersion < 3) {
                         this.oscMessageAddTimestamp(message, timestamp);
                     }
                     messages.push(message);
