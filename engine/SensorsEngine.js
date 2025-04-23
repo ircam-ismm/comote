@@ -489,7 +489,6 @@ export class SensorsEngine {
             }
 
             const values = {
-                timestamp,
                 accelerometer,
                 gyroscope,
                 gravity,
