@@ -14,11 +14,6 @@ export default {
     webview: 'WebView',
     about: 'Informazioni',
   },
-  home: {
-    play: 'Esegui',
-    settings: 'Impostazioni',
-    qrcode: 'QR Code',
-  },
   play: {
     header: 'Esegui',
     a: 'A',

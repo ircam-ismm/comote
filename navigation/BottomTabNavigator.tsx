@@ -21,7 +21,6 @@ import i18n from '../constants/i18n';
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 
-// import HomeScreen from '../screens/HomeScreen';
 import PlayScreen from '../screens/PlayScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import QRScreen from '../screens/QRScreen';
@@ -45,7 +44,6 @@ export default function BottomTabNavigator() {
 
   return (
     <BottomTab.Navigator
-      // initialRouteName="Home"
       initialRouteName="Play"
 
       screenOptions={{
@@ -62,15 +60,6 @@ export default function BottomTabNavigator() {
           fontSize: Platform.OS === 'ios' ? 12 : 12,
         },
       }}>
-
-      {/* <BottomTab.Screen
-        name="Home"
-        component={HomeNavigator}
-        options={{
-          tabBarLabel: i18n.t('nav.home'),
-          tabBarIcon: ({ color }) => <AntDesign name="home" size={26} color={color} />,
-        }}
-      /> */}
 
       <BottomTab.Screen
         name="Play"
@@ -136,24 +125,6 @@ function TabBarIcon(props: { name: React.ComponentProps<typeof Ionicons>['name']
 
 // Each tab has its own navigation stack, you can read more about this pattern here:
 // https://reactnavigation.org/docs/tab-based-navigation#a-stack-navigator-for-each-tab
-
-// const HomeStack = createNativeStackNavigator<PlayParamList>();
-
-// function HomeNavigator() {
-//   const colorScheme = useColorScheme();
-
-//   return (
-//     <HomeStack.Navigator>
-//       <HomeStack.Screen
-//         name="HomeScreen"
-//         component={HomeScreen}
-//         options={{
-//           headerShown: false,
-//         }}
-//       />
-//     </HomeStack.Navigator>
-//   );
-// }
 
 const PlayStack = createNativeStackNavigator<PlayParamList>();
 

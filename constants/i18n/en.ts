@@ -9,11 +9,6 @@ export default {
     webview: 'WebView',
     about: 'About',
   },
-  home: {
-    play: 'Play',
-    settings: 'Settings',
-    qrcode: 'QR Code',
-  },
   play: {
     header: 'Play',
     a: 'A',
