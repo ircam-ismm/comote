@@ -296,6 +296,9 @@ The message format is normalised. Please consult [sc-motion](https://github.com/
 
 ## TODO
 
+- [ ] Update to Expo SDK v52
+- [ ] Remove explicit image for ios production build in `eas.json`
+
 ### BUGS
 
 - [ ] fix full-screen glitches
@@ -436,33 +439,3 @@ Rename CoMo.te to Comote:
 
 - [x] i18n - at least french and english
 - [x] review Home buttons, be consistent with the bottom menu
-
-### JS helpers
-
-See `comote-bench` project.
-
-```
-@ircam/comote-helpers
-```
-
-```
-import { getWifiInfos, CoMoteServer } from '@ircam/comote-helpers/server.js';
-await getWifiInfos() -> { ssid, ip }
-
-new comote.Server(config, { verbose = false }) -> CoMoteServer {
-  await start();
-  await close();
-  addListener(callback) -> () => removeEventListener(callback);
-  removeListener();
-};
-
-// server + client
-import { qrCode } from '@ircam/comote-helpers/qr-code.js';
-
-qrCode.terminal(config);
-qrCode.dataUrl(config);
-```
-
-### Max abstraction
-
-jpatcher w/ jweb
