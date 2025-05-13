@@ -352,7 +352,6 @@ export class NetworkEngine {
         }
 
         const outputApiVersion = apiStringToVersion(this.outputApi);
-        console.log('outputApiVersion', outputApiVersion);
         if(!outputApiVersion) {
             console.error(`Invalid outputApi: ${this.outputApi}`);
             return;

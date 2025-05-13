@@ -38,9 +38,11 @@ oscServer.on('message', (data, rinfo) => {
       bundle.unpack(dataView);
 
       const timestamp = timetagToTimestamp(bundle.timetag.value);
+      const date = new Date(timestamp);
+      const dateString = `${date.toLocaleString()}.${date.getMilliseconds()}`;
       bundle.bundleElements.forEach((element) => {
-        console.log(`osc: bundle element: ${timestamp}`,
-          `${element.address}`,
+        console.log(`osc: bundle element: ${timestamp} (${dateString})`);
+        console.log(`${element.address}`,
           typesFormat(element.types),
           ...element.args,
         );
