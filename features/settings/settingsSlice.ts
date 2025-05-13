@@ -12,6 +12,7 @@ import slugify from 'slugify';
 import type { RootState, AppThunk } from '../../store';
 
 import stringIsNumeric from '../../helpers/stringIsNumeric.js';
+import { apiStringToVersion } from '../../helpers/api.js';
 
 interface SettingsState {
   data: any;
@@ -52,6 +53,11 @@ const settingsSlice = createSlice({
         || Number.isNaN(state.data.sensorsInterval)
       ) {
         state.data.sensorsInterval = initialState.data.sensorsInterval;
+      }
+
+      const outputApiVersion = apiStringToVersion(state.data.outputApi);
+      if (outputApiVersion < 2) {
+        state.data.outputApi = initialState.data.outputApi;
       }
 
       // make sure we don't have garbage in id, as it used for OSC addresses

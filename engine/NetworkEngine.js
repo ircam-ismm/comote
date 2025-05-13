@@ -10,6 +10,8 @@ import OSC from 'osc-js';
 
 import { format } from '@ircam/sc-motion';
 
+import { apiStringToVersion } from '../helpers/api';
+
 function frequencyToInterval(frequency) {
     if(frequency) {
         return 1000 / frequency;
@@ -349,7 +351,8 @@ export class NetworkEngine {
             return;
         }
 
-        const outputApiVersion = parseInt(this.outputApi.slice(1), 10);
+        const outputApiVersion = apiStringToVersion(this.outputApi);
+        console.log('outputApiVersion', outputApiVersion);
         if(!outputApiVersion) {
             console.error(`Invalid outputApi: ${this.outputApi}`);
             return;
