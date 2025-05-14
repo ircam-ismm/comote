@@ -523,7 +523,7 @@ export class NetworkEngine {
                     }
                     const message = new OSC.Message(address, value);
 
-                    if (outputApiVersion < 3) {
+                    if (outputApiVersion >= 3) {
                         this.oscMessageAddTimestamp(message, timestamp);
                     }
                     messages.push(message);
