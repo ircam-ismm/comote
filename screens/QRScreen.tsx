@@ -3,10 +3,8 @@ import * as Linking from 'expo-linking';
 import { StyleSheet, Button } from 'react-native';
 
 import { useIsFocused } from '@react-navigation/native';
-import { BarCodeScanner } from 'expo-barcode-scanner';
 
-// import { useAppSelector } from '../hooks';
-// import { selectSettings } from '../features/settings/settingsSlice';
+import { CameraView, Camera } from "expo-camera";
 
 import i18n from '../constants/i18n';
 import store from '../store';
@@ -16,18 +14,9 @@ import { RootTabScreenProps } from '../types';
 
 import { urlHandler } from '../navigation/LinkingConfiguration';
 
-// @TODO:
-// BarCodeScanner has been deprecated and will be removed in a future SDK
-// version. Please use `expo-camera` instead.
-//
-// See https://expo.fyi/barcode-scanner-to-expo-camera for more details on
-//  how to migrate.
-//
-
 // @TODO: limit code type to what is generated
 
-// https://docs.expo.dev/versions/latest/sdk/bar-code-scanner/
-// Note: Passing undefined to the onBarCodeScanned prop will result in no
+// Note: Passing undefined to the onBarcodeScanned prop will result in no
 // scanning. This can be used to effectively "pause" the scanner so that it
 // doesn't continually scan even after data has been retrieved.
 
@@ -75,7 +64,7 @@ export default function QRScreen({ navigation }: RootTabScreenProps<'QR'>) {
   useEffect(() => {
     (async () => {
       try {
-        const { status } = await BarCodeScanner.requestPermissionsAsync();
+        const { status } = await Camera.requestCameraPermissionsAsync();
         setHasPermission(status === 'granted');
       } catch (error) {
         console.log('Error requesting permission for camera', error);
@@ -134,8 +123,8 @@ export default function QRScreen({ navigation }: RootTabScreenProps<'QR'>) {
   return (
     <View style={styles.container}>
       {isFocused
-       ? <BarCodeScanner
-           onBarCodeScanned={isFocused ? handleBarCodeScanned : undefined}
+       ? <CameraView
+           onBarcodeScanned={isFocused ? handleBarCodeScanned : undefined}
            style={StyleSheet.absoluteFillObject}
          />
        : <View style={styles.info}>
