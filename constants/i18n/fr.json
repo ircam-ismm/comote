@@ -1,0 +1,9 @@
+{
+  "ios": {
+    "CFBundleDisplayName": "CoMote",
+    "NSContactsUsageDescription": "CoMote"
+  },
+  "android": {
+    "app_name": "CoMote"
+  }
+}

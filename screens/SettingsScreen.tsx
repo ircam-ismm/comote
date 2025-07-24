@@ -1,5 +1,6 @@
 import * as React from 'react';
 import {
+  KeyboardAvoidingView,
   Platform,
   StyleSheet,
   TextInput,
@@ -14,7 +15,6 @@ import { useFocusEffect } from '@react-navigation/native';
 import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 
 import { Text, View, WebSocketConnectionStatus, OscConnectionStatus } from '../components/Themed';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import ColouredSwitch from './ColouredSwitch';
 
 import { useAppSelector, useAppDispatch } from '../hooks';
@@ -251,7 +251,8 @@ export default function SettingsScreen({ color, navigation }) {
 
 
   return (
-    <KeyboardAwareScrollView>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
 
       <View style={styles.container}>
 
@@ -684,6 +685,6 @@ export default function SettingsScreen({ color, navigation }) {
 
         </View>
       </View>
-    </KeyboardAwareScrollView>
+    </KeyboardAvoidingView>
   );
 }
