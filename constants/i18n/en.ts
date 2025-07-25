@@ -17,8 +17,7 @@ export default {
   },
   settings: {
     header: 'Settings',
-    outputApiChange: 'Please note that the version 3 of CoMote uses a different format than the version 2. Please refer to the documentation.',
-    outputApiAvailable: 'See below for a temporary compatibility mode.',
+    outputApiChange: 'CoMote v3 formats data according to the W3C standard, unlike CoMote v2.',
     comoteWebsite: 'CoMote Website',
     scanQrCode: 'Scan config from QRCode',
     sensors: {

@@ -86,7 +86,7 @@ export default function SettingsScreen({ color, navigation }) {
     },
 
     labelLarge: {
-        width: 140,
+      width: 140,
     },
 
     input: {
@@ -134,11 +134,11 @@ export default function SettingsScreen({ color, navigation }) {
     },
 
     sensorAvailable: {
-        color: colors.green,
+      color: colors.green,
     },
 
     sensorNotAvailable: {
-        color: colors.red,
+      color: colors.red,
     },
 
   });
@@ -150,7 +150,7 @@ export default function SettingsScreen({ color, navigation }) {
 
     (async () => {
       const sensorsMultipleAvailable = await engine.sensors.sensorsAvailable();
-        setSensorsMultipleAvailable(sensorsMultipleAvailable);
+      setSensorsMultipleAvailable(sensorsMultipleAvailable);
     })();
 
   }, []);
@@ -161,7 +161,7 @@ export default function SettingsScreen({ color, navigation }) {
     = React.useState(settings.webSocketUrl ? `${settings.webSocketUrl}` : '');
 
   // update local value for coercion by store
-  React.useEffect( () => {
+  React.useEffect(() => {
     setWebSocketUrl(settings.webSocketUrl ? `${settings.webSocketUrl}` : '');
   }, [settings.webSocketUrl]);
 
@@ -170,10 +170,10 @@ export default function SettingsScreen({ color, navigation }) {
     = React.useState(settings.oscUrl ? `${settings.oscUrl}` : '');
 
   // update local value for coercion by store
-  React.useEffect( () => {
+  React.useEffect(() => {
     const url = settings.oscUrl ? `${settings.oscUrl}` : '';
     setOscUrl(url);
-    const { hostname, port} = urlParse(url);
+    const { hostname, port } = urlParse(url);
     setOscHostname(hostname);
     setOscPort(port);
   }, [settings.oscUrl]);
@@ -181,7 +181,7 @@ export default function SettingsScreen({ color, navigation }) {
   const [oscHostname, setOscHostname] = React.useState('');
   const [oscPort, setOscPort] = React.useState('');
 
-  React.useEffect( () => {
+  React.useEffect(() => {
     setOscUrl(`udp://${oscHostname}:${oscPort}`);
   }, [oscHostname, oscPort])
 
@@ -254,46 +254,61 @@ export default function SettingsScreen({ color, navigation }) {
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'offset'}
-      style={[styles.container, { flex: 1}]}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={[styles.container, { flex: 1 }]}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
     >
 
       <ScrollView style={styles.container}>
 
-        <View style={styles.groupContainer}>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => navigation.navigate('QRCode')}
-          >
-            <Text style={{color: 'white'}}>{i18n.t('settings.scanQrCode')}</Text>
-          </TouchableOpacity>
-
-        </View>
-
         {/* INFO SECTION */}
-        <View style={[styles.groupContainer, styles.borderBottom]}>
-
+        <View style={styles.groupContainer}>
 
           <Text style={styles.description}>
             {i18n.t('settings.outputApiChange')}
           </Text>
+
+          {/* V2 MODE SECTION */}
+          <View style={styles.groupContainer}>
+            <View style={styles.borderBottom}>
+              <Text style={styles.groupTitle}>
+                {i18n.t('settings.outputApi.header')}
+              </Text>
+            </View>
+
+            <View style={styles.itemContainer}>
+
+              <Text style={[styles.label, styles.item]}>
+                {i18n.t('settings.outputApi.activate')}
+              </Text>
+
+              <ColouredSwitch styles={styles}
+                colors={colors}
+                value={settings.outputApi === 'v2'}
+                onValueChange={(value) => {
+                  batch(() => {
+                    dispatch({
+                      type: 'settings/set',
+                      payload: { outputApi: value ? 'v2' : 'v3' },
+                    });
+
+                  });
+                }}
+              />
+
+            </View>
+
+          </View>
 
           <TouchableOpacity
             style={[styles.button, styles.item]}
             onPress={() => {
               Linking.openURL('https://apps.ismm.ircam.fr/comote');
             }}>
-            <Text style={{color: 'white'}}>{i18n.t('about.comoteWebsite')}</Text>
+            <Text style={{ color: 'white' }}>{i18n.t('about.comoteWebsite')}</Text>
           </TouchableOpacity>
 
-          <Text style={styles.description}>
-            {i18n.t('settings.outputApiAvailable')}
-          </Text>
-
         </View>
-
-        <View style={styles.separator}></View>
 
         {/* SENSORS SECTION */}
         <View style={styles.groupContainer}>
@@ -302,6 +317,7 @@ export default function SettingsScreen({ color, navigation }) {
               {i18n.t('settings.sensors.header')}
             </Text>
           </View>
+
           <View style={styles.separator}></View>
 
           <View style={styles.itemContainer}>
@@ -309,14 +325,14 @@ export default function SettingsScreen({ color, navigation }) {
               {i18n.t('settings.sensors.accelerometer')}
             </Text>
             <Text style={[
-                styles.item,
-                sensorsMultipleAvailable.accelerometerAvailable
-                  ? styles.sensorAvailable
-                  : styles.sensorNotAvailable
-                ]}>
+              styles.item,
+              sensorsMultipleAvailable.accelerometerAvailable
+                ? styles.sensorAvailable
+                : styles.sensorNotAvailable
+            ]}>
               {sensorsMultipleAvailable.accelerometerAvailable
                 ? i18n.t('settings.sensors.isAvailable')
-                : i18n.t('settings.sensors.isNotAvailable') }
+                : i18n.t('settings.sensors.isNotAvailable')}
             </Text>
           </View>
 
@@ -325,14 +341,14 @@ export default function SettingsScreen({ color, navigation }) {
               {i18n.t('settings.sensors.gyroscope')}
             </Text>
             <Text style={[
-                styles.item,
-                sensorsMultipleAvailable.gyroscopeAvailable
-                  ? styles.sensorAvailable
-                  : styles.sensorNotAvailable
-                ]}>
+              styles.item,
+              sensorsMultipleAvailable.gyroscopeAvailable
+                ? styles.sensorAvailable
+                : styles.sensorNotAvailable
+            ]}>
               {sensorsMultipleAvailable.gyroscopeAvailable
                 ? i18n.t('settings.sensors.isAvailable')
-                : i18n.t('settings.sensors.isNotAvailable') }
+                : i18n.t('settings.sensors.isNotAvailable')}
             </Text>
           </View>
 
@@ -341,14 +357,14 @@ export default function SettingsScreen({ color, navigation }) {
               {i18n.t('settings.sensors.magnetometer')}
             </Text>
             <Text style={[
-                styles.item,
-                sensorsMultipleAvailable.magnetometerAvailable
-                  ? styles.sensorAvailable
-                  : styles.sensorNotAvailable
-                ]}>
+              styles.item,
+              sensorsMultipleAvailable.magnetometerAvailable
+                ? styles.sensorAvailable
+                : styles.sensorNotAvailable
+            ]}>
               {sensorsMultipleAvailable.magnetometerAvailable
                 ? i18n.t('settings.sensors.isAvailable')
-                : i18n.t('settings.sensors.isNotAvailable') }
+                : i18n.t('settings.sensors.isNotAvailable')}
             </Text>
           </View>
 
@@ -357,14 +373,14 @@ export default function SettingsScreen({ color, navigation }) {
               {i18n.t('settings.sensors.heading')}
             </Text>
             <Text style={[
-                styles.item,
-                sensorsMultipleAvailable.headingAvailable
-                  ? styles.sensorAvailable
-                  : styles.sensorNotAvailable
-                ]}>
+              styles.item,
+              sensorsMultipleAvailable.headingAvailable
+                ? styles.sensorAvailable
+                : styles.sensorNotAvailable
+            ]}>
               {sensorsMultipleAvailable.headingAvailable
                 ? i18n.t('settings.sensors.isAvailable')
-                : i18n.t('settings.sensors.isNotAvailable') }
+                : i18n.t('settings.sensors.isNotAvailable')}
             </Text>
           </View>
 
@@ -372,7 +388,7 @@ export default function SettingsScreen({ color, navigation }) {
             style={styles.button}
             onPress={() => Linking.openSettings()}
           >
-            <Text style={{color: 'white'}}>{i18n.t('settings.sensors.openSettings')}</Text>
+            <Text style={{ color: 'white' }}>{i18n.t('settings.sensors.openSettings')}</Text>
           </TouchableOpacity>
 
         </View>
@@ -474,17 +490,17 @@ export default function SettingsScreen({ color, navigation }) {
             </Text>
 
             <ColouredSwitch styles={styles}
-                            colors={colors}
-                            value={settings.webSocketEnabled}
-                            onValueChange={(value) => {
-                              batch(() => {
-                                dispatch({
-                                  type: 'settings/set',
-                                  payload: { webSocketEnabled: value },
-                                });
+              colors={colors}
+              value={settings.webSocketEnabled}
+              onValueChange={(value) => {
+                batch(() => {
+                  dispatch({
+                    type: 'settings/set',
+                    payload: { webSocketEnabled: value },
+                  });
 
-                              });
-                            }}
+                });
+              }}
             />
 
           </View>
@@ -510,7 +526,7 @@ export default function SettingsScreen({ color, navigation }) {
               value={webSocketUrl}
               onChange={(e) => {
                 setWebSocketUrl(e.nativeEvent.text);
-              } }
+              }}
               onBlur={(e) => {
                 batch(() => {
                   dispatch({
@@ -537,17 +553,17 @@ export default function SettingsScreen({ color, navigation }) {
             </Text>
 
             <ColouredSwitch styles={styles}
-                            colors={colors}
-                            value={settings.oscEnabled}
-                            onValueChange={(value) => {
-                              batch(() => {
-                                dispatch({
-                                  type: 'settings/set',
-                                  payload: { oscEnabled: value },
-                                });
+              colors={colors}
+              value={settings.oscEnabled}
+              onValueChange={(value) => {
+                batch(() => {
+                  dispatch({
+                    type: 'settings/set',
+                    payload: { oscEnabled: value },
+                  });
 
-                              });
-                            }}
+                });
+              }}
             />
 
           </View>
@@ -573,7 +589,7 @@ export default function SettingsScreen({ color, navigation }) {
               value={oscHostname}
               onChange={(e) => {
                 setOscHostname(e.nativeEvent.text);
-              } }
+              }}
               onBlur={(e) => {
                 batch(() => {
                   dispatch({
@@ -599,7 +615,7 @@ export default function SettingsScreen({ color, navigation }) {
               value={oscPort}
               onChange={(e) => {
                 setOscPort(e.nativeEvent.text);
-              } }
+              }}
               onBlur={(e) => {
                 if (stringIsNumeric(oscPort)) {
                   batch(() => {
@@ -611,7 +627,7 @@ export default function SettingsScreen({ color, navigation }) {
                 } else {
                   const url = `${settings.oscUrl}`;
                   setOscUrl(url);
-                  const {hostname, port} = urlParse(url);
+                  const { hostname, port } = urlParse(url);
                   setOscPort(port);
                 }
               }}
@@ -654,41 +670,6 @@ export default function SettingsScreen({ color, navigation }) {
           </View>
         </View>
 
-        {/* V2 MODE SECTION */}
-        <View style={styles.groupContainer}>
-          <View style={styles.borderBottom}>
-            <Text style={styles.groupTitle}>
-              {i18n.t('settings.outputApi.header')}
-            </Text>
-          </View>
-
-          <View style={styles.itemContainer}>
-
-            <Text style={[styles.description, { color: colors.red }]}>
-              {i18n.t('settings.outputApi.deprecationNotice')}
-            </Text>
-
-            <Text style={[styles.label, styles.item]}>
-              {i18n.t('settings.outputApi.activate')}
-            </Text>
-
-            <ColouredSwitch styles={styles}
-              colors={colors}
-              value={settings.outputApi === 'v2'}
-              onValueChange={(value) => {
-                batch(() => {
-                  dispatch({
-                    type: 'settings/set',
-                    payload: { outputApi: value ? 'v2' : 'v3' },
-                  });
-
-                });
-              }}
-            />
-
-          </View>
-
-        </View>
       </ScrollView>
     </KeyboardAvoidingView>
   );
