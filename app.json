@@ -3,7 +3,7 @@
     "name": "CoMote",
     "slug": "comote",
     "owner": "ircam-ismm",
-    "version": "3.4.0",
+    "version": "3.4.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "comote",
