@@ -496,7 +496,7 @@ export class NetworkEngine {
                  } = heading;
 
                 if (outputApiVersion < 3) {
-                    message = new OSC.Message(address, interval, magnetic, geographic, accuracy);
+                    message = new OSC.Message(address, interval, accuracy, magnetic, geographic);
                 } else {
                     message = new OSC.Message(address, magnetic, geographic, accuracy);
                     this.oscMessageAddTimestamp(message, timestamp);
