@@ -2,6 +2,7 @@ import * as React from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
+  ScrollView,
   StyleSheet,
   TextInput,
   TouchableOpacity,
@@ -43,6 +44,7 @@ export default function SettingsScreen({ color, navigation }) {
   const styles = StyleSheet.create({
     container: {
       padding: 16,
+      backgroundColor: colors.background,
     },
 
     groupContainer: {
@@ -252,9 +254,12 @@ export default function SettingsScreen({ color, navigation }) {
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      behavior={Platform.OS === 'ios' ? 'padding' : 'offset'}
+      style={[styles.container, { flex: 1}]}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+    >
 
-      <View style={styles.container}>
+      <ScrollView style={styles.container}>
 
         <View style={styles.groupContainer}>
           <TouchableOpacity
@@ -684,7 +689,7 @@ export default function SettingsScreen({ color, navigation }) {
           </View>
 
         </View>
-      </View>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 }

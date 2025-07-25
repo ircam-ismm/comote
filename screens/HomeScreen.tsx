@@ -107,7 +107,9 @@ export default function HomeScreen({ color }) {
 
     buttonLockText: {
       color: colors.text,
+      textAlign: 'center',
     }
+
   });
 
   const dispatch = useAppDispatch();
