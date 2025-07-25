@@ -54,7 +54,8 @@
       ],
       "blockedPermissions": [
         "android.permission.ACTIVITY_RECOGNITION",
-        "com.google.android.gms.permission.ACTIVITY_RECOGNITION"
+        "com.google.android.gms.permission.ACTIVITY_RECOGNITION",
+        "android.permission.RECORD_AUDIO"
       ]
     },
     "locales": {

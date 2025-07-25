@@ -125,6 +125,7 @@ export default function QRScreen({ navigation }: RootTabScreenProps<'QR'>) {
       {isFocused
        ? <CameraView
            onBarcodeScanned={isFocused ? handleBarCodeScanned : undefined}
+           mute={true}
            style={StyleSheet.absoluteFillObject}
          />
        : <View style={styles.info}>
