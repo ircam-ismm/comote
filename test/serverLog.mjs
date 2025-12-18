@@ -41,8 +41,9 @@ oscServer.on('message', (data, rinfo) => {
       const date = new Date(timestamp);
       const dateString = `${date.toLocaleString()}.${date.getMilliseconds()}`;
       bundle.bundleElements.forEach((element) => {
-        console.log(`osc: bundle element: ${timestamp} (${dateString})`);
-        console.log(`${element.address}`,
+        console.log(
+          `osc: bundle element: ${timestamp} (${dateString})`,
+          `${element.address}`,
           typesFormat(element.types),
           ...element.args,
         );
@@ -84,7 +85,7 @@ webSocketServer.on('connection', (socket, rinfo) => {
     try {
       if(data.buffer) {
         messageType = 'ArrayBuffer';
-        message = Array.from(data);
+        message = JSON.parse(data.toString('utf-8'));
       } else {
         messageType = 'JSON';
         message = JSON.parse(data);
