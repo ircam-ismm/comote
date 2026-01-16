@@ -27,7 +27,6 @@ oscServer.on('error', (err) => {
 });
 
 oscServer.on('message', (data, rinfo) => {
-  console.log(`osc: message: from ${rinfo.address}:${rinfo.port}`);
 
   try {
     const dataView = new DataView(data.buffer);
@@ -40,15 +39,19 @@ oscServer.on('message', (data, rinfo) => {
       const timestamp = timetagToTimestamp(bundle.timetag.value);
       const date = new Date(timestamp);
       const dateString = `${date.toLocaleString()}.${date.getMilliseconds()}`;
+      console.log(`osc: bundle: from ${rinfo.address}:${rinfo.port} at ${timestamp} (${dateString})`);
+
       bundle.bundleElements.forEach((element) => {
         console.log(
-          `osc: bundle element: ${timestamp} (${dateString})`,
+          `osc: element:`,
           `${element.address}`,
           typesFormat(element.types),
           ...element.args,
         );
       });
     } else {
+      console.log(`osc: message: from ${rinfo.address}:${rinfo.port}`);
+
       const message = new OSC.Message();
       message.unpack(dataView);
       console.log(`osc: message: ${message.address}`,
