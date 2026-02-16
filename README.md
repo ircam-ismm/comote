@@ -161,6 +161,8 @@ You can also install via `adb`.
 - allow developer mode on device
 - type `adb install build-latest.apk`
 
+Note that you may need to uninstall the application first: `adb uninstall fr.ircam.ismm.comote`
+
 You can also install and run a build on a device with the following command:
 
 ```sh
@@ -299,7 +301,20 @@ The message format is normalised. Please consult [sc-motion](https://github.com/
 - [ ] Update to Expo SDK v52
 - [ ] Remove explicit image for ios production build in `eas.json`
 
+### Layout
+
+- [ ] Android: Titles are superimposed with phone header
+
+### Webview
+
+- [ ] Bug: automatic reload do not take url change into account, need to restart the application
+- [ ] Propagate sensors values to webview
+  + [x] Main functionnality
+  + [ ] Gate functionality behind a config flag?
+
 ### BUGS
+
+- [x] Android: `requestForegroundPermissionsAsync` never resolves on development builds
 
 - [ ] fix full-screen glitches
   - [ ] do not reload page
@@ -338,8 +353,8 @@ The message format is normalised. Please consult [sc-motion](https://github.com/
 ### Target v2-beta - WebView
 
 - [x] Unify message format for buttons
-    + [x] osc `comote/${id}/control/${key} value` 
-    + [x] ws  `control: { [key]: value }` 
+    + [x] osc `comote/${id}/control/${key} value`
+    + [x] ws  `control: { [key]: value }`
 - [x] Add QRcode `webview` key
     + [x] `url` if starts with `http`
     + [x] else `html`
