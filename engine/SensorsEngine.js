@@ -172,7 +172,6 @@ export class SensorsEngine {
     async init() {
         await this.cleanup();
         this.intervalEstimateInit();
-
         const {
             accelerometerAvailable,
             gyroscopeAvailable,
@@ -251,7 +250,22 @@ export class SensorsEngine {
         // and disturb all processes.
         // On init, the asynchronous calls from SensorsComponent and SensorsEngine are pending,
         // so we need to accept both.
-        let headingPermission;
+        let headingPermission = {};
+
+        // @note(2026/02/16 - Benjamin) - to be fixed
+        // Bypass in android Expo development and preview build, because
+        //  `requestForegroundPermissionsAsync` never resolve, so the app is stuck
+        // here and we never get any data.
+        // Not sure I understand the problem or the solution though, but it seems
+        // heading is just accessible according to Localisation is check or not
+        // in settings.
+        // related: https://github.com/expo/expo/issues/28284
+        if (Platform.OS === 'android'
+            && (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'preview')
+        ) {
+          this.headingPermissionRequested = true;
+        }
+
         if (!this.headingPermissionRequested) {
             try {
                 headingPermission = await Location.requestForegroundPermissionsAsync();
