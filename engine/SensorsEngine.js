@@ -252,53 +252,55 @@ export class SensorsEngine {
         // so we need to accept both.
         let headingPermission = {};
 
-        // @note(2026/02/16 - Benjamin) - to be fixed
-        // Bypass in android Expo development and preview build, because
-        //  `requestForegroundPermissionsAsync` never resolve, so the app is stuck
-        // here and we never get any data.
-        // Not sure I understand the problem or the solution though, but it seems
-        // heading is just accessible according to Localisation is check or not
-        // in settings.
-        // related: https://github.com/expo/expo/issues/28284
-        if (Platform.OS === 'android'
-            && (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'preview')
-        ) {
-          this.headingPermissionRequested = true;
+        // Requesting permission when already granted on Android make
+        // `Location.requestForegroundPermissionsAsync` to never resolve,
+        // which leaves the application in a stuck state.
+        // This strategy is more robust when we play with permissions
+        // @todo
+        // - Make sure this behaves as well in iOS
+        // - remove `this.headingPermissionRequested`, not required anymore
+        try {
+            headingPermission = await Location.getForegroundPermissionsAsync();
+        } catch (error) {
+            console.error('Location.getForegroundPermissionsAsync', error);
+            headingPermission.granted = false;
         }
 
-        if (!this.headingPermissionRequested) {
-            try {
-                headingPermission = await Location.requestForegroundPermissionsAsync();
-                this.headingPermissionRequested = true;
-            } catch (error) {
-                console.error('Location.requestForegroundPermissionsAsync', error);
-                headingPermission.granted = false;
-            }
-        } else {
-            try {
-                headingPermission = await Location.getForegroundPermissionsAsync();
-            } catch (error) {
-                console.error('Location.getForegroundPermissionsAsync', error);
-                headingPermission.granted = false;
-            }
+        console.log(headingPermission);
+        // requesting permission when already granted make the application
+        // stuck because `Location.requestForegroundPermissionsAsync` never
+        // resolves
+        if (headingPermission.status && headingPermission.status !== 'granted') {
+          try {
+              headingPermission = await Location.requestForegroundPermissionsAsync();
+              this.headingPermissionRequested = true; //
+          } catch (error) {
+              console.error('Location.requestForegroundPermissionsAsync', error);
+              headingPermission.granted = false;
+          }
         }
+
+        // if (!this.headingPermissionRequested) {
+        //     try {
+        //         headingPermission = await Location.requestForegroundPermissionsAsync();
+        //         this.headingPermissionRequested = true;
+        //     } catch (error) {
+        //         console.error('Location.requestForegroundPermissionsAsync', error);
+        //         headingPermission.granted = false;
+        //     }
+        // } else {
+        //     try {
+        //         headingPermission = await Location.getForegroundPermissionsAsync();
+        //     } catch (error) {
+        //         console.error('Location.getForegroundPermissionsAsync', error);
+        //         headingPermission.granted = false;
+        //     }
+        // }
 
         const accelerometerAvailable = await Accelerometer.isAvailableAsync();
         const gyroscopeAvailable = await Gyroscope.isAvailableAsync();
         const magnetometerAvailable = await Magnetometer.isAvailableAsync();
-
         const headingAvailable = await Location.hasServicesEnabledAsync();
-
-        // console.log({
-        //     accelerometerPermission,
-        //     gyroscopePermission,
-        //     magnetometerPermission,
-        //     headingPermission,
-        //     accelerometerAvailable,
-        //     gyroscopeAvailable,
-        //     magnetometerAvailable,
-        //     headingAvailable,
-        // });
 
         return {
             accelerometerAvailable: accelerometerAvailable && accelerometerPermission.granted,
