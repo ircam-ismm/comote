@@ -15,6 +15,7 @@ import { selectSettings } from '../features/settings/settingsSlice';
 import isURL from '../helpers/isURL';
 
 import { timestampGet } from '../helpers/timestamp';
+import { engine } from '../engine';
 
 // this is extended later with variable to pass some state to the webview
 const injectJavascript = `
@@ -49,6 +50,36 @@ const injectJavascript = `
   window.log = (...value) => {
     window.ReactNativeWebView.postMessage(JSON.stringify({ cmd: 'log', data: value }));
   };
+
+  // parse and propagate unified event across platforms
+  // https://github.com/react-native-webview/react-native-webview/issues/3776
+  function unpackAndPropagateMessage(event) {
+    try {
+      const data = JSON.parse(event.data);
+
+      if (data.source === 'comote') {
+        // do not propagate control events
+        if (data.control !== undefined) {
+          return;
+        }
+
+        const comoteEvent = new CustomEvent('comote', {
+          bubbles: true,
+          composed: true,
+          detail: data,
+        });
+
+        window.dispatchEvent(comoteEvent);
+      }
+    } catch (err) {
+      console.error("Failed to parse and send comote frame from React Native:", error);
+    }
+  }
+
+  // listen for both document and window to workaround platform inconsistencies
+  // cf. https://github.com/react-native-webview/react-native-webview/issues/3776#issuecomment-3251753403
+  document.addEventListener("message", unpackAndPropagateMessage);
+  window.addEventListener("message", unpackAndPropagateMessage);
 `;
 
 export default function WebViewScreen({ color }) {
@@ -118,6 +149,20 @@ export default function WebViewScreen({ color }) {
     : settings.webviewContent;
 
   const source = isURL(content) ? { uri: content } : { html: content };
+
+  // propagate sensors stream to webview, see injected JS for how it is processed then
+  // client code should listen for `window.addEventListener('comote', e => console.log(e.data))`
+  function propagateSensors(values) {
+    webViewRef.current?.postMessage(JSON.stringify(values));
+  }
+
+  useFocusEffect(() => {
+    engine.addListener(propagateSensors);
+
+    return () => {
+      engine.removeListener(propagateSensors)
+    }
+  });
 
   const onWebViewMessage = (event) => {
     event = JSON.parse(event.nativeEvent.data);
