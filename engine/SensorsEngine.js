@@ -141,8 +141,6 @@ export class SensorsEngine {
         // last normalised value
         this.magnetometer = null;
 
-        // ask once
-        this.headingPermissionRequested = false;
         this.headingSubscribeId = null;
         this.headingListener = null;
         // last normalised value
@@ -246,19 +244,20 @@ export class SensorsEngine {
         const gyroscopePermission = await Gyroscope.getPermissionsAsync();
         const magnetometerPermission = await Magnetometer.getPermissionsAsync();
 
+        // Requesting permission when already granted on Android make
+        // `Location.requestForegroundPermissionsAsync` to never resolve,
+        // which leaves the application in a stuck state.
+        // This strategy is more robust when we play with permissions
+        // @note - Can be stuck when removing Location authorization manually
+        // while app is open, but maybe hardcore edge case that requires relaunch
+        //
+        // @legacy comment (remove?)
         // Heading does not request permission on get, and multiple requests are annoying
         // and disturb all processes.
         // On init, the asynchronous calls from SensorsComponent and SensorsEngine are pending,
         // so we need to accept both.
         let headingPermission = {};
 
-        // Requesting permission when already granted on Android make
-        // `Location.requestForegroundPermissionsAsync` to never resolve,
-        // which leaves the application in a stuck state.
-        // This strategy is more robust when we play with permissions
-        // @todo
-        // - Make sure this behaves as well in iOS
-        // - remove `this.headingPermissionRequested`, not required anymore
         try {
             headingPermission = await Location.getForegroundPermissionsAsync();
         } catch (error) {
@@ -266,36 +265,24 @@ export class SensorsEngine {
             headingPermission.granted = false;
         }
 
-        console.log(headingPermission);
-        // requesting permission when already granted make the application
-        // stuck because `Location.requestForegroundPermissionsAsync` never
-        // resolves
-        if (headingPermission.status && headingPermission.status !== 'granted') {
-          try {
-              headingPermission = await Location.requestForegroundPermissionsAsync();
-              this.headingPermissionRequested = true; //
-          } catch (error) {
-              console.error('Location.requestForegroundPermissionsAsync', error);
-              headingPermission.granted = false;
-          }
+        // Explicitly request permission only if denied:
+        // - if GRANTED: nothing to do we are ok
+        // - if UNDETERMINED: assume we can't recover until the user does something
+        // cf. https://docs.expo.dev/versions/latest/sdk/location/#permissionstatus
+        // cf. https://docs.expo.dev/versions/latest/sdk/location/#permissionresponse
+        if (headingPermission.status === Location.PermissionStatus.DENIED
+          // && headingPermission.canAskAgain === true // this is not reliable
+        ) {
+            try {
+                headingPermission = await Location.requestForegroundPermissionsAsync();
+
+            } catch (error) {
+                console.error('Location.requestForegroundPermissionsAsync', error);
+                headingPermission.granted = false;
+            }
         }
 
-        // if (!this.headingPermissionRequested) {
-        //     try {
-        //         headingPermission = await Location.requestForegroundPermissionsAsync();
-        //         this.headingPermissionRequested = true;
-        //     } catch (error) {
-        //         console.error('Location.requestForegroundPermissionsAsync', error);
-        //         headingPermission.granted = false;
-        //     }
-        // } else {
-        //     try {
-        //         headingPermission = await Location.getForegroundPermissionsAsync();
-        //     } catch (error) {
-        //         console.error('Location.getForegroundPermissionsAsync', error);
-        //         headingPermission.granted = false;
-        //     }
-        // }
+        console.log('headingPermission', headingPermission);
 
         const accelerometerAvailable = await Accelerometer.isAvailableAsync();
         const gyroscopeAvailable = await Gyroscope.isAvailableAsync();
