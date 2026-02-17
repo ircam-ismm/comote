@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import * as Linking from 'expo-linking';
 import { StyleSheet, Button } from 'react-native';
 
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused, useFocusEffect } from '@react-navigation/native';
 
-import { CameraView, Camera } from "expo-camera";
+import { CameraView, Camera, PermissionStatus } from "expo-camera";
 
 import i18n from '../constants/i18n';
 import store from '../store';
@@ -58,35 +58,62 @@ const styles = StyleSheet.create({
 });
 
 export default function QRScreen({ navigation }: RootTabScreenProps<'QR'>) {
+  // - null: no permission yet, waiting screen
+  // - false: not granted, open system settings
+  // - true: ok
   const [hasPermission, setHasPermission] = useState<Boolean|null>(null);
   const isFocused = useIsFocused();
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const { status } = await Camera.requestCameraPermissionsAsync();
-        setHasPermission(status === 'granted');
-      } catch (error) {
-        console.log('Error requesting permission for camera', error);
-        setHasPermission(false);
+  // cf. https://reactnavigation.org/docs/use-focus-effect/
+  // cf. https://stackoverflow.com/questions/69987372/react-navigation-v6-using-usecallback-inside-usefocuseffect-issue-invalid-hook-c
+  useFocusEffect(
+    React.useCallback(() => {
+      let isActive = true;
+
+      const getPermission = async () => {
+        let cameraPermission = {
+          status: PermissionStatus.UNDETERMINED,
+        };
+
+        try {
+          cameraPermission = await Camera.getCameraPermissionsAsync();
+        } catch (err) {
+          console.error('Camera.getCameraPermissionsAsync', err);
+        }
+
+        // Explicitly request permission only if denied:
+        // - if GRANTED: nothing to do we are ok
+        // - if UNDETERMINED: directly propose to open settings
+        // cf. https://docs.expo.dev/versions/latest/sdk/location/#permissionstatus
+        // cf. https://docs.expo.dev/versions/latest/sdk/location/#permissionresponse
+        if (cameraPermission.status === PermissionStatus.DENIED) {
+          try {
+            cameraPermission = await Camera.requestCameraPermissionsAsync();
+          } catch (err) {
+            console.error('Camera.requestCameraPermissionsAsync', err);
+          }
+        }
+
+        if (isActive) {
+          switch (cameraPermission.status) {
+            case PermissionStatus.GRANTED:
+              setHasPermission(true);
+              break;
+            case PermissionStatus.DENIED:
+            case PermissionStatus.UNDETERMINED:
+              setHasPermission(false);
+              break;
+          }
+        }
       }
-    })();
-  }, []);
 
-  const handleBarCodeScanned = ({ type, data }: {type: any, data: string}): void => {
-    console.log('scanned', 'type =', type, 'data =', data);
-    // this is not synchronous
-    urlHandler({ url: data });
-    // access store directly, for some reason using `settings` from `useAppSelector`
-    // does not reflect the changes
-    const state = store.getState();
+      getPermission();
 
-    if (state.settings.data.webviewContent === null) {
-      navigation.navigate('Home');
-    } else {
-      navigation.navigate('WebView');
-    }
-  };
+      return () => {
+        isActive = false;
+      };
+    }, [])
+  );
 
   if (hasPermission === null) {
     return (
@@ -118,6 +145,21 @@ export default function QRScreen({ navigation }: RootTabScreenProps<'QR'>) {
       </View>
     );
   }
+
+  const handleBarCodeScanned = ({ type, data }: {type: any, data: string}): void => {
+    console.log('scanned', 'type =', type, 'data =', data);
+    // this is not synchronous
+    urlHandler({ url: data });
+    // access store directly, for some reason using `settings` from `useAppSelector`
+    // does not reflect the changes
+    const state = store.getState();
+
+    if (state.settings.data.webviewContent === null) {
+      navigation.navigate('Home');
+    } else {
+      navigation.navigate('WebView');
+    }
+  };
 
   // be sure to completely discard camera when not focused
   return (
