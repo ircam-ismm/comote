@@ -62,6 +62,7 @@ export default function QRScreen({ navigation }: RootTabScreenProps<'QR'>) {
   // - false: not granted, open system settings
   // - true: ok
   const [hasPermission, setHasPermission] = useState<Boolean|null>(null);
+  const [cameraPermissionStore, setCameraPermissionStore] = useState<Object>({}); // for debug
   const isFocused = useIsFocused();
 
   // cf. https://reactnavigation.org/docs/use-focus-effect/
@@ -71,28 +72,37 @@ export default function QRScreen({ navigation }: RootTabScreenProps<'QR'>) {
       let isActive = true;
 
       const getPermission = async () => {
-        let cameraPermission = {
-          status: PermissionStatus.UNDETERMINED,
-        };
+        let cameraPermission: PermissionResponse;
 
         try {
           cameraPermission = await Camera.getCameraPermissionsAsync();
+          setCameraPermissionStore(cameraPermission);
         } catch (err) {
           console.error('Camera.getCameraPermissionsAsync', err);
         }
 
-        // Explicitly request permission only if denied:
-        // - if GRANTED: nothing to do we are ok
-        // - if UNDETERMINED: directly propose to open settings
+        // Explicitly request permission on status DENIED or UNDETERMINED
         // cf. https://docs.expo.dev/versions/latest/sdk/location/#permissionstatus
         // cf. https://docs.expo.dev/versions/latest/sdk/location/#permissionresponse
-        if (cameraPermission.status === PermissionStatus.DENIED) {
+        // @note: status seems to be PermissionStatus.UNDETERMINED on fresh install
+        // then we need to request permission on these two cases
+        if (
+          cameraPermission.canAskAgain &&
+          (
+            cameraPermission.status === PermissionStatus.DENIED ||
+            cameraPermission.status === PermissionStatus.UNDETERMINED
+          )
+        ) {
           try {
+            console.log('try request camera permission');
             cameraPermission = await Camera.requestCameraPermissionsAsync();
+            setCameraPermissionStore(cameraPermission);
           } catch (err) {
             console.error('Camera.requestCameraPermissionsAsync', err);
           }
         }
+
+        console.log('cameraPermission', cameraPermission)
 
         if (isActive) {
           switch (cameraPermission.status) {
@@ -115,25 +125,30 @@ export default function QRScreen({ navigation }: RootTabScreenProps<'QR'>) {
     }, [])
   );
 
-  if (hasPermission === null) {
-    return (
-      <View style={styles.container}>
-        <View style={styles.info}>
-          <Text style={styles.text}>
-            {i18n.t('qrcode.requestingPermission')}
-          </Text>
-        </View>
-      </View>
-    );
-  }
+  // if (hasPermission === null) {
+  //   return (
+  //     <View style={styles.container}>
+  //       <View style={styles.info}>
+  //         <Text style={styles.text}>
+  //           {i18n.t('qrcode.requestingPermission')}
+  //         </Text>
+  //       </View>
+  //     </View>
+  //   );
+  // }
 
-  if (hasPermission === false) {
+  // Also show open settings button when hasPermission is null, in case
+  // `requestCameraPermissionsAsync` get stuck for some unknown reason
+  if (hasPermission === false || hasPermission === null) {
     return (
       <View style={styles.container}>
         <View style={styles.info}>
           <Text style={styles.text}>
             {i18n.t('qrcode.noPermission')}
           </Text>
+          {/* <Text style={styles.text}>
+            {JSON.stringify(cameraPermissionStore)}
+          </Text> */}
           <Button
             style={styles.button}
             title={i18n.t('qrcode.openSettings')}

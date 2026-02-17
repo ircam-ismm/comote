@@ -159,7 +159,12 @@ You can also install via `adb`.
 - trust the computer
 - allow for file transfer from USB
 - allow developer mode on device
-- type `adb install build-latest.apk`
+- Install on device
+
+```sh
+adb uninstall fr.ircam.ismm.comote # clean previous install
+adb install build-latest.apk
+```
 
 Note that you may need to uninstall the application first: `adb uninstall fr.ircam.ismm.comote`
 
@@ -309,10 +314,10 @@ The message format is normalised. Please consult [sc-motion](https://github.com/
 - [x] Fix: Android: Titles are superimposed with phone header
 - [ ] Fix: Android: Fix permissions strategies
   + [x] `Location.requestForegroundPermissionsAsync` never resolves when already granted
-  + [ ] `Camera.requestCameraPermissionsAsync` never resolves when already granted
+  + [x] `Camera.requestCameraPermissionsAsync` never resolves when already granted
   + [ ] Test possible regressions on iOS
 - [ ] Fix: automatic reload do not take url change into account, need to restart the application
-- [ ] Chore: Harmonize version between
+- [ ] Chore: Harmonize version between package.json and app.json
 
 ### BUGS
 

@@ -265,13 +265,14 @@ export class SensorsEngine {
             headingPermission.granted = false;
         }
 
-        // Explicitly request permission only if denied:
-        // - if GRANTED: nothing to do we are ok
-        // - if UNDETERMINED: assume we can't recover until the user does something
+        // Explicitly request permission on status DENIED or UNDETERMINED
         // cf. https://docs.expo.dev/versions/latest/sdk/location/#permissionstatus
         // cf. https://docs.expo.dev/versions/latest/sdk/location/#permissionresponse
-        if (headingPermission.status === Location.PermissionStatus.DENIED
-          // && headingPermission.canAskAgain === true // this is not reliable
+        // @note: status seems to be PermissionStatus.UNDETERMINED on fresh install
+        // then we need to request permission on these two cases
+        if (
+          headingPermission.status === Location.PermissionStatus.DENIED ||
+          headingPermission.status === Location.PermissionStatus.UNDETERMINED
         ) {
             try {
                 headingPermission = await Location.requestForegroundPermissionsAsync();
@@ -471,23 +472,23 @@ export class SensorsEngine {
                 heading,
             } = this;
 
-            if(accelerometer) {
+            if (accelerometer) {
                 Object.assign(accelerometer, { timestamp, frequency });
             }
 
-            if(gyroscope) {
+            if (gyroscope) {
                 Object.assign(gyroscope, { timestamp, frequency });
             }
 
-            if(gravity) {
+            if (gravity) {
                 Object.assign(gravity, { timestamp, frequency });
             }
 
-            if(magnetometer) {
+            if (magnetometer) {
                 Object.assign(magnetometer, { timestamp, frequency });
             }
 
-            if(heading) {
+            if (heading) {
                 Object.assign(heading, { timestamp, frequency });
             }
 
