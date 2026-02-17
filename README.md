@@ -301,20 +301,20 @@ The message format is normalised. Please consult [sc-motion](https://github.com/
 - [ ] Update to Expo SDK v52
 - [ ] Remove explicit image for ios production build in `eas.json`
 
-### Layout
+### v3.5.0
 
-- [ ] Android: Titles are superimposed with phone header
-
-### Webview
-
-- [ ] Bug: automatic reload do not take url change into account, need to restart the application
-- [ ] Propagate sensors values to webview
-  + [x] Main functionnality
+- [ ] Feat: Sensors within webview
+  + [x] Propagate sensors values to webview
   + [ ] Gate functionality behind a config flag?
+- [x] Fix: Android: Titles are superimposed with phone header
+- [ ] Fix: Android: Fix permissions strategies
+  + [x] `Location.requestForegroundPermissionsAsync` never resolves when already granted
+  + [ ] `Camera.requestCameraPermissionsAsync` never resolves when already granted
+  + [ ] Test possible regressions on iOS
+- [ ] Fix: automatic reload do not take url change into account, need to restart the application
+- [ ] Chore: Harmonize version between
 
 ### BUGS
-
-- [x] Android: `requestForegroundPermissionsAsync` never resolves on development builds
 
 - [ ] fix full-screen glitches
   - [ ] do not reload page
