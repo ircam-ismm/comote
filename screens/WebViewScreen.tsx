@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { StyleSheet, Pressable, Modal } from 'react-native';
 import { WebView } from 'react-native-webview';
@@ -127,6 +127,8 @@ export default function WebViewScreen({ color }) {
   const dispatch = useAppDispatch();
   const settings = useAppSelector((state) => selectSettings(state));
   const [modalVisible, setModalVisible] = useState(false);
+  // force reload if http error
+  const webViewRef = useRef();
 
   // prevent sleep when tab is focused
   useFocusEffect(
@@ -134,15 +136,15 @@ export default function WebViewScreen({ color }) {
       // prevent sleep when tab is focused
       const keepAwakeTag = 'comote:webview';
       activateKeepAwakeAsync(keepAwakeTag);
+      // propagate sensors to
+      engine.addListener(propagateSensors);
 
       return () => {
         deactivateKeepAwake(keepAwakeTag);
+        engine.removeListener(propagateSensors)
       };
     }, [])
   );
-
-  // force reload if http error
-  const webViewRef = useRef();
 
   const content = settings.webviewContent === null || settings.webviewContent === ''
     ? `<p style="font-size: 40px; margin-top: 150px; text-align: center; color: ${colors.text}">No webview content defined</p>`
@@ -155,14 +157,6 @@ export default function WebViewScreen({ color }) {
   function propagateSensors(values) {
     webViewRef.current?.postMessage(JSON.stringify(values));
   }
-
-  useFocusEffect(() => {
-    engine.addListener(propagateSensors);
-
-    return () => {
-      engine.removeListener(propagateSensors)
-    }
-  });
 
   const onWebViewMessage = (event) => {
     event = JSON.parse(event.nativeEvent.data);

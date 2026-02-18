@@ -87,11 +87,8 @@ export default function QRScreen({ navigation }: RootTabScreenProps<'QR'>) {
         // @note: status seems to be PermissionStatus.UNDETERMINED on fresh install
         // then we need to request permission on these two cases
         if (
-          cameraPermission.canAskAgain &&
-          (
-            cameraPermission.status === PermissionStatus.DENIED ||
-            cameraPermission.status === PermissionStatus.UNDETERMINED
-          )
+          cameraPermission.status === PermissionStatus.DENIED ||
+          cameraPermission.status === PermissionStatus.UNDETERMINED
         ) {
           try {
             console.log('try request camera permission');

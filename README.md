@@ -311,13 +311,13 @@ The message format is normalised. Please consult [sc-motion](https://github.com/
 - [ ] Feat: Sensors within webview
   + [x] Propagate sensors values to webview
   + [ ] Gate functionality behind a config flag?
+- [ ] Chore: Harmonize version between package.json and app.json
 - [x] Fix: Android: Titles are superimposed with phone header
 - [ ] Fix: Android: Fix permissions strategies
   + [x] `Location.requestForegroundPermissionsAsync` never resolves when already granted
   + [x] `Camera.requestCameraPermissionsAsync` never resolves when already granted
   + [ ] Test possible regressions on iOS
 - [ ] Fix: automatic reload do not take url change into account, need to restart the application
-- [ ] Chore: Harmonize version between package.json and app.json
 
 ### BUGS
 
