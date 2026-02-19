@@ -308,19 +308,17 @@ The message format is normalised. Please consult [sc-motion](https://github.com/
 
 ### v3.5.0
 
-- [ ] Feat: Sensors within webview
-  + [x] Propagate sensors values to webview
-  + [ ] Gate functionality behind a config flag?
-- [ ] Chore: Harmonize version between package.json and app.json
+- [x] Propagate sensors values to webview
 - [x] Fix: Android: Titles are superimposed with phone header
 - [ ] Fix: Android: Fix permissions strategies
   + [x] `Location.requestForegroundPermissionsAsync` never resolves when already granted
   + [x] `Camera.requestCameraPermissionsAsync` never resolves when already granted
   + [ ] Test possible regressions on iOS
-- [ ] Fix: automatic reload do not take url change into account, need to restart the application
+- [ ] Gate sensors in webview functionality behind a config flag?
 
 ### BUGS
 
+- [ ] Chore: Harmonize version between package.json and app.json
 - [ ] fix full-screen glitches
   - [ ] do not reload page
     - in React (CoMote), re-use WebView (cf. `createPortal`, `forwardRef`, etc.)
