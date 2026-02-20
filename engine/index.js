@@ -12,13 +12,15 @@ export class Engine {
         this.source = source;
         this.api = api;
         this.id = id;
+
+        this.listeners = new Set();
+
         this.network = new NetworkEngine(network);
+        this.addListener(message => this.network.send(message));
 
         const sensorsRequest = { ...sensors };
         if (typeof sensorsRequest.dataCallback === 'undefined') {
-            sensorsRequest.dataCallback = (data) => {
-                this.send(data);
-            }
+            sensorsRequest.dataCallback = data => this.send(data);
         }
 
         this.sensors = new SensorsEngine(sensorsRequest);
@@ -54,7 +56,6 @@ export class Engine {
         if (typeof sensors !== 'undefined') {
             await this.sensors.set(sensors);
         }
-
     }
 
     async cleanup() {
@@ -67,15 +68,26 @@ export class Engine {
         await this.sensors.init();
     }
 
-    send(message) {
+    addListener(callback) {
+      if (typeof callback === 'function') {
+        this.listeners.add(callback);
+      }
+    }
 
+    removeListener(callback) {
+      this.listeners.delete(callback);
+    }
+
+    send(message) {
         const { source, api, id } = this;
-        this.network.send({
+        message = {
             source,
             api,
             id,
             ...message,
-        })
+        };
+
+        this.listeners.forEach(callback => callback(message));
     }
 }
 

@@ -141,8 +141,6 @@ export class SensorsEngine {
         // last normalised value
         this.magnetometer = null;
 
-        // ask once
-        this.headingPermissionRequested = false;
         this.headingSubscribeId = null;
         this.headingListener = null;
         // last normalised value
@@ -172,7 +170,6 @@ export class SensorsEngine {
     async init() {
         await this.cleanup();
         this.intervalEstimateInit();
-
         const {
             accelerometerAvailable,
             gyroscopeAvailable,
@@ -247,44 +244,51 @@ export class SensorsEngine {
         const gyroscopePermission = await Gyroscope.getPermissionsAsync();
         const magnetometerPermission = await Magnetometer.getPermissionsAsync();
 
+        // Requesting permission when already granted on Android make
+        // `Location.requestForegroundPermissionsAsync` to never resolve,
+        // which leaves the application in a stuck state.
+        // This strategy is more robust when we play with permissions
+        // @note - Can be stuck when removing Location authorization manually
+        // while app is open, but maybe hardcore edge case that requires relaunch
+        //
+        // @legacy comment (remove?)
         // Heading does not request permission on get, and multiple requests are annoying
         // and disturb all processes.
         // On init, the asynchronous calls from SensorsComponent and SensorsEngine are pending,
         // so we need to accept both.
-        let headingPermission;
-        if (!this.headingPermissionRequested) {
+        let headingPermission = {};
+
+        try {
+            headingPermission = await Location.getForegroundPermissionsAsync();
+        } catch (error) {
+            console.error('Location.getForegroundPermissionsAsync', error);
+            headingPermission.granted = false;
+        }
+
+        // Explicitly request permission on status DENIED or UNDETERMINED
+        // cf. https://docs.expo.dev/versions/latest/sdk/location/#permissionstatus
+        // cf. https://docs.expo.dev/versions/latest/sdk/location/#permissionresponse
+        // @note: status seems to be PermissionStatus.UNDETERMINED on fresh install
+        // then we need to request permission on these two cases
+        if (
+          headingPermission.status === Location.PermissionStatus.DENIED ||
+          headingPermission.status === Location.PermissionStatus.UNDETERMINED
+        ) {
             try {
                 headingPermission = await Location.requestForegroundPermissionsAsync();
-                this.headingPermissionRequested = true;
+
             } catch (error) {
                 console.error('Location.requestForegroundPermissionsAsync', error);
                 headingPermission.granted = false;
             }
-        } else {
-            try {
-                headingPermission = await Location.getForegroundPermissionsAsync();
-            } catch (error) {
-                console.error('Location.getForegroundPermissionsAsync', error);
-                headingPermission.granted = false;
-            }
         }
+
+        console.log('headingPermission', headingPermission);
 
         const accelerometerAvailable = await Accelerometer.isAvailableAsync();
         const gyroscopeAvailable = await Gyroscope.isAvailableAsync();
         const magnetometerAvailable = await Magnetometer.isAvailableAsync();
-
         const headingAvailable = await Location.hasServicesEnabledAsync();
-
-        // console.log({
-        //     accelerometerPermission,
-        //     gyroscopePermission,
-        //     magnetometerPermission,
-        //     headingPermission,
-        //     accelerometerAvailable,
-        //     gyroscopeAvailable,
-        //     magnetometerAvailable,
-        //     headingAvailable,
-        // });
 
         return {
             accelerometerAvailable: accelerometerAvailable && accelerometerPermission.granted,
@@ -468,23 +472,23 @@ export class SensorsEngine {
                 heading,
             } = this;
 
-            if(accelerometer) {
+            if (accelerometer) {
                 Object.assign(accelerometer, { timestamp, frequency });
             }
 
-            if(gyroscope) {
+            if (gyroscope) {
                 Object.assign(gyroscope, { timestamp, frequency });
             }
 
-            if(gravity) {
+            if (gravity) {
                 Object.assign(gravity, { timestamp, frequency });
             }
 
-            if(magnetometer) {
+            if (magnetometer) {
                 Object.assign(magnetometer, { timestamp, frequency });
             }
 
-            if(heading) {
+            if (heading) {
                 Object.assign(heading, { timestamp, frequency });
             }
 

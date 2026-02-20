@@ -159,7 +159,14 @@ You can also install via `adb`.
 - trust the computer
 - allow for file transfer from USB
 - allow developer mode on device
-- type `adb install build-latest.apk`
+- Install on device
+
+```sh
+adb uninstall fr.ircam.ismm.comote # clean previous install
+adb install build-latest.apk
+```
+
+Note that you may need to uninstall the application first: `adb uninstall fr.ircam.ismm.comote`
 
 You can also install and run a build on a device with the following command:
 
@@ -299,8 +306,19 @@ The message format is normalised. Please consult [sc-motion](https://github.com/
 - [ ] Update to Expo SDK v52
 - [ ] Remove explicit image for ios production build in `eas.json`
 
+### v3.5.0
+
+- [x] Propagate sensors values to webview
+- [x] Fix: Android: Titles are superimposed with phone header
+- [ ] Fix: Android: Fix permissions strategies
+  + [x] `Location.requestForegroundPermissionsAsync` never resolves when already granted
+  + [x] `Camera.requestCameraPermissionsAsync` never resolves when already granted
+  + [ ] Test possible regressions on iOS
+- [ ] Gate sensors in webview functionality behind a config flag?
+
 ### BUGS
 
+- [ ] Chore: Harmonize version between package.json and app.json
 - [ ] fix full-screen glitches
   - [ ] do not reload page
     - in React (CoMote), re-use WebView (cf. `createPortal`, `forwardRef`, etc.)
@@ -338,8 +356,8 @@ The message format is normalised. Please consult [sc-motion](https://github.com/
 ### Target v2-beta - WebView
 
 - [x] Unify message format for buttons
-    + [x] osc `comote/${id}/control/${key} value` 
-    + [x] ws  `control: { [key]: value }` 
+    + [x] osc `comote/${id}/control/${key} value`
+    + [x] ws  `control: { [key]: value }`
 - [x] Add QRcode `webview` key
     + [x] `url` if starts with `http`
     + [x] else `html`
