@@ -1,6 +1,6 @@
 import * as React from 'react';
 import 'expo-dev-client';
-import { ActivityIndicator, StyleSheet, View } from "react-native";
+import { ActivityIndicator, AppState, StyleSheet, View } from "react-native";
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Provider } from 'react-redux';
@@ -16,6 +16,7 @@ import Navigation from './navigation';
 import EngineComponent from './components/EngineComponent';
 
 import * as Localization from 'expo-localization';
+import * as NavigationBar from 'expo-navigation-bar';
 
 import i18n from './constants/i18n';
 // testing
@@ -39,10 +40,23 @@ function LoadingView() {
 }
 
 export default function App() {
+  // hide button navigation bar on Android
+  React.useEffect(() => {
+    const handleAppStateChange = nextAppState => {
+      // If app is being used, hide nav bar
+      if (nextAppState === "active") {
+        NavigationBar.setVisibilityAsync("hidden");
+      }
+    }
+
+    // Subscribe to app state changes
+    const appStateSubscription = AppState.addEventListener('change', handleAppStateChange)
+    // Clean up the event listener when the component unmounts
+    return () => appStateSubscription.remove();
+  }, []);
+
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
-
-  // const colors = Colors[colorScheme];
 
   if (!isLoadingComplete) {
     return (
@@ -52,7 +66,7 @@ export default function App() {
     return (
       <Provider store={store}>
         <PersistGate loading={<LoadingView />} persistor={persistor}>
-          <SafeAreaProvider>
+          <SafeAreaProvider style={{ flex: 1 }}>
             <Navigation colorScheme={colorScheme} />
             <StatusBar />
             <EngineComponent />

@@ -79,6 +79,14 @@
           "usesCleartextTraffic": true
         }
       }],
+      [
+        "expo-navigation-bar",
+        {
+          "enforceContrast": true,
+          "barStyle": "light",
+          "visibility": "hidden"
+        }
+      ],
       "expo-asset",
       "expo-font"
     ],

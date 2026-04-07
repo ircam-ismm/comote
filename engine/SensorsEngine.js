@@ -13,6 +13,7 @@ import { Gravity } from '@ircam/sc-motion';
 
 // for heading
 import * as Location from 'expo-location';
+import * as NavigationBar from 'expo-navigation-bar';
 
 // import throttle from 'lodash/throttle';
 
@@ -284,6 +285,11 @@ export class SensorsEngine {
         }
 
         console.log('headingPermission', headingPermission);
+
+        // hide button navigation bar on Android, requesting for permission re-display the buttons
+        console.log('> [android] hide navigation bar after heading permission');
+        NavigationBar.setVisibilityAsync("hidden");
+
 
         const accelerometerAvailable = await Accelerometer.isAvailableAsync();
         const gyroscopeAvailable = await Gyroscope.isAvailableAsync();
