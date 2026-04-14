@@ -1,6 +1,6 @@
 {
   "name": "comote",
-  "version": "3.5.0",
+  "version": "3.5.1",
   "scripts": {
     "start": "expo start --dev-client",
     "android": "expo run:android",
