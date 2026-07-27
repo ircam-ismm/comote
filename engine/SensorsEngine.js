@@ -180,12 +180,12 @@ export class SensorsEngine {
 
         if (accelerometerAvailable) {
             // define master before any subscription
-            if(!gyroscopeAvailable) {
+            if (!gyroscopeAvailable) {
                 this.sensorsMaster = 'accelerometer';
             }
 
             // subscribe optional sensors first
-            if(headingAvailable) {
+            if (headingAvailable) {
                 await this.headingSubscribe();
             }
 
@@ -317,7 +317,6 @@ export class SensorsEngine {
                 this.accelerometer = accelerometerNormalise(data);
 
                 if (this.sensorsMaster === 'accelerometer') {
-
                     this.intervalEstimateUpdate();
                     this.gravityUpdate();
                     this.sensorsReport();
@@ -384,15 +383,16 @@ export class SensorsEngine {
 
     gravityUpdate() {
         const { accelerometer, gyroscope } = this;
+
         if (this.gravityProcessor && accelerometer && gyroscope) {
             const { accelerometer, gyroscope } = this;
+
             try {
-                const gravity = this.gravityProcessor.process({
+                this.gravity = this.gravityProcessor.process({
                     api: 'v3',
                     accelerometer,
                     gyroscope,
                 });
-                Object.assign(this, gravity);
             } catch (error) {
                 console.error('Gravity processor error', error.message);
             }
@@ -477,38 +477,39 @@ export class SensorsEngine {
                 heading,
             } = this;
 
+            const timingInfos = {
+              timestamp,
+              frequency,
+            };
+
             if (accelerometer) {
-                Object.assign(accelerometer, { timestamp, frequency });
+                Object.assign(accelerometer, timingInfos);
             }
 
             if (gyroscope) {
-                Object.assign(gyroscope, { timestamp, frequency });
+                Object.assign(gyroscope, timingInfos);
             }
 
             if (gravity) {
-                Object.assign(gravity, { timestamp, frequency });
+                Object.assign(gravity, timingInfos);
             }
 
             if (magnetometer) {
-                Object.assign(magnetometer, { timestamp, frequency });
+                Object.assign(magnetometer, timingInfos);
             }
 
             if (heading) {
-                Object.assign(heading, { timestamp, frequency });
+                Object.assign(heading, timingInfos);
             }
 
             const values = {
                 timestamp,
+                frequency,
                 accelerometer,
                 gyroscope,
                 gravity,
                 magnetometer,
                 heading,
-                // devicemotion: {
-                //     interval,
-                //     accelerationIncludingGravity: accelerometer,
-                //     rotationRate: rotationRateNormalise(gyroscope),
-                // },
             };
 
             // remove empty values
