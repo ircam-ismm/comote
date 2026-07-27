@@ -8,13 +8,11 @@ import { Platform } from 'react-native';
 import {
   AntDesign, // QR-code
   Ionicons,
-  MaterialCommunityIcons,
 } from '@expo/vector-icons';
 
 import * as React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import i18n from '../constants/i18n';
 
@@ -29,14 +27,15 @@ import WebViewScreen from '../screens/WebViewScreen';
 // import DebugScreen from '../screens/DebugScreen';
 
 
+// @todo - this is weird...
 import {
   HomeParamList,
   WebViewParamList,
   SettingsParamList,
   QRParamList,
-  AboutParamsList,
+  AboutParamList,
   BottomTabParamList,
-  DebugParamList,
+  // DebugParamList,
  } from '../types';
 
 const BottomTab = createBottomTabNavigator<BottomTabParamList>();
