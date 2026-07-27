@@ -18,69 +18,87 @@ import { timestampGet } from '../helpers/timestamp';
 import { engine } from '../engine';
 
 // this is extended later with variable to pass some state to the webview
-const injectJavascript = `
-  ['touchstart', 'touchend'].forEach(input => {
-    document.body.addEventListener(input, (e) => {
-      const target = e.target;
+function createInjectedJavascript(comoteId) {
+  return `
+    // ## The comote Id
+    window.comoteId = '${comoteId}';
 
-      if (target.hasAttribute('comote-key')) {
-        if (target.hasAttribute(\`comote-\${input}\`)) {
-          const key = target.getAttribute('comote-key');
-          const value = target.getAttribute(\`comote-\${input}\`);
+    // ## Send control event to be dispatched by the application
+    window.sendEvent = (key, value) => {
+      window.ReactNativeWebView.postMessage(JSON.stringify({ cmd: 'control', data: { [key]: value } }));
+    };
 
-          window.sendEvent(key, value);
+    // ## Fullscreen (@todo - rename)
+    window.toggleFullscreen = () => {
+      window.ReactNativeWebView.postMessage(JSON.stringify({ cmd: 'toggleModal' }));
+    };
+
+    window.setFullscreen = (value) => {
+      window.ReactNativeWebView.postMessage(JSON.stringify({ cmd: 'setModal', data: value}));
+    };
+
+    // @deprecated - use "toggleFullscreen" instead, keep for backward compatibility
+    window.toggleModal = () => {
+      window.ReactNativeWebView.postMessage(JSON.stringify({ cmd: 'toggleModal' }));
+    };
+    // @deprecated - use "setFullscreen" instead, keep for backward compatibility
+    window.setModal = (value) => {
+      window.ReactNativeWebView.postMessage(JSON.stringify({ cmd: 'setModal', data: value}));
+    };
+
+    // ## Debug
+    window.log = (...value) => {
+      window.ReactNativeWebView.postMessage(JSON.stringify({ cmd: 'log', data: value }));
+    };
+
+    // ## Automatically report html elements that has "comote-key" (key) and eventual
+    // "comote-touchstart" and/or "comote-touchend" (value) attributes
+    ['touchstart', 'touchend'].forEach(input => {
+      document.body.addEventListener(input, (e) => {
+        const target = e.target;
+
+        if (target.hasAttribute('comote-key')) {
+          if (target.hasAttribute(\`comote-\${input}\`)) {
+            const key = target.getAttribute('comote-key');
+            const value = target.getAttribute(\`comote-\${input}\`);
+
+            window.sendEvent(key, value);
+          }
         }
-      }
+      });
     });
-  });
 
-  window.sendEvent = (key, value) => {
-    window.ReactNativeWebView.postMessage(JSON.stringify({ cmd: 'control', data: { [key]: value } }));
-  };
+    // ## Propagate comote frame to the webview
+    // https://github.com/react-native-webview/react-native-webview/issues/3776
+    function unpackAndPropagateMessage(event) {
+      try {
+        const data = JSON.parse(event.data);
 
-  window.toggleModal = () => {
-    window.ReactNativeWebView.postMessage(JSON.stringify({ cmd: 'toggleModal' }));
-  };
+        if (data.source === 'comote') {
+          // do not propagate control events
+          if (data.control !== undefined) {
+            return;
+          }
 
-  window.setModal = (value) => {
-    window.ReactNativeWebView.postMessage(JSON.stringify({ cmd: 'setModal', data: value}));
-  };
+          const comoteEvent = new CustomEvent('comote', {
+            bubbles: true,
+            composed: true,
+            detail: data,
+          });
 
-
-  window.log = (...value) => {
-    window.ReactNativeWebView.postMessage(JSON.stringify({ cmd: 'log', data: value }));
-  };
-
-  // parse and propagate unified event across platforms
-  // https://github.com/react-native-webview/react-native-webview/issues/3776
-  function unpackAndPropagateMessage(event) {
-    try {
-      const data = JSON.parse(event.data);
-
-      if (data.source === 'comote') {
-        // do not propagate control events
-        if (data.control !== undefined) {
-          return;
+          window.dispatchEvent(comoteEvent);
         }
-
-        const comoteEvent = new CustomEvent('comote', {
-          bubbles: true,
-          composed: true,
-          detail: data,
-        });
-
-        window.dispatchEvent(comoteEvent);
+      } catch (err) {
+        console.error("Failed to parse and send comote frame from React Native:", error);
       }
-    } catch (err) {
-      console.error("Failed to parse and send comote frame from React Native:", error);
     }
-  }
 
-  // listen for both document and window to workaround platform inconsistencies
-  // cf. https://github.com/react-native-webview/react-native-webview/issues/3776#issuecomment-3251753403
-  document.addEventListener("message", unpackAndPropagateMessage);
-  window.addEventListener("message", unpackAndPropagateMessage);
-`;
+    // listen for both document and window to workaround platform inconsistencies
+    // cf. https://github.com/react-native-webview/react-native-webview/issues/3776#issuecomment-3251753403
+    document.addEventListener("message", unpackAndPropagateMessage);
+    window.addEventListener("message", unpackAndPropagateMessage);
+  `;
+}
 
 export default function WebViewScreen({ color }) {
   const colorScheme = useColorScheme();
@@ -136,7 +154,7 @@ export default function WebViewScreen({ color }) {
       // prevent sleep when tab is focused
       const keepAwakeTag = 'comote:webview';
       activateKeepAwakeAsync(keepAwakeTag);
-      // propagate sensors to
+      // propagate sensors to webview
       engine.addListener(propagateSensors);
 
       return () => {
@@ -203,6 +221,8 @@ export default function WebViewScreen({ color }) {
     setTimeout(() => webViewRef.current.reload(), 2000);
   };
 
+  const injectedJavascript = createInjectedJavascript(settings.id);
+
   return (
     <View style={styles.container}>
 
@@ -217,7 +237,7 @@ export default function WebViewScreen({ color }) {
               originWhitelist={['*']}
               source={source}
               onMessage={onWebViewMessage}
-              injectedJavaScript={injectJavascript}
+              injectedJavaScript={injectedJavascript}
               ref={(ref) => webViewRef.current = ref}
               onError={onWebViewError}
             />
@@ -246,7 +266,7 @@ export default function WebViewScreen({ color }) {
           originWhitelist={['*']}
           source={source}
           onMessage={onWebViewMessage}
-          injectedJavaScript={injectJavascript}
+          injectedJavaScript={injectedJavascript}
           ref={(ref) => webViewRef.current = ref}
           onError={onWebViewError}
         />

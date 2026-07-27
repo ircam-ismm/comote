@@ -33,7 +33,7 @@ import { engine } from '../engine';
 import stringIsNumeric from '../helpers/stringIsNumeric.js';
 import isURL from '../helpers/isURL';
 
-export default function SettingsScreen({ color, navigation }) {
+export default function SettingsScreen() {
   const settings = useAppSelector((state) => selectSettings(state));
   const network = useAppSelector((state) => selectNetwork(state));
   const dispatch = useAppDispatch();
