@@ -8,11 +8,6 @@
     "icon": "./assets/images/icon.png",
     "scheme": "comote",
     "userInterfaceStyle": "automatic",
-    "splash": {
-      "image": "./assets/images/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
     "updates": {
       "fallbackToCacheTimeout": 0,
       "checkAutomatically": "NEVER"
@@ -40,7 +35,6 @@
     "android": {
       "softwareKeyboardLayoutMode": "pan",
       "package": "fr.ircam.ismm.comote",
-      "edgeToEdgeEnabled": true,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -83,12 +77,19 @@
         "expo-navigation-bar",
         {
           "enforceContrast": true,
-          "barStyle": "light",
-          "visibility": "hidden"
+          "style": "light",
+          "hidden": true
         }
       ],
       "expo-asset",
-      "expo-font"
+      "expo-font",
+      [
+        "expo-splash-screen", {
+          "image": "./assets/images/splash.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff"
+        }
+      ]
     ],
     "runtimeVersion": {
       "policy": "appVersion"

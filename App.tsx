@@ -16,7 +16,7 @@ import Navigation from './navigation';
 import EngineComponent from './components/EngineComponent';
 
 import * as Localization from 'expo-localization';
-import * as NavigationBar from 'expo-navigation-bar';
+import { NavigationBar } from 'expo-navigation-bar';
 
 import i18n from './constants/i18n';
 // testing
@@ -45,7 +45,7 @@ export default function App() {
     const handleAppStateChange = nextAppState => {
       // If app is being used, hide nav bar
       if (nextAppState === "active") {
-        NavigationBar.setVisibilityAsync("hidden");
+        NavigationBar.setHidden(true);
       }
     }
 

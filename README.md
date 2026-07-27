@@ -168,6 +168,12 @@ adb install build-latest.apk
 
 Note that you may need to uninstall the application first: `adb uninstall fr.ircam.ismm.comote`
 
+run from device
+```
+adb shell
+am start -n fr.ircam.ismm.comote/fr.ircam.ismm.comote.MainApplication
+```
+
 You can also install and run a build on a device with the following command:
 
 ```sh
@@ -300,6 +306,10 @@ Prebuild and build again the development versions, to use with expo.
 ## Message format
 
 The message format is normalised. Please consult [sc-motion](https://github.com/ircam-ismm/sc-motion/blob/main/FORMAT.md).
+
+
+
+================================================================================
 
 ## TODO
 

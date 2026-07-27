@@ -77,7 +77,7 @@ export default function BottomTabNavigator() {
         component={WebViewNavigator}
         options={{
           tabBarLabel: i18n.t('nav.webview'),
-          tabBarIcon: ({ color }) => <AntDesign name="plussquareo" size={26} color={color} />,
+          tabBarIcon: ({ color }) => <AntDesign name="plus-square" size={26} color={color} />,
         }}
       />
 
@@ -104,7 +104,7 @@ export default function BottomTabNavigator() {
         component={AboutNavigator}
         options={{
           tabBarLabel: i18n.t('nav.about'),
-          tabBarIcon: ({ color }) => <AntDesign name="infocirlceo" size={26} color={color} />,
+          tabBarIcon: ({ color }) => <AntDesign name="info-circle" size={26} color={color} />,
         }}
       />
 

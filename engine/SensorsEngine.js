@@ -9,11 +9,11 @@ import {
     // Pedometer,
 } from 'expo-sensors';
 
-import { Gravity } from '@ircam/sc-motion';
+import { Gravity } from '@ircam/sc-motion/Gravity.js';
 
 // for heading
 import * as Location from 'expo-location';
-import * as NavigationBar from 'expo-navigation-bar';
+import { NavigationBar } from 'expo-navigation-bar';
 
 // import throttle from 'lodash/throttle';
 
@@ -288,7 +288,7 @@ export class SensorsEngine {
 
         // hide button navigation bar on Android, requesting for permission re-display the buttons
         console.log('> [android] hide navigation bar after heading permission');
-        NavigationBar.setVisibilityAsync("hidden");
+        NavigationBar.setHidden(true);
 
 
         const accelerometerAvailable = await Accelerometer.isAvailableAsync();
@@ -407,14 +407,14 @@ export class SensorsEngine {
         }
 
         const magnetometerAvailable = await Magnetometer.isAvailableAsync();
+
         if (magnetometerAvailable) {
             this.magnetometerListener = Magnetometer.addListener(data => {
                 this.magnetometer = magnetometerNormalise(data);
             });
         } else {
             // try again later
-            clearTimeout(this.magnetometerSubscribeId);
-            this.intervalId = setTimeout(() => {
+            this.magnetometerSubscribeId = setTimeout(() => {
                 this.magnetometerSubscribe();
             }, 1000);
         }
@@ -445,8 +445,7 @@ export class SensorsEngine {
             });
         } else {
             // try again later
-            clearTimeout(this.headingSubscribeId);
-            this.intervalId = setTimeout(() => {
+            this.headingSubscribeId = setTimeout(() => {
                 this.headingSubscribe();
             }, 1000);
         }
@@ -554,19 +553,16 @@ export class SensorsEngine {
                         y: Math.random() * 2 - 1,
                         z: Math.random() * 2 - 1,
                     },
-
                     gyroscope: {
                         x: Math.random() * 2 - 1,
                         y: Math.random() * 2 - 1,
                         z: Math.random() * 2 - 1,
                     },
-
                     magnetometer: {
                         x: Math.random() * 100 - 50,
                         y: Math.random() * 100 - 50,
                         z: Math.random() * 100 - 50,
                     },
-
                     heading: {
                         accuracy: 35,
                         geographic: Math.random() * 360,
